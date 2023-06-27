@@ -1,0 +1,5 @@
+rootProject.name = 'cider-server'
+include 'cider-api'
+include 'cider-common'
+include 'cider-domain'
+
