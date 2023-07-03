@@ -1,0 +1,53 @@
+spring:
+  config:
+    activate:
+      on-profile: ["local", "dev"]
+
+  datasource:
+    url: ${url_dev}
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: ${username}
+    password: ${password}
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: validate
+
+  mvc:
+    pathmatch:
+      # swagger
+      matching-strategy: ant_path_matcher
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: ["local"]
+
+swagger:
+  url: http://localhost:8080
+  desc: for local usages
+  documentation:
+    enabled: true
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: ["dev"]
+
+swagger:
+  url: http://fairer-dev-env.eba-yzy7enxi.ap-northeast-2.elasticbeanstalk.com/
+  desc: for dev usages
+  documentation:
+    enabled: true
+
