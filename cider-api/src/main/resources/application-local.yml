@@ -1,0 +1,10 @@
+spring:
+  config:
+    activate:
+      on-profile: ["local"]
+
+swagger:
+  url: http://localhost:8080
+  desc: for local usages
+  documentation:
+    enabled: true

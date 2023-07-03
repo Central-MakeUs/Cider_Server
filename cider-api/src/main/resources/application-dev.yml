@@ -1,0 +1,10 @@
+spring:
+  config:
+    activate:
+      on-profile: ["dev"]
+
+swagger:
+  url: http://fairer-dev-env.eba-yzy7enxi.ap-northeast-2.elasticbeanstalk.com/
+  desc: for dev usages
+  documentation:
+    enabled: true

@@ -24,30 +24,4 @@ spring:
       # swagger
       matching-strategy: ant_path_matcher
 
----
-
-spring:
-  config:
-    activate:
-      on-profile: ["local"]
-
-swagger:
-  url: http://localhost:8080
-  desc: for local usages
-  documentation:
-    enabled: true
-
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: ["dev"]
-
-swagger:
-  url: http://fairer-dev-env.eba-yzy7enxi.ap-northeast-2.elasticbeanstalk.com/
-  desc: for dev usages
-  documentation:
-    enabled: true
 
