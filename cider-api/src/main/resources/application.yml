@@ -24,4 +24,11 @@ spring:
       # swagger
       matching-strategy: ant_path_matcher
 
+kakao:
+  authUrl: https://kauth.kakao.com/oauth/token
+  userApiUrl: https://kapi.kakao.com/v2/user/me
+  restapiKey: ${kakao_restapi_url}
+  redirectUrl: ${kakao_redirect_url}
+
+
 

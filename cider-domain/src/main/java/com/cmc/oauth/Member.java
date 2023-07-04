@@ -1,14 +1,12 @@
-package com.cmc.member;
+package com.cmc.oauth;
 
 import com.cmc.base.BaseTimeEntity;
-import com.cmc.member.constant.SocialType;
+import com.cmc.oauth.constant.SocialType;
 import lombok.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 @Entity

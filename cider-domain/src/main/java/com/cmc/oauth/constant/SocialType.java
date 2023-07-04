@@ -1,4 +1,4 @@
-package com.cmc.member.constant;
+package com.cmc.oauth.constant;
 
 import lombok.Getter;
 
