@@ -2,9 +2,13 @@ package com.cmc.oauth.service;
 
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.CiderException;
-import com.cmc.oauth.Member;
+import com.cmc.domains.member.repository.MemberRepository;
+import com.cmc.member.Member;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.OAuthAttributes;
+import com.cmc.oauth.dto.OauthLoginDto;
+import com.cmc.oauth.dto.TokenDto;
+import com.cmc.oauth.dto.response.KakaoUserInfoResDto;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +24,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.modelmapper.ModelMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,6 +45,38 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class OauthLoginService {
+
+    private final MemberRepository memberRepository;
+    private final TokenProvider tokenProvider;
+    private final ModelMapper modelMapper;
+
+    // member 생성
+    public ResponseJwtTokenDto createMemberAndJwt(KakaoUserInfoResDto kakaoUserInfoResDto, SocialType socialType) {
+
+        // 회원 가입 or 로그인
+        Member requestMember;
+        final Optional<Member> foundMember = memberRepository.findByEmail(kakaoUserInfoResDto.getEmail());
+        if (foundMember.isEmpty()) { // 기존 회원 아닐 때
+            Member newMember = Member.create(kakaoUserInfoResDto.getEmail(), socialType);
+            requestMember = memberRepository.save(newMember);
+        } else {
+            requestMember = foundMember.get(); // 기존 회원일 때
+        }
+
+        // JWT 토큰 생성
+        TokenDto tokenDto = tokenProvider.createTokenDto(requestMember.getMemberId());
+        log.info("tokenDto: {}", tokenDto);
+
+        ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+        final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
+        responseJwtTokenDto.setIsNewMember(isNewMember);
+        if (!isNewMember) {
+            responseJwtTokenDto.setMemberName(requestMember.getMemberName());
+        }
+        responseJwtTokenDto.setMemberId(requestMember.getMemberId());
+
+        return responseJwtTokenDto;
+    }
 
     public ResponseJwtTokenDto loginAppleIos(String tokenString) throws JsonProcessingException {
         Member requestMember;
@@ -77,6 +114,12 @@ public class OauthLoginService {
 
         return null;
     }
+
+    // 로그인
+//    public ResponseJwtTokenDto login(SocialType socialType, String accessToken) {
+//        final OauthLoginDto oauthLoginDto = OauthLoginDto.builder().accessToken(accessToken).socialType(socialType).build();
+//        return createMemberAndJwt(oauthLoginDto);
+//    }
 
     public PublicKey getPublicKey(JsonElement kid, JsonElement alg) {
 

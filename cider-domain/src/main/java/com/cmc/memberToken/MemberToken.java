@@ -26,5 +26,13 @@ public class MemberToken extends BaseTimeEntity {
 
     private LocalDateTime tokenExpirationTime;
 
+    public static MemberToken create(String refreshToken, LocalDateTime tokenExpiredTime) {
+        final MemberToken memberToken = MemberToken.builder()
+                .refreshToken(refreshToken)
+                .tokenExpirationTime(tokenExpiredTime)
+                .build();
+
+        return memberToken;
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.cmc.oauth;
+package com.cmc.member;
 
 import com.cmc.base.BaseTimeEntity;
 import com.cmc.oauth.constant.SocialType;
@@ -6,6 +6,7 @@ import lombok.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -49,5 +50,14 @@ public class Member extends BaseTimeEntity {
     @Column(name = "fcm_token_date", columnDefinition = "DATETIME")
     private LocalDateTime fcmTokenDate;
 
+
+    public static Member create(String email, SocialType socialType) {
+        return Member.builder()
+                .email(email)
+                .socialType(socialType)
+                .memberName("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
+                .profilePath("")
+                .build();
+    }
 
 }
