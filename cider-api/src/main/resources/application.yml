@@ -24,4 +24,16 @@ spring:
       # swagger
       matching-strategy: ant_path_matcher
 
+kakao:
+  authUrl: https://kauth.kakao.com/oauth/token
+  userApiUrl: https://kapi.kakao.com/v2/user/me
+  restapiKey: ${kakao_restapi_url}
+  redirectUrl: ${kakao_redirect_url}
+
+
+# JWT token
+token:
+  secret: fairer-backend
+  access-token-expiration-time: 900000  # 5분
+  refresh-token-expiration-time: 31536000000 # 임시로 1년으로 변경, 안드로이드 갱신 기능 적용 후 2주로 다시 변경
 

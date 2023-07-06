@@ -34,6 +34,8 @@ jobs:
           spring.datasource.url_dev: ${{ secrets.DB_URL_DEV }}
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+          kakao.restapiKey: ${{secret.RESTAPI_KEY}}
+          kakao.redirectUrl: ${{secret.REDIRECT_URL}}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew # gradle wrapper를 실행할 수 있도록 권한 부여
