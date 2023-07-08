@@ -51,13 +51,14 @@ public class OauthLoginService {
     private final ModelMapper modelMapper;
 
     // member 생성
-    public ResponseJwtTokenDto createMemberAndJwt(KakaoUserInfoResDto kakaoUserInfoResDto, SocialType socialType) {
+    public ResponseJwtTokenDto createMemberAndJwt(KakaoUserInfoResDto memberInfo, SocialType socialType) {
 
         // 회원 가입 or 로그인
         Member requestMember;
-        final Optional<Member> foundMember = memberRepository.findByEmail(kakaoUserInfoResDto.getEmail());
+        final Optional<Member> foundMember = memberRepository.findByEmail(memberInfo.getEmail());
         if (foundMember.isEmpty()) { // 기존 회원 아닐 때
-            Member newMember = Member.create(kakaoUserInfoResDto.getEmail(), socialType);
+            Member newMember = Member.create(memberInfo.getProfile().getNickname(),
+                    memberInfo.getEmail(), memberInfo.getBirthday(), memberInfo.getGender(), socialType);
             requestMember = memberRepository.save(newMember);
         } else {
             requestMember = foundMember.get(); // 기존 회원일 때
@@ -68,6 +69,7 @@ public class OauthLoginService {
         log.info("tokenDto: {}", tokenDto);
 
         ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+
         final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
         responseJwtTokenDto.setIsNewMember(isNewMember);
         if (!isNewMember) {
@@ -111,8 +113,35 @@ public class OauthLoginService {
 
         log.info("oauthAttributes: {}", socialUserInfo.toString());
 
+        final Optional<Member> foundMember = memberRepository.findByEmail(email);
 
-        return null;
+        if (foundMember.isEmpty()) { // 기존 회원 아닐 때
+            Member newMember = Member.createApple(socialUserInfo.getEmail(), SocialType.APPLE);
+            requestMember = memberRepository.save(newMember);
+            // alarmRepository.save(Alarm.create(requestMember));
+        } else {
+            requestMember = foundMember.get(); // 기존 회원일 때
+        }
+
+
+        return generateToken(requestMember);
+    }
+
+    public ResponseJwtTokenDto generateToken(Member member) {
+
+        // JWT 토큰 생성
+        TokenDto tokenDto = tokenProvider.createTokenDto(member.getMemberId());
+        log.info("tokenDto: {}", tokenDto);
+
+        ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+        final boolean isNewMember = StringUtils.isEmpty(member.getMemberName());
+        responseJwtTokenDto.setIsNewMember(isNewMember);
+        if (!isNewMember) {
+            responseJwtTokenDto.setMemberName(member.getMemberName());
+        }
+        responseJwtTokenDto.setMemberId(member.getMemberId());
+
+        return responseJwtTokenDto;
     }
 
     // 로그인

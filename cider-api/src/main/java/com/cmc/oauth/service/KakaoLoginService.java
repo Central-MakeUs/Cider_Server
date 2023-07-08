@@ -33,8 +33,11 @@ public class KakaoLoginService {
     private String redirectUrl;
 
     public KakaoInfoResDto getInfo(final String code) {
+
+        // code <-> accessToken 교환
         final KakaoTokenResDto token = getToken(code);
         log.debug("token = {}", token);
+
         try {
             return kakaoFeignService.getInfo(new URI(kakaoUserApiUrl), token.getTokenType() + " " + token.getAccessToken());
         } catch (Exception e) {
