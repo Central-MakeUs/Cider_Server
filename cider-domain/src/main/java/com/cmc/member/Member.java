@@ -36,13 +36,11 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_name", columnDefinition = "VARCHAR(50)", nullable = false)
     private String memberName;
 
-    private Date memberBirth;
+    private String memberBirth;     // TODO : memberBirth 타입 점검
 
     private String memberGender;
 
     private String interestChallenge;
-
-    private String interestKeyword;
 
     @Column(name = "fcm_token", columnDefinition = "VARCHAR(200)")
     private String fcmToken;
@@ -50,13 +48,27 @@ public class Member extends BaseTimeEntity {
     @Column(name = "fcm_token_date", columnDefinition = "DATETIME")
     private LocalDateTime fcmTokenDate;
 
+    public static Member create(String nickname, String email, String birthday, String gender, SocialType socialType) {
 
-    public static Member create(String email, SocialType socialType) {
         return Member.builder()
+                .memberName(nickname)
                 .email(email)
+                .memberBirth(birthday)
+                .memberGender(gender)
                 .socialType(socialType)
-                .memberName("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
-                .profilePath("")
+                .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
+                .build();
+    }
+
+    public static Member createApple(String email, SocialType socialType) {
+
+        return Member.builder()
+                .memberName("")
+                .email(email)
+                .memberBirth("")
+                .memberGender("")
+                .socialType(socialType)
+                .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .build();
     }
 

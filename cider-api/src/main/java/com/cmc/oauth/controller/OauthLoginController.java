@@ -4,7 +4,9 @@ import com.cmc.common.exception.BadRequestException;
 import com.cmc.oauth.constant.ClientType;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.request.OauthReqDto;
+import com.cmc.oauth.dto.response.KakaoUserInfoResDto;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
+import com.cmc.oauth.dto.response.userInfo.KakaoInfoResDto;
 import com.cmc.oauth.service.KakaoLoginService;
 import com.cmc.oauth.service.OauthLoginService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,20 +42,19 @@ public class OauthLoginController {
         final SocialType socialType = oauthReqDto.getSocialType();
         ResponseJwtTokenDto jwtTokenDto;
 
-        if (socialType == SocialType.KAKAO && oauthReqDto.getClientType() == ClientType.ANDROID) {
+        if (socialType == SocialType.KAKAO) {
 
-            kakaoLoginService.getInfo(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).getKakaoUserInfoResDto();
-
-        } else if (socialType == SocialType.KAKAO && oauthReqDto.getClientType() == ClientType.IOS) {
             final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-
             if (tokenString == null || tokenString.isEmpty()) {
                 throw new BadRequestException("토큰이 없습니다.");
             }
 
-        } else if (socialType == SocialType.APPLE && oauthReqDto.getClientType() == ClientType.IOS) {
-            final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+            KakaoUserInfoResDto memberInfo = kakaoLoginService.getInfo(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).getKakaoUserInfoResDto();
+            jwtTokenDto = oauthLoginService.createMemberAndJwt(memberInfo, socialType);
 
+        } else if (socialType == SocialType.APPLE) {
+
+            final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
             if (tokenString == null || tokenString.isEmpty()) {
                 throw new BadRequestException("토큰이 없습니다.");
             }
@@ -65,8 +66,7 @@ public class OauthLoginController {
         }
 
         log.info("=== Oauth login end ===");
-        //return ResponseEntity.ok(jwtTokenDto);
-        return null;
+        return ResponseEntity.ok(jwtTokenDto);
     }
 
 }
