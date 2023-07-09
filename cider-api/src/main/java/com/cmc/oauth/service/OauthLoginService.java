@@ -76,6 +76,8 @@ public class OauthLoginService {
             responseJwtTokenDto.setMemberName(requestMember.getMemberName());
         }
         responseJwtTokenDto.setMemberId(requestMember.getMemberId());
+        responseJwtTokenDto.setBirthday(requestMember.getMemberBirth());
+        responseJwtTokenDto.setGender(requestMember.getMemberGender());
 
         return responseJwtTokenDto;
     }
@@ -140,6 +142,9 @@ public class OauthLoginService {
             responseJwtTokenDto.setMemberName(member.getMemberName());
         }
         responseJwtTokenDto.setMemberId(member.getMemberId());
+        responseJwtTokenDto.setMemberName("");
+        responseJwtTokenDto.setBirthday("");
+        responseJwtTokenDto.setGender("");
 
         return responseJwtTokenDto;
     }

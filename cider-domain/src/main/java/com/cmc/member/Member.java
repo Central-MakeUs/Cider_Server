@@ -72,4 +72,10 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
+    public void update(String memberGender, String memberBirth, String interestChallenge) {
+
+        this.memberGender = memberGender;
+        this.memberBirth = memberBirth;
+        this.interestChallenge = interestChallenge;
+    }
 }
