@@ -4,7 +4,7 @@ spring:
       on-profile: ["local", "dev"]
 
   datasource:
-    url: ${url_dev}
+    url: jdbc:mysql://cider.chghplczsjfl.ap-northeast-2.rds.amazonaws.com:3306/cider_dev
     driverClassName: com.mysql.cj.jdbc.Driver
     username: ${username}
     password: ${password}
