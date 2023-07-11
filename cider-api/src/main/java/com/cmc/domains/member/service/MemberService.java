@@ -1,6 +1,7 @@
 package com.cmc.domains.member.service;
 
 import com.cmc.common.exception.BadRequestException;
+import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.member.repository.nickname.NameAdjectiveRepository;
 import com.cmc.domains.member.repository.nickname.NameAnimalRepository;
@@ -54,5 +55,20 @@ public class MemberService {
         }).getAnimalContent();
 
         return adjective + noun + animal;
+    }
+
+    public CommonResponse checkNickName(String nickname) {
+
+        if(isValidNickName(nickname)){
+            return CommonResponse.from("사용할 수 있는 닉네임입니다.");
+        }
+        else {
+            return CommonResponse.from("이미 존재하는 닉네임입니다.");
+        }
+    }
+
+    private boolean isValidNickName(String nickname) {
+
+        return !memberRepository.existsByMemberName(nickname);
     }
 }
