@@ -69,4 +69,12 @@ public class OauthLoginController {
         return ResponseEntity.ok(jwtTokenDto);
     }
 
+    @Tag(name = "oauth")
+    @PostMapping(value = "/logout")
+    @Operation(summary = "로그아웃", description = "- refresh token으로만 요청 가능, 로그아웃 처리 시 db에 저장된 refresh token 만료 처리\n" + "- 헤더의 Authorization 값으로 Refresh token 넣어 요청주세요.")
+    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization") String refreshToken) {
+        oauthLoginService.logout(refreshToken, LocalDateTime.now());
+        return ResponseEntity.ok().body("로그아웃이 완료되었습니다.");
+    }
+
 }

@@ -2,8 +2,11 @@ package com.cmc.oauth.service;
 
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.CiderException;
+import com.cmc.common.exception.MemberTokenNotFoundException;
 import com.cmc.domains.member.repository.MemberRepository;
+import com.cmc.domains.memberToken.MemberTokenRepository;
 import com.cmc.member.Member;
+import com.cmc.memberToken.MemberToken;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.OAuthAttributes;
 import com.cmc.oauth.dto.OauthLoginDto;
@@ -36,6 +39,7 @@ import java.security.InvalidParameterException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,6 +51,7 @@ import java.util.Optional;
 public class OauthLoginService {
 
     private final MemberRepository memberRepository;
+    private final MemberTokenRepository memberTokenRepository;
     private final TokenProvider tokenProvider;
     private final ModelMapper modelMapper;
 
@@ -196,6 +201,12 @@ public class OauthLoginService {
         }
     }
 
+    public void logout(String refreshToken, LocalDateTime now) {
+        final MemberToken memberToken = memberTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new MemberTokenNotFoundException("해당 리프레시 토큰이 존재하지 않습니다."));
+        memberToken.expire(now);
+    }
+
 
     private JsonArray getApplePublicKeys() {
         StringBuilder apiKey = new StringBuilder();
@@ -219,18 +230,10 @@ public class OauthLoginService {
         }
     }
 
-
-    private final KakaoLoginService kakaoLoginService;
-
     public String getAccessToken(String authorizationCode) {
 
         //return kakaoLoginService.getAccess(authorizationCode);
         return authorizationCode;
-    }
-
-    public void validateLoginParams(SocialType socialType, String accessToken) {
-
-        validateAccessToken(accessToken);
     }
 
     private void validateAccessToken(String accessToken) {
@@ -239,7 +242,5 @@ public class OauthLoginService {
             throw new InvalidParameterException("Access 토큰값을 입력해주세요.");
         }
     }
-
-
 
 }
