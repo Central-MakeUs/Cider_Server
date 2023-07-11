@@ -22,6 +22,11 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    // 내 정보 조회
+    public Member find(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new BadRequestException("해당하는 멤버를 찾을 수 없습니다."));
+    }
+
     private Member findMemberOrThrow(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> {
             throw new BadRequestException("요청한 멤버는 존재하지 않습니다.");

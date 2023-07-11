@@ -1,6 +1,7 @@
 package com.cmc.domains.member.controller;
 
 import com.cmc.domains.member.dto.request.MemberUpdateReqDto;
+import com.cmc.domains.member.dto.response.MemberResponseDto;
 import com.cmc.domains.member.dto.response.MemberUpdateResDto;
 import com.cmc.domains.member.service.MemberService;
 import com.cmc.global.resolver.RequestMemberId;
@@ -36,6 +37,16 @@ public class MemberController {
 
         Member member = memberService.updateMember(memberId, request.getMemberGender(), request.getMemberBirth(), request.getInterestChallenge());
         return ResponseEntity.ok(MemberUpdateResDto.from(member));
+    }
+
+    @Tag(name = "members")
+    @Operation(summary = "내 정보 조회")
+    @GetMapping("/me")
+    public ResponseEntity<MemberResponseDto> getMe(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+
+        log.info("memberId :::: " + memberId);
+
+        return ResponseEntity.ok(MemberResponseDto.from(memberService.find(memberId)));
     }
 
 //    @Tag(name = "members")
