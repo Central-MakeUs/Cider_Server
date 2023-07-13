@@ -33,11 +33,11 @@ public class ChallengeCreateRequestDto {
     @Schema(description = "챌린지 공개 여부", example = "true: 공개, fale: 비공개", required=true)
     private Boolean isPublic;
 
-    @Schema(description = "성공 예시 사진 리스트 (1-2개)", required=true)
-    List<MultipartFile> successImages;
+//    @Schema(description = "성공 예시 사진 리스트 (1-2개)", required=true)
+//    List<MultipartFile> successImages;
 
-    @Schema(description = "실패 예시 사진 리스트 (1-2개)", required=true)
-    List<MultipartFile> failureImages;
+//    @Schema(description = "실패 예시 사진 리스트 (1-2개)", required=true)
+//    List<MultipartFile> failureImages;
 
     public Challenge toEntity(){
         return Challenge.builder()
