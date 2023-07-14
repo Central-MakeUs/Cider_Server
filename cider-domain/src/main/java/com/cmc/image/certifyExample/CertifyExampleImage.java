@@ -16,11 +16,14 @@ public class CertifyExampleImage extends Image {
     @JoinColumn(name = "challenge_id", nullable = false)
     private Challenge challenge;
 
+    private String exampleType;
+
     protected CertifyExampleImage(){}
 
-    public CertifyExampleImage(Challenge challenge, String imagerUrl){
+    public CertifyExampleImage(Challenge challenge, String imagerUrl, String exampleType){
         super(imagerUrl);
         this.challenge = challenge;
+        this.exampleType = exampleType;
         challenge.getCertifyExampleImageList().add(this);
     }
 }
