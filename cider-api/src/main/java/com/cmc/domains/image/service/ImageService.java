@@ -26,7 +26,7 @@ public class ImageService {
 
 
     // 챌린지 인증 성공 예시 사진 업로드
-    public List<CertifyExampleImage> uploadCertifyExampleImages(List<MultipartFile> certifyExampleImages, Long challengeId, String exampleType) throws IOException {
+    public List<CertifyExampleImage> uploadCertifyExampleImages(List<MultipartFile> certifyExampleImages, Long challengeId, Long memberId, String exampleType) throws IOException {
 
         Challenge challenge = findChallengeOrThrow(challengeId);
         List<String> imageUrlList = s3Uploader.s3UploadOfCertifyExampleImages(challenge, certifyExampleImages);

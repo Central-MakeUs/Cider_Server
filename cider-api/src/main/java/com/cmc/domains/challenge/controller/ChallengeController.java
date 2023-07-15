@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,35 +40,24 @@ public class ChallengeController {
                                                                     @RequestBody @Valid ChallengeCreateRequestDto req){
 
         Challenge challenge = challengeService.create(req, memberId);
-        return new ResponseEntity<>(ChallengeCreateResponseDto.create(challenge), HttpStatus.CREATED);
+        return ResponseEntity.ok(ChallengeCreateResponseDto.create(challenge));
     }
 
     @Tag(name = "challenge")
-    @Operation(summary = "챌린지 인증 성공 예시 이미지 업로드 api")
-    @PostMapping(value="/images/success/{challengeId}")
+    @Operation(summary = "챌린지 인증 예시 이미지 업로드 api", description = "- form-data 형태로 보내주시고, content-type는 따로 지정 안해주셔도 됩니다.\n" +
+            "- challengeId는 직전에 호출한 챌린지 생성 api response값 보내주시면 됩니다.")
+    @PostMapping(value="/images/{challengeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CommonResponse> createSuccessExampleImages(@Parameter(hidden = true) @RequestMemberId Long memberId,
-                                                            @RequestPart(value = "certifyExampleImages") List<MultipartFile> certifyExampleImages,
-                                                            @PathVariable("challengeId") Long challengeId) throws IOException {
+                                                                     @RequestPart(value = "successExampleImages") List<MultipartFile> successExampleImages,
+                                                                     @RequestPart(value = "failureExampleImages") List<MultipartFile> failureExampleImages,
+                                                                     @PathVariable("challengeId") Long challengeId) throws IOException {
 
-        for(MultipartFile multipartFile : certifyExampleImages){
+        for(MultipartFile multipartFile : successExampleImages){
             log.info("contentType ::::::::: " + multipartFile.getContentType());
         }
-        imageService.uploadCertifyExampleImages(certifyExampleImages, challengeId, "SUCCESS");
-        return ResponseEntity.ok(CommonResponse.from("인증 성공 예시 이미지가 업로드 되었습니다."));
-    }
-
-    @Tag(name = "challenge")
-    @Operation(summary = "챌린지 인증 실패 예시 이미지 업로드 api")
-    @PostMapping(value="/images/failure/{challengeId}")
-    public ResponseEntity<CommonResponse> createFailureExampleImages(@Parameter(hidden = true) @RequestMemberId Long memberId,
-                                                           @RequestPart(value = "certifyExampleImages") List<MultipartFile> certifyExampleImages,
-                                                           @PathVariable("challengeId") Long challengeId) throws IOException {
-
-        for(MultipartFile multipartFile : certifyExampleImages){
-            log.info("contentType ::::::::: " + multipartFile.getContentType());
-        }
-        imageService.uploadCertifyExampleImages(certifyExampleImages, challengeId, "FAILURE");
-        return ResponseEntity.ok(CommonResponse.from("인증 실패 예시 이미지가 업로드 되었습니다."));
+        imageService.uploadCertifyExampleImages(successExampleImages, challengeId, memberId, "SUCCESS");
+        imageService.uploadCertifyExampleImages(failureExampleImages, challengeId, memberId, "FAILURE");
+        return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
     }
 
 }
