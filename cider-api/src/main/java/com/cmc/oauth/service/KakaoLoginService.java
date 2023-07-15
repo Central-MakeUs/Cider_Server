@@ -20,16 +20,16 @@ public class KakaoLoginService {
 
     private final KakaoFeignService kakaoFeignService;
 
-    @Value("${kakao.auth-url}")
+    @Value("${kakao.authUrl}")
     private String kakaoAuthUrl;
 
-    @Value("${kakao.user-api-url}")
+    @Value("${kakao.userApiUrl}")
     private String kakaoUserApiUrl;
 
-    @Value("${kakao.restapi-key}")
+    @Value("${kakao.restapiKey}")
     private String restapiKey;
 
-    @Value("${kakao.redirect-url}")
+    @Value("${kakao.redirectUrl}")
     private String redirectUrl;
 
     public KakaoInfoResDto getInfo(final String code) {
