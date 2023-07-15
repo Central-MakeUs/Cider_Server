@@ -51,4 +51,9 @@ public class Challenge extends BaseTimeEntity {
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY)
     private List<CertifyExampleImage> certifyExampleImageList = new ArrayList<>();
 
+    public boolean isCreator(Long memberId) {
+
+        return this.member.getMemberId().equals(memberId);
+    }
+
 }
