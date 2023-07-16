@@ -24,6 +24,7 @@ public class Member extends BaseTimeEntity {
     private Long memberId;
 
     @Column(name = "email", columnDefinition = "VARCHAR(50)", unique = true)
+    private String email;
 
     @OneToMany(mappedBy = "member")
     private List<Challenge> challenges;
