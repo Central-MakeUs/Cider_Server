@@ -34,6 +34,9 @@ public class KakaoLoginService {
 
         // code <-> accessToken 교환
         final KakaoTokenResDto token = getToken(code);
+
+
+
         log.debug("token = {}", token);
 
         try {

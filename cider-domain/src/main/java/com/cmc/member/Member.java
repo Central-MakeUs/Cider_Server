@@ -1,13 +1,13 @@
 package com.cmc.member;
 
 import com.cmc.base.BaseTimeEntity;
+import com.cmc.challenge.Challenge;
 import com.cmc.oauth.constant.SocialType;
 import lombok.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -24,7 +24,9 @@ public class Member extends BaseTimeEntity {
     private Long memberId;
 
     @Column(name = "email", columnDefinition = "VARCHAR(50)", unique = true)
-    private String email;
+
+    @OneToMany(mappedBy = "member")
+    private List<Challenge> challenges;
 
     @Column(name = "profile_path", columnDefinition = "VARCHAR(200) default ''")
     private String profilePath;
@@ -72,4 +74,10 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
+    public void update(String memberGender, String memberBirth, String interestChallenge) {
+
+        this.memberGender = memberGender;
+        this.memberBirth = memberBirth;
+        this.interestChallenge = interestChallenge;
+    }
 }

@@ -4,7 +4,7 @@ spring:
       on-profile: ["local", "dev"]
 
   datasource:
-    url: ${url_dev}
+    url: jdbc:mysql://cider.chghplczsjfl.ap-northeast-2.rds.amazonaws.com:3306/cider_dev
     driverClassName: com.mysql.cj.jdbc.Driver
     username: ${username}
     password: ${password}
@@ -34,6 +34,17 @@ kakao:
 # JWT token
 token:
   secret: ciderserver
-  access-token-expiration-time: 900000  # 5분
-  refresh-token-expiration-time: 31536000000 # 임시로 1년으로 변경, 안드로이드 갱신 기능 적용 후 2주로 다시 변경
+  access-token-expiration-time: 31536000000
+  refresh-token-expiration-time: 31536000000
 
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      access-key: ${access-key}
+      secret-key: ${secret-key}
+    s3:
+      bucket: cider-bucket

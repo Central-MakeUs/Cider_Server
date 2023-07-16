@@ -33,9 +33,16 @@ public class ResponseJwtTokenDto {
     @Builder.Default
     private Boolean isNewMember = false;
 
+    @Schema(description = "멤버 ID")
+    private Long memberId;
+
     @Schema(description = "멤버 이름")
     private String memberName;
 
-    @Schema(description = "멤버 ID")
-    private Long memberId;
+    @Schema(description = "멤버 생일")
+    private String birthday;
+
+    @Schema(description = "멤버 성별")
+    private String gender;
+
 }

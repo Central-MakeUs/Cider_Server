@@ -25,7 +25,7 @@ public class SwaggerConfig {
     @Value("${spring.profiles.active}")
     private String profile;
 
-    private final String IDFV_TOKEN_HEADER = "x-sdp-idfv";
+    private final String IDFV_TOKEN_HEADER = "Authorization";
 
     @Bean
     public GroupedOpenApi publicApi() {
