@@ -23,17 +23,17 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", columnDefinition = "BIGINT", nullable = false, unique = true)
     private Long memberId;
 
-    @Column(name = "email", columnDefinition = "VARCHAR(50)", nullable = false, unique = true)
+    @Column(name = "email", columnDefinition = "VARCHAR(50)", unique = true)
     private String email;
 
-    @Column(name = "profile_path", columnDefinition = "VARCHAR(200) default ''", nullable = false)
+    @Column(name = "profile_path", columnDefinition = "VARCHAR(200) default ''")
     private String profilePath;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type", columnDefinition = "VARCHAR(50)", nullable = false)
     SocialType socialType;
 
-    @Column(name = "member_name", columnDefinition = "VARCHAR(50)", nullable = false)
+    @Column(name = "member_name", columnDefinition = "VARCHAR(50)")
     private String memberName;
 
     private String memberBirth;     // TODO : memberBirth 타입 점검
@@ -64,7 +64,7 @@ public class Member extends BaseTimeEntity {
 
         return Member.builder()
                 .memberName("")
-                .email(email)
+                .email("")
                 .memberBirth("")
                 .memberGender("")
                 .socialType(socialType)

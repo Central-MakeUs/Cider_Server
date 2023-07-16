@@ -1,9 +1,7 @@
 package com.cmc.oauth.service;
 
 import com.cmc.oauth.dto.response.KakaoTokenResDto;
-import com.cmc.oauth.dto.response.KakaoUserInfoResDto;
 import com.cmc.oauth.dto.response.userInfo.KakaoInfoResDto;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

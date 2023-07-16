@@ -6,9 +6,8 @@ import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.member.Member;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.OAuthAttributes;
-import com.cmc.oauth.dto.OauthLoginDto;
 import com.cmc.oauth.dto.TokenDto;
-import com.cmc.oauth.dto.response.KakaoUserInfoResDto;
+import com.cmc.oauth.dto.response.KakaoAccount;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +50,7 @@ public class OauthLoginService {
     private final ModelMapper modelMapper;
 
     // member 생성
-    public ResponseJwtTokenDto createMemberAndJwt(KakaoUserInfoResDto memberInfo, SocialType socialType) {
+    public ResponseJwtTokenDto createMemberAndJwt(KakaoAccount memberInfo, SocialType socialType) {
 
         // 회원 가입 or 로그인
         Member requestMember;

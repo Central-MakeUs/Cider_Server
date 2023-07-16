@@ -14,11 +14,15 @@ public class KakaoTokenResDto {
 
     private String accessToken;
 
-    private String refreshToken;
+    private String idToken;
 
     private Long expiresIn;
 
+    private String refreshToken;
+
     private Long refreshTokenExpiresIn;
+
+    private String scope;
 
     public static KakaoTokenResDto fail() {
         return new KakaoTokenResDto(null, null);

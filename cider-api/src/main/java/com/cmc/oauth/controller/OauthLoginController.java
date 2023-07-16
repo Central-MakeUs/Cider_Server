@@ -1,12 +1,10 @@
 package com.cmc.oauth.controller;
 
 import com.cmc.common.exception.BadRequestException;
-import com.cmc.oauth.constant.ClientType;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.request.OauthReqDto;
-import com.cmc.oauth.dto.response.KakaoUserInfoResDto;
+import com.cmc.oauth.dto.response.KakaoAccount;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
-import com.cmc.oauth.dto.response.userInfo.KakaoInfoResDto;
 import com.cmc.oauth.service.KakaoLoginService;
 import com.cmc.oauth.service.OauthLoginService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,8 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -49,7 +45,7 @@ public class OauthLoginController {
                 throw new BadRequestException("토큰이 없습니다.");
             }
 
-            KakaoUserInfoResDto memberInfo = kakaoLoginService.getInfo(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).getKakaoUserInfoResDto();
+            KakaoAccount memberInfo = kakaoLoginService.getInfo(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).getKakaoAccount();
             jwtTokenDto = oauthLoginService.createMemberAndJwt(memberInfo, socialType);
 
         } else if (socialType == SocialType.APPLE) {
