@@ -1,9 +1,7 @@
 package com.cmc.oauth.service;
 
 import com.cmc.oauth.dto.response.KakaoTokenResDto;
-import com.cmc.oauth.dto.response.KakaoUserInfoResDto;
 import com.cmc.oauth.dto.response.userInfo.KakaoInfoResDto;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,16 +18,16 @@ public class KakaoLoginService {
 
     private final KakaoFeignService kakaoFeignService;
 
-    @Value("${kakao.auth-url}")
+    @Value("${kakao.authUrl}")
     private String kakaoAuthUrl;
 
-    @Value("${kakao.user-api-url}")
+    @Value("${kakao.userApiUrl}")
     private String kakaoUserApiUrl;
 
-    @Value("${kakao.restapi-key}")
+    @Value("${kakao.restapiKey}")
     private String restapiKey;
 
-    @Value("${kakao.redirect-url}")
+    @Value("${kakao.redirectUrl}")
     private String redirectUrl;
 
     public KakaoInfoResDto getInfo(final String code) {

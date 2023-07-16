@@ -33,9 +33,9 @@ kakao:
 
 # JWT token
 token:
-  secret: cider-backend
+  secret: ciderserver
   access-token-expiration-time: 31536000000
-  refresh-token-expiration-time: 31536000000 # 임시로 1년으로 변경, 안드로이드 갱신 기능 적용 후 2주로 다시 변경
+  refresh-token-expiration-time: 31536000000
 
 cloud:
   aws:

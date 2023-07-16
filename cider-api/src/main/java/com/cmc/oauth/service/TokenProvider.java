@@ -10,11 +10,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -61,8 +63,8 @@ public class TokenProvider {
         Date accessTokenExpireTime = createAccessTokenExpireTime();
         Date refreshTokenExpireTime = createRefreshTokenExpireTime();
 
-        String accessToken = createAccessToken(memberId, accessTokenExpireTime);
-        String refreshToken = createRefreshToken(memberId, refreshTokenExpireTime);
+        String accessToken = createRefreshTokenV2(memberId, accessTokenExpireTime);
+        String refreshToken = createRefreshTokenV2(memberId, refreshTokenExpireTime);
 
         final MemberToken memberToken = MemberToken.create(refreshToken, DateTimeUtils.convertToLocalDateTime(refreshTokenExpireTime), memberId);
         memberTokenRepository.save(memberToken);
@@ -94,6 +96,21 @@ public class TokenProvider {
                 .setExpiration(expirationTime)
                 .signWith(SignatureAlgorithm.HS512, tokenSecret)
                 .compact();
+    }
+
+    public String createRefreshTokenV2(Long memberId, Date expirationTime) {
+        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512); // 안전한 HS512 키 생성
+
+        // JWT 생성
+        String token = Jwts.builder()
+                .setSubject(JwtTokenType.REFRESH.name())
+                .setAudience(Long.toString(memberId))
+                .setIssuedAt(new Date())
+                .setExpiration(expirationTime)
+                .signWith(key) // 생성한 키로 서명
+                .compact();
+
+        return token;
     }
 
     /**
