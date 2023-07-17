@@ -3,6 +3,7 @@ package com.cmc.challenge;
 import com.cmc.base.BaseTimeEntity;
 import com.cmc.image.certifyExample.CertifyExampleImage;
 import com.cmc.member.Member;
+import com.cmc.participate.Participate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,9 +26,12 @@ public class Challenge extends BaseTimeEntity {
     @Column(name = "challenge_id", columnDefinition = "BIGINT", nullable = false, unique = true)
     private Long challengeId;
 
-    @ManyToOne
-    @JoinColumn(name = "creator_id")
-    private Member member;
+//    @ManyToOne
+//    @JoinColumn(name = "creator_id")
+//    private Member member;
+
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participate> participates;
 
     private String challengeBranch;
 
@@ -51,9 +55,9 @@ public class Challenge extends BaseTimeEntity {
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY)
     private List<CertifyExampleImage> certifyExampleImageList = new ArrayList<>();
 
-    public boolean isCreator(Long memberId) {
-
-        return this.member.getMemberId().equals(memberId);
-    }
+//    public boolean isCreator(Long memberId) {
+//
+//        return this.member.getMemberId().equals(memberId);
+//    }
 
 }

@@ -3,6 +3,7 @@ package com.cmc.member;
 import com.cmc.base.BaseTimeEntity;
 import com.cmc.challenge.Challenge;
 import com.cmc.oauth.constant.SocialType;
+import com.cmc.participate.Participate;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -26,8 +27,11 @@ public class Member extends BaseTimeEntity {
     @Column(name = "email", columnDefinition = "VARCHAR(50)", unique = true)
     private String email;
 
+//    @OneToMany(mappedBy = "member")
+//    private List<Challenge> challenges;
+
     @OneToMany(mappedBy = "member")
-    private List<Challenge> challenges;
+    private List<Participate> participates;
 
     @Column(name = "profile_path", columnDefinition = "VARCHAR(200) default ''")
     private String profilePath;

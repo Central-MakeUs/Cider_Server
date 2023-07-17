@@ -35,10 +35,10 @@ public class ImageService {
             throw new BadRequestException("인증 예시 성공/실패 이미지는 2장까지 등록 가능합니다.");
         }
 
-        Challenge challenge = findChallengeOrThrow(challengeId);
-        if(!challenge.isCreator(memberId)){
-            throw new BadRequestException("본인이 작성한 챌린지가 아닙니다.");
-        }
+        Challenge challenge = findChallengeOrThrow(challengeId);    // TODO : 본인이 작성한 챌린지 예외처리 다시
+//        if(!challenge.isCreator(memberId)){
+//            throw new BadRequestException("본인이 작성한 챌린지가 아닙니다.");
+//        }
 
         List<String> imageUrlList = s3Uploader.s3UploadOfCertifyExampleImages(challenge, certifyExampleImages);
 

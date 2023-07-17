@@ -4,10 +4,13 @@ import com.cmc.challenge.Challenge;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.common.response.CreatedResponse;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
+import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
 import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
 import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.image.service.ImageService;
+import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
+import com.cmc.participate.Participate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +35,7 @@ public class ChallengeController {
 
     private final ChallengeService challengeService;
     private final ImageService imageService;
+    private final ParticipateService participateService;
 
     @Tag(name = "challenge")
     @Operation(summary = "챌린지 생성 api")
@@ -40,6 +44,7 @@ public class ChallengeController {
                                                                     @RequestBody @Valid ChallengeCreateRequestDto req){
 
         Challenge challenge = challengeService.create(req, memberId);
+        participateService.create(challenge.getChallengeId(), memberId);
         return ResponseEntity.ok(ChallengeCreateResponseDto.create(challenge));
     }
 
@@ -60,4 +65,13 @@ public class ChallengeController {
         return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
     }
 
+    @Tag(name = "challenge")
+    @Operation(summary = "챌린지 참여하기 api")
+    @PostMapping(value="/participate")
+    public ResponseEntity<CommonResponse> createChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                                      @RequestBody @Valid ChallengeParticipateRequestDto req){
+
+        participateService.create(req.getChallengeId(), memberId);
+        return ResponseEntity.ok(CommonResponse.from("챌린지 참여가 완료되었습니다"));
+    }
 }
