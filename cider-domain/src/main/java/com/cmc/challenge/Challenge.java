@@ -1,6 +1,7 @@
 package com.cmc.challenge;
 
 import com.cmc.base.BaseTimeEntity;
+import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.image.certifyExample.CertifyExampleImage;
 import com.cmc.member.Member;
 import com.cmc.participate.Participate;
@@ -32,6 +33,9 @@ public class Challenge extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participate> participates;
+
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChallengeLike> challengeLikes;
 
     private String challengeBranch;
 
