@@ -69,7 +69,7 @@ public class OauthLoginService {
         }
 
         // JWT 토큰 생성
-        TokenDto tokenDto = tokenProvider.createTokenDto(requestMember.getMemberId());
+        TokenDto tokenDto = tokenProvider.createTokenDtoKakao(requestMember.getMemberId());
         log.info("tokenDto: {}", tokenDto);
 
         ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
@@ -130,13 +130,33 @@ public class OauthLoginService {
         }
 
 
-        return generateToken(requestMember);
+        return generateTokenKakao(requestMember);
     }
 
-    public ResponseJwtTokenDto generateToken(Member member) {
+    public ResponseJwtTokenDto generateTokenApple(Member member) {
 
         // JWT 토큰 생성
-        TokenDto tokenDto = tokenProvider.createTokenDto(member.getMemberId());
+        TokenDto tokenDto = tokenProvider.createTokenDtoApple(member.getMemberId());
+        log.info("tokenDto: {}", tokenDto);
+
+        ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+        final boolean isNewMember = StringUtils.isEmpty(member.getMemberName());
+        responseJwtTokenDto.setIsNewMember(isNewMember);
+        if (!isNewMember) {
+            responseJwtTokenDto.setMemberName(member.getMemberName());
+        }
+        responseJwtTokenDto.setMemberId(member.getMemberId());
+        responseJwtTokenDto.setMemberName("");
+        responseJwtTokenDto.setBirthday("");
+        responseJwtTokenDto.setGender("");
+
+        return responseJwtTokenDto;
+    }
+
+    public ResponseJwtTokenDto generateTokenKakao(Member member) {
+
+        // JWT 토큰 생성
+        TokenDto tokenDto = tokenProvider.createTokenDtoKakao(member.getMemberId());
         log.info("tokenDto: {}", tokenDto);
 
         ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);

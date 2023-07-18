@@ -40,9 +40,33 @@ public class TokenProvider {
 
     private static final String BEARER_TYPE = "bearer";
 
-    public static Long getMemberId(String token) {
+    public static Long getMemberIdKakao(String token) {
         try {
-            final Claims claims = Jwts.parser().setSigningKey("cider-backend") //jwt 만들 때 사용했던 키. static 메서드 사용하기 위해서 String으로 하드 코딩.
+            Key key = Keys.hmacShaKeyFor("cidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkey".getBytes());
+
+            final Claims claims = Jwts.parser().setSigningKey(key)
+                    .parseClaimsJws(token).getBody();
+            return Long.parseLong(claims.getAudience());
+        } catch (Exception e) {
+            log.warn("토큰 변환 중 에러 발생: {}", token);
+            e.printStackTrace();
+            throw e;
+        }
+//        try {
+//            final Claims claims = Jwts.parser().setSigningKey("cidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkey") //jwt 만들 때 사용했던 키. static 메서드 사용하기 위해서 String으로 하드 코딩.
+//                    .parseClaimsJws(token).getBody();
+//            return Long.parseLong(claims.getAudience());
+//        } catch (Exception e) {
+//            log.warn("토큰 변환 중 에러 발생: {}", token);
+//            e.printStackTrace();
+//            throw e;
+//        }
+    }
+
+    public static Long getMemberId(String token) {
+
+        try {
+            final Claims claims = Jwts.parser().setSigningKey("cidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkey") //jwt 만들 때 사용했던 키. static 메서드 사용하기 위해서 String으로 하드 코딩.
                     .parseClaimsJws(token).getBody();
             return Long.parseLong(claims.getAudience());
         } catch (Exception e) {
@@ -58,12 +82,38 @@ public class TokenProvider {
      * @param memberId
      * @return
      */
-    public TokenDto createTokenDto(Long memberId) {
+    public TokenDto createTokenDtoApple(Long memberId) {
 
         Date accessTokenExpireTime = createAccessTokenExpireTime();
         Date refreshTokenExpireTime = createRefreshTokenExpireTime();
 
-        String accessToken = createRefreshTokenV2(memberId, accessTokenExpireTime);
+        String accessToken = createAccessToken(memberId, accessTokenExpireTime);
+        String refreshToken = createRefreshToken(memberId, refreshTokenExpireTime);
+
+        final MemberToken memberToken = MemberToken.create(refreshToken, DateTimeUtils.convertToLocalDateTime(refreshTokenExpireTime), memberId);
+        memberTokenRepository.save(memberToken);
+
+        return TokenDto.builder()
+                .grantType(BEARER_TYPE)
+                .accessToken(accessToken)
+                .accessTokenExpireTime(accessTokenExpireTime)
+                .refreshToken(refreshToken)
+                .refreshTokenExpireTime(refreshTokenExpireTime)
+                .build();
+    }
+
+    /**
+     * 엑세스/리프레시 토큰 dto 생성
+     * refresh token 저장 로직 포함
+     * @param memberId
+     * @return
+     */
+    public TokenDto createTokenDtoKakao(Long memberId) {
+
+        Date accessTokenExpireTime = createAccessTokenExpireTime();
+        Date refreshTokenExpireTime = createRefreshTokenExpireTime();
+
+        String accessToken = createAccessTokenV2(memberId, accessTokenExpireTime);
         String refreshToken = createRefreshTokenV2(memberId, refreshTokenExpireTime);
 
         final MemberToken memberToken = MemberToken.create(refreshToken, DateTimeUtils.convertToLocalDateTime(refreshTokenExpireTime), memberId);
@@ -98,8 +148,23 @@ public class TokenProvider {
                 .compact();
     }
 
+    public String createAccessTokenV2(Long memberId, Date expirationTime) {
+        Key key = Keys.hmacShaKeyFor("cidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkey".getBytes()); // 안전한 키 생성
+
+        // JWT 생성
+        String token = Jwts.builder()
+                .setSubject(JwtTokenType.ACCESS.name())
+                .setAudience(Long.toString(memberId))
+                .setIssuedAt(new Date())
+                .setExpiration(expirationTime)
+                .signWith(key, SignatureAlgorithm.HS512) // 생성한 키와 알고리즘을 명시적으로 지정하여 서명
+                .compact();
+
+        return token;
+    }
+
     public String createRefreshTokenV2(Long memberId, Date expirationTime) {
-        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512); // 안전한 HS512 키 생성
+        Key key = Keys.hmacShaKeyFor("cidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkeycidersecretkey".getBytes()); // 안전한 키 생성
 
         // JWT 생성
         String token = Jwts.builder()
@@ -107,7 +172,7 @@ public class TokenProvider {
                 .setAudience(Long.toString(memberId))
                 .setIssuedAt(new Date())
                 .setExpiration(expirationTime)
-                .signWith(key) // 생성한 키로 서명
+                .signWith(key, SignatureAlgorithm.HS512) // 생성한 키와 알고리즘을 명시적으로 지정하여 서명
                 .compact();
 
         return token;
