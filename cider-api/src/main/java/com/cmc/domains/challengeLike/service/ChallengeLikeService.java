@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,6 +32,20 @@ public class ChallengeLikeService {
         return challengeLikeRepository.save(challengeLike);
     }
 
+    // 관심 챌린지 삭제
+    public void delete(Long memberId, Long challengeId) {
+
+        Challenge challenge = findChallengeOrThrow(challengeId);
+        List<ChallengeLike> challengeLikeList = challenge.getChallengeLikes();
+
+        ChallengeLike challengeLike = findChallengeLike(challengeLikeList, memberId);
+        if (challengeLike == null){
+            throw new BadRequestException("관심 챌린지에 등록하지 않은 챌린지입니다.");
+        }
+
+        challengeLikeRepository.deleteById(challengeLike.getChallengeLikeId());
+    }
+
     private Member findMemberOrThrow(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> {
             throw new BadRequestException("요청한 멤버는 존재하지 않습니다.");
@@ -40,5 +56,17 @@ public class ChallengeLikeService {
         return challengeRepository.findById(challengeId).orElseThrow(() -> {
             throw new BadRequestException("요청한 챌린지는 존재하지 않습니다.");
         });
+    }
+
+    private ChallengeLike findChallengeLike(List<ChallengeLike> challengeLikes, Long memberId){
+
+        ChallengeLike challengeLike = null;
+        for(ChallengeLike like : challengeLikes){
+            if(like.getMember().getMemberId().equals(memberId)){
+                challengeLike = like;
+            }
+        }
+
+        return challengeLike;
     }
 }

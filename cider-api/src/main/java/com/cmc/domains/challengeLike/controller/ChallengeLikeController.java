@@ -15,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,12 +34,21 @@ public class ChallengeLikeController {
     @Tag(name = "challengeLike")
     @Operation(summary = "관심 챌린지 등록 api")
     @PostMapping(value="")
-    public ResponseEntity<CommonResponse> createFeedback(@Parameter(hidden = true) @RequestMemberId Long memberId,
+    public ResponseEntity<CommonResponse> createChallengeLike(@Parameter(hidden = true) @RequestMemberId Long memberId,
                                                                          @RequestBody @Valid ChallengeLikeCreateRequestDto req){
 
         challengeLikeService.create(memberId, req.getChallengeId());
         return ResponseEntity.ok(CommonResponse.from("관심 챌린지가 등록되었습니다"));
     }
 
+    @Tag(name = "challengeLike")
+    @Operation(summary = "관심 챌린지 삭제 api")
+    @DeleteMapping(value="/{challengeId}")
+    public ResponseEntity<CommonResponse> deleteChallengeLike(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                            @PathVariable("challengeId") Long challengeId) {
+
+        challengeLikeService.delete(memberId, challengeId);
+        return ResponseEntity.ok(CommonResponse.from("관심 챌린지가 삭제되었습니다"));
+    }
 
 }
