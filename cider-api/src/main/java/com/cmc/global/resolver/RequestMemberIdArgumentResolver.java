@@ -24,6 +24,6 @@ public class RequestMemberIdArgumentResolver implements HandlerMethodArgumentRes
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        return TokenProvider.getMemberId(token);
+        return TokenProvider.getMemberIdKakao(token);
     }
 }

@@ -33,7 +33,7 @@ kakao:
 
 # JWT token
 token:
-  secret: ciderserver
+  secret: ciderserversecretkeysecretsecretsecret
   access-token-expiration-time: 31536000000
   refresh-token-expiration-time: 31536000000
 
