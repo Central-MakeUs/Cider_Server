@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -19,5 +21,15 @@ public class ChallengeService {
 
         Challenge challenge = req.toEntity();
         return challengeRepository.save(challenge);
+    }
+
+    // 인기 챌린지 조회
+    public void getPopularChallenges(Long memberId) {
+
+        List<Challenge> challenges = challengeRepository.getPopularChallenges();
+    }
+
+    // 공식 챌린지 조회
+    public void getOfficialChallenges(Long memberId) {
     }
 }

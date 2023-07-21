@@ -8,6 +8,7 @@ import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
 import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
 import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.image.service.ImageService;
+import com.cmc.domains.member.dto.response.MemberResponseDto;
 import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
 import com.cmc.participate.Participate;
@@ -63,6 +64,21 @@ public class ChallengeController {
         imageService.uploadCertifyExampleImages(successExampleImages, challengeId, memberId, "SUCCESS");
         imageService.uploadCertifyExampleImages(failureExampleImages, challengeId, memberId, "FAILURE");
         return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
+    }
+
+    @Tag(name = "challenge")
+    @Operation(summary = "인기 챌린지, 공식 챌린지 조회 api")
+    @GetMapping("/home")
+    public ResponseEntity<MemberResponseDto> getMe(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+
+        // 로그인 o
+        challengeService.getPopularChallenges(memberId);
+        challengeService.getOfficialChallenges(memberId);
+
+        // 로그인 x
+
+        // return ResponseEntity.ok(MemberResponseDto.from(challengeService.find(memberId)));
+        return null;
     }
 
     @Tag(name = "challenge")

@@ -14,8 +14,20 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
-    // jakarta
-    implementation 'org.hibernate:hibernate-spatial:6.2.2.Final'
+//    // jakarta
+//    implementation 'org.hibernate:hibernate-spatial:6.2.2.Final'
+//
+//    // mysql
+//    implementation 'mysql:mysql-connector-java:8.0.33'
+//
+//    // h2
+//    runtimeOnly 'com.h2database:h2'
+
+    // querydsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 test {
