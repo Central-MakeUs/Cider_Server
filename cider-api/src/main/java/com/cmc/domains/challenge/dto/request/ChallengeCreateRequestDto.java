@@ -21,6 +21,9 @@ public class ChallengeCreateRequestDto {
     @Schema(description = "챌린지 소개", example = "챌린지 소개~~", required=true)
     private String challengeInfo;
 
+    @Schema(description = "챌린지 미션", example = "챌린지 인증 미션은 이러합니다", required=true)
+    private String certifyMission;
+
     @Schema(description = "참여 정원", example = "15", required=true)
     private Integer challengeCapacity;
 
@@ -38,6 +41,7 @@ public class ChallengeCreateRequestDto {
                 .challengeBranch(challengeBranch)
                 .challengeName(challengeName)
                 .challengeInfo(challengeInfo)
+                .certifyMission(certifyMission)
                 .challengeCapacity(challengeCapacity)
                 .recruitPeriod(recruitPeriod)
                 .challengePeriod(challengePeriod * 7)
