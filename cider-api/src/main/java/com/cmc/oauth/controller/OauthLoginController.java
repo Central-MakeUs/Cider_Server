@@ -37,7 +37,7 @@ public class OauthLoginController {
     public ResponseEntity<ResponseJwtTokenDto> loginOauth(@Valid @RequestBody OauthReqDto oauthReqDto, HttpServletRequest httpServletRequest) throws JsonProcessingException {
         log.info("=== Oauth login start ===");
 
-        log.info("authorization :::::: " + HttpHeaders.AUTHORIZATION);
+        log.info("authorization :::::: " + httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
         log.info("socialType ::::: " + oauthReqDto.getSocialType());
         log.info("clientType :::: " + oauthReqDto.getClientType());
 
