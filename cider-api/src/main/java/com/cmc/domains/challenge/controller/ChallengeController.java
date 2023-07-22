@@ -1,31 +1,34 @@
 package com.cmc.domains.challenge.controller;
 
 import com.cmc.challenge.Challenge;
+import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
-import com.cmc.common.response.CreatedResponse;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
 import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
+import com.cmc.domains.challenge.dto.response.ChallengeHomeResponseDto;
+import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
 import com.cmc.domains.challenge.service.ChallengeService;
+import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.image.service.ImageService;
-import com.cmc.domains.member.dto.response.MemberResponseDto;
 import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
-import com.cmc.participate.Participate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -69,16 +72,35 @@ public class ChallengeController {
     @Tag(name = "challenge")
     @Operation(summary = "인기 챌린지, 공식 챌린지 조회 api")
     @GetMapping("/home")
-    public ResponseEntity<MemberResponseDto> getMe(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+    public ResponseEntity<ChallengeHomeResponseDto> getChallengeHome(@Parameter(hidden = true) @RequestMemberId Long memberId) {
 
-        // 로그인 o
-        challengeService.getPopularChallenges(memberId);
-        challengeService.getOfficialChallenges(memberId);
+        // 인기 챌린지
+        List<ChallengeResponseVo> popularChallengeVos = challengeService.getPopularChallenges();
 
-        // 로그인 x
+        List<ChallengeResponseDto> popularChallengeResponseDtos = popularChallengeVos.stream().map(vo -> {
+            return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                    findIsLike(vo.getChallenge(), memberId), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+        }).toList();
 
-        // return ResponseEntity.ok(MemberResponseDto.from(challengeService.find(memberId)));
-        return null;
+        // 공식 챌린지
+        List<ChallengeResponseVo> officialChallengeVos = challengeService.getOfficialChallenges();
+
+        List<ChallengeResponseDto> officialChallengeResponseDtos = officialChallengeVos.stream().map(vo -> {
+            return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                    findIsLike(vo.getChallenge(), memberId), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+        }).toList();
+
+        return ResponseEntity.ok(ChallengeHomeResponseDto.from(popularChallengeResponseDtos, officialChallengeResponseDtos));
+    }
+
+    private Boolean findIsLike(Challenge challenge, Long memberId){
+
+        for(ChallengeLike challengeLike : challenge.getChallengeLikes()){
+            if (challengeLike.getMember().getMemberId().equals(memberId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Tag(name = "challenge")

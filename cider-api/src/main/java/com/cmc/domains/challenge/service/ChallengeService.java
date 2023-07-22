@@ -3,6 +3,7 @@ package com.cmc.domains.challenge.service;
 import com.cmc.challenge.Challenge;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
+import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +25,14 @@ public class ChallengeService {
     }
 
     // 인기 챌린지 조회
-    public void getPopularChallenges(Long memberId) {
+    public List<ChallengeResponseVo> getPopularChallenges() {
 
-        List<Challenge> challenges = challengeRepository.getPopularChallenges();
+        return challengeRepository.getPopularChallenges();
     }
 
     // 공식 챌린지 조회
-    public void getOfficialChallenges(Long memberId) {
+    public List<ChallengeResponseVo> getOfficialChallenges() {
+
+        return challengeRepository.getOfficialChallenges();
     }
 }

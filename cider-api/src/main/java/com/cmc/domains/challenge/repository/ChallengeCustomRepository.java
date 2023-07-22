@@ -1,10 +1,12 @@
 package com.cmc.domains.challenge.repository;
 
-import com.cmc.challenge.Challenge;
+import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 
 import java.util.List;
 
 public interface ChallengeCustomRepository {
 
-    //List<Challenge> getPopularChallenges();
+    List<ChallengeResponseVo> getPopularChallenges();
+
+    List<ChallengeResponseVo> getOfficialChallenges();
 }
