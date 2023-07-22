@@ -35,4 +35,10 @@ public class ChallengeService {
 
         return challengeRepository.getOfficialChallenges();
     }
+
+    // 카테고리 별 챌린지 조회
+    public List<ChallengeResponseVo> getCategoryChallenges(String category) {
+
+        return challengeRepository.getCategoryChallenges(category);
+    }
 }

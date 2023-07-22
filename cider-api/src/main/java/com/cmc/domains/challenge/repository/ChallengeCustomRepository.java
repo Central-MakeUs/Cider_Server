@@ -9,4 +9,6 @@ public interface ChallengeCustomRepository {
     List<ChallengeResponseVo> getPopularChallenges();
 
     List<ChallengeResponseVo> getOfficialChallenges();
+
+    List<ChallengeResponseVo> getCategoryChallenges(String category);
 }

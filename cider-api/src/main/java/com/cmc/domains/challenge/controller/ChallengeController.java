@@ -70,7 +70,7 @@ public class ChallengeController {
     }
 
     @Tag(name = "challenge")
-    @Operation(summary = "인기 챌린지, 공식 챌린지 조회 api")
+    @Operation(summary = "홈 - 인기 챌린지, 공식 챌린지 조회 api")
     @GetMapping("/home")
     public ResponseEntity<ChallengeHomeResponseDto> getChallengeHome(@Parameter(hidden = true) @RequestMemberId Long memberId) {
 
@@ -91,6 +91,22 @@ public class ChallengeController {
         }).toList();
 
         return ResponseEntity.ok(ChallengeHomeResponseDto.from(popularChallengeResponseDtos, officialChallengeResponseDtos));
+    }
+
+    @Tag(name = "challenge")
+    @Operation(summary = "홈 - 카테고리 별 챌린지 조회 api")
+    @GetMapping("/home/{category}")
+    public ResponseEntity<List<ChallengeResponseDto>> getChallengeHomeCategory(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                                               @PathVariable("category") String category) {
+
+        List<ChallengeResponseVo> challengeVos = challengeService.getCategoryChallenges(category);
+
+        List<ChallengeResponseDto> challengeResponseDtos = challengeVos.stream().map(vo -> {
+            return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                    findIsLike(vo.getChallenge(), memberId), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+        }).toList();
+
+        return ResponseEntity.ok(challengeResponseDtos);
     }
 
     private Boolean findIsLike(Challenge challenge, Long memberId){
