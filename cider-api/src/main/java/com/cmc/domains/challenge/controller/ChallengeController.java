@@ -2,6 +2,7 @@ package com.cmc.domains.challenge.controller;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.challengeLike.ChallengeLike;
+import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
@@ -13,12 +14,15 @@ import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.image.service.ImageService;
 import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
+import com.cmc.oauth.service.TokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,23 +77,44 @@ public class ChallengeController {
     @Tag(name = "challenge")
     @Operation(summary = "홈 - 인기 챌린지, 공식 챌린지 조회 api")
     @GetMapping("/home")
-    public ResponseEntity<ChallengeHomeResponseDto> getChallengeHome(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+    public ResponseEntity<ChallengeHomeResponseDto> getChallengeHome(HttpServletRequest httpServletRequest) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
         // 인기 챌린지
         List<ChallengeResponseVo> popularChallengeVos = challengeService.getPopularChallenges();
+        List<ChallengeResponseDto> popularChallengeResponseDtos = new ArrayList<>();
+        if (tokenString == null || tokenString.isEmpty()) {
+            // 로그인 x
+            popularChallengeResponseDtos = popularChallengeVos.stream().map(vo -> {
+                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                        ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+            }).toList();
+        } else{
+            // 로그인 o
+            popularChallengeResponseDtos = popularChallengeVos.stream().map(vo -> {
+                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                        findIsLike(vo.getChallenge(), TokenProvider.getMemberId(tokenString)), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+            }).toList();
+        }
 
-        List<ChallengeResponseDto> popularChallengeResponseDtos = popularChallengeVos.stream().map(vo -> {
-            return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                    findIsLike(vo.getChallenge(), memberId), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
-        }).toList();
 
         // 공식 챌린지
         List<ChallengeResponseVo> officialChallengeVos = challengeService.getOfficialChallenges();
-
-        List<ChallengeResponseDto> officialChallengeResponseDtos = officialChallengeVos.stream().map(vo -> {
-            return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                    findIsLike(vo.getChallenge(), memberId), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
-        }).toList();
+        List<ChallengeResponseDto> officialChallengeResponseDtos = new ArrayList<>();
+        if (tokenString == null || tokenString.isEmpty()) {
+            // 로그인 x
+            officialChallengeResponseDtos = officialChallengeVos.stream().map(vo -> {
+                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                        ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+            }).toList();
+        } else{
+            // 로그인 o
+            officialChallengeResponseDtos = officialChallengeVos.stream().map(vo -> {
+                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                        findIsLike(vo.getChallenge(), TokenProvider.getMemberId(tokenString)), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+            }).toList();
+        }
 
         return ResponseEntity.ok(ChallengeHomeResponseDto.from(popularChallengeResponseDtos, officialChallengeResponseDtos));
     }
@@ -96,15 +122,26 @@ public class ChallengeController {
     @Tag(name = "challenge")
     @Operation(summary = "홈 - 카테고리 별 챌린지 조회 api")
     @GetMapping("/home/{category}")
-    public ResponseEntity<List<ChallengeResponseDto>> getChallengeHomeCategory(@Parameter(hidden = true) @RequestMemberId Long memberId,
+    public ResponseEntity<List<ChallengeResponseDto>> getChallengeHomeCategory(HttpServletRequest httpServletRequest,
                                                                                @PathVariable("category") String category) {
 
-        List<ChallengeResponseVo> challengeVos = challengeService.getCategoryChallenges(category);
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
-        List<ChallengeResponseDto> challengeResponseDtos = challengeVos.stream().map(vo -> {
-            return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                    findIsLike(vo.getChallenge(), memberId), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
-        }).toList();
+        List<ChallengeResponseVo> challengeVos = challengeService.getCategoryChallenges(category);
+        List<ChallengeResponseDto> challengeResponseDtos = new ArrayList<>();
+        if (tokenString == null || tokenString.isEmpty()) {
+            // 로그인 x
+            challengeResponseDtos = challengeVos.stream().map(vo -> {
+                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                        ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+            }).toList();
+        } else{
+            // 로그인 o
+            challengeResponseDtos = challengeVos.stream().map(vo -> {
+                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                        findIsLike(vo.getChallenge(), TokenProvider.getMemberId(tokenString)), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+            }).toList();
+        }
 
         return ResponseEntity.ok(challengeResponseDtos);
     }

@@ -57,4 +57,19 @@ public class ChallengeResponseDto {
                 .build();
     }
 
+    public static ChallengeResponseDto from(Challenge challenge, Integer participateNum, Long recruitLeft){
+
+        return new ChallengeResponseDtoBuilder()
+                .challengeId(challenge.getChallengeId())
+                .challengeName(challenge.getChallengeName())
+                .challengeStatus(challenge.getChallengeStatus())
+                .participateNum(participateNum)
+                .recruitLeft(recruitLeft)
+                .interestField(challenge.getChallengeBranch())
+                .isOfficial(challenge.getIsOfficial())
+                .isReward(challenge.getIsReward())
+                .isLike(false)
+                .build();
+    }
+
 }
