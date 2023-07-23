@@ -16,6 +16,22 @@ dependencies {
 
     // jakarta
     implementation 'org.hibernate:hibernate-spatial:6.2.2.Final'
+
+    // data jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // mysql
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
+    // h2
+    runtimeOnly 'com.h2database:h2'
+
+    // querydsl
+    // TODO : 멀티모듈 의존성 정리
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta';
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 test {
