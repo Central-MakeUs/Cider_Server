@@ -83,38 +83,11 @@ public class ChallengeController {
 
         // 인기 챌린지
         List<ChallengeResponseVo> popularChallengeVos = challengeService.getPopularChallenges();
-        List<ChallengeResponseDto> popularChallengeResponseDtos = new ArrayList<>();
-        if (tokenString == null || tokenString.isEmpty()) {
-            // 로그인 x
-            popularChallengeResponseDtos = popularChallengeVos.stream().map(vo -> {
-                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                        ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
-            }).toList();
-        } else{
-            // 로그인 o
-            popularChallengeResponseDtos = popularChallengeVos.stream().map(vo -> {
-                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                        findIsLike(vo.getChallenge(), TokenProvider.getMemberId(tokenString)), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
-            }).toList();
-        }
-
+        List<ChallengeResponseDto> popularChallengeResponseDtos = makeChallengeResponseDto(tokenString, popularChallengeVos);
 
         // 공식 챌린지
         List<ChallengeResponseVo> officialChallengeVos = challengeService.getOfficialChallenges();
-        List<ChallengeResponseDto> officialChallengeResponseDtos = new ArrayList<>();
-        if (tokenString == null || tokenString.isEmpty()) {
-            // 로그인 x
-            officialChallengeResponseDtos = officialChallengeVos.stream().map(vo -> {
-                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                        ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
-            }).toList();
-        } else{
-            // 로그인 o
-            officialChallengeResponseDtos = officialChallengeVos.stream().map(vo -> {
-                return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                        findIsLike(vo.getChallenge(), TokenProvider.getMemberId(tokenString)), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
-            }).toList();
-        }
+        List<ChallengeResponseDto> officialChallengeResponseDtos = makeChallengeResponseDto(tokenString, officialChallengeVos);
 
         return ResponseEntity.ok(ChallengeHomeResponseDto.from(popularChallengeResponseDtos, officialChallengeResponseDtos));
     }
@@ -128,6 +101,12 @@ public class ChallengeController {
         final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
         List<ChallengeResponseVo> challengeVos = challengeService.getCategoryChallenges(category);
+        List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
+        return ResponseEntity.ok(challengeResponseDtos);
+    }
+
+    private List<ChallengeResponseDto> makeChallengeResponseDto(String tokenString, List<ChallengeResponseVo> challengeVos){
+
         List<ChallengeResponseDto> challengeResponseDtos = new ArrayList<>();
         if (tokenString == null || tokenString.isEmpty()) {
             // 로그인 x
@@ -143,7 +122,7 @@ public class ChallengeController {
             }).toList();
         }
 
-        return ResponseEntity.ok(challengeResponseDtos);
+        return challengeResponseDtos;
     }
 
     private Boolean findIsLike(Challenge challenge, Long memberId){

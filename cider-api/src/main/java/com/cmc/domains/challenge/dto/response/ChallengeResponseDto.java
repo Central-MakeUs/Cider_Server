@@ -30,7 +30,7 @@ public class ChallengeResponseDto {
     @Schema(description = "챌린지 분야", example = "재태크/돈관리/금융학습/소비절약")
     private String interestField;
 
-    @Schema(description = "챌린지 진행 기간", example = "4(주)")
+    @Schema(description = "챌린지 진행 기간", example = "4")
     private Integer challengePeriod;
 
     @Schema(description = "공식 챌린지 여부", example = "true")
