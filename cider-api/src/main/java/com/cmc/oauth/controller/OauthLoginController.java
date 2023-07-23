@@ -47,7 +47,8 @@ public class OauthLoginController {
                 throw new BadRequestException("토큰이 없습니다.");
             }
 
-            KakaoAccount memberInfo = kakaoLoginService.getInfo(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).getKakaoAccount();
+            KakaoAccount memberInfo = kakaoLoginService.getInfoV2(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).getKakaoAccount();
+
             jwtTokenDto = oauthLoginService.createMemberAndJwt(memberInfo, socialType);
 
         } else if (socialType == SocialType.APPLE) {

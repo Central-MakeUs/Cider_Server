@@ -47,6 +47,21 @@ public class KakaoLoginService {
         }
     }
 
+    public KakaoInfoResDto getInfoV2(final String code) {
+
+        // code <-> accessToken 교환
+        //final KakaoTokenResDto token = getToken(code);
+
+        //log.debug("token = {}", token);
+
+        try {
+            return kakaoFeignService.getInfo(new URI(kakaoUserApiUrl), "Bearer " + code);
+        } catch (Exception e) {
+            log.error("something error..", e);
+            return KakaoInfoResDto.fail();
+        }
+    }
+
     private KakaoTokenResDto getToken(final String code) {
         try {
             return kakaoFeignService.getToken(new URI(kakaoAuthUrl), restapiKey, redirectUrl, code, "authorization_code");
