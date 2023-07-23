@@ -17,6 +17,7 @@ import java.time.temporal.Temporal;
 import java.util.List;
 
 import static com.cmc.challenge.QChallenge.challenge;
+import static com.cmc.challengeLike.QChallengeLike.challengeLike;
 import static com.cmc.participate.QParticipate.participate;
 
 @Repository
@@ -67,6 +68,48 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
                 .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
                         .and(challenge.challengeBranch.eq(category)))
                 .groupBy(challenge)
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getPopularChallengeByLatest() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .groupBy(challenge)
+                .orderBy(challenge.createdDate.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getPopularChallengeByParticipate() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .groupBy(challenge)
+                .orderBy(participate.count().desc())
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getPopularChallengeByLike() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .groupBy(challenge)
+                .orderBy(challenge.challengeLikes.size().desc())
                 .fetch();
     }
 

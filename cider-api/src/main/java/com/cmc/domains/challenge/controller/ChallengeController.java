@@ -105,6 +105,19 @@ public class ChallengeController {
         return ResponseEntity.ok(challengeResponseDtos);
     }
 
+    @Tag(name = "challenge")
+    @Operation(summary = "인기 챌린지 리스트 조회 api")
+    @GetMapping("/popular/{filter}")
+    public ResponseEntity<List<ChallengeResponseDto>> getPopularChallengeList(HttpServletRequest httpServletRequest,
+                                                                               @PathVariable("filter") String filter) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        List<ChallengeResponseVo> challengeVos = challengeService.getPopularChallengeList(filter);
+        List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
+        return ResponseEntity.ok(challengeResponseDtos);
+    }
+
     private List<ChallengeResponseDto> makeChallengeResponseDto(String tokenString, List<ChallengeResponseVo> challengeVos){
 
         List<ChallengeResponseDto> challengeResponseDtos = new ArrayList<>();

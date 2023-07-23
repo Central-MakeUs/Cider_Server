@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,5 +41,23 @@ public class ChallengeService {
     public List<ChallengeResponseVo> getCategoryChallenges(String category) {
 
         return challengeRepository.getCategoryChallenges(category);
+    }
+
+    // 인기 챌린지 리스트 조회
+    public List<ChallengeResponseVo> getPopularChallengeList(String filter) {
+
+        List<ChallengeResponseVo> challengeResponseVos = new ArrayList<>();
+        switch (filter){
+            case "latest":
+                challengeResponseVos = challengeRepository.getPopularChallengeByLatest();
+                break;
+            case "participate":
+                challengeResponseVos = challengeRepository.getPopularChallengeByParticipate();
+                break;
+            case "like":
+                challengeResponseVos = challengeRepository.getPopularChallengeByLike();
+                break;
+        }
+        return challengeResponseVos;
     }
 }
