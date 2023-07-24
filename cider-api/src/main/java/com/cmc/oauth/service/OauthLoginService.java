@@ -12,6 +12,7 @@ import com.cmc.oauth.dto.OAuthAttributes;
 import com.cmc.oauth.dto.TokenDto;
 import com.cmc.oauth.dto.response.KakaoAccount;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
+import com.cmc.oauth.dto.response.userInfo.KakaoInfoResDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -55,14 +56,16 @@ public class OauthLoginService {
     private final ModelMapper modelMapper;
 
     // member 생성
-    public ResponseJwtTokenDto createMemberAndJwt(KakaoAccount memberInfo, SocialType socialType) {
+    public ResponseJwtTokenDto createMemberAndJwt(KakaoInfoResDto kakaoInfoResDto, SocialType socialType) {
 
         // 회원 가입 or 로그인
         Member requestMember;
-        final Optional<Member> foundMember = memberRepository.findByEmail(memberInfo.getEmail());
+        KakaoAccount memberInfo = kakaoInfoResDto.getKakaoAccount();
+
+        final Optional<Member> foundMember = memberRepository.findByKakaoId(kakaoInfoResDto.getId());
         if (foundMember.isEmpty()) { // 기존 회원 아닐 때
-            Member newMember = Member.create(memberInfo.getProfile().getNickname(),
-                    memberInfo.getEmail(), memberInfo.getBirthday(), memberInfo.getGender(), socialType);
+            Member newMember = Member.createKakao(memberInfo.getProfile().getNickname(),
+                    memberInfo.getEmail(), memberInfo.getBirthday(), memberInfo.getGender(), socialType, kakaoInfoResDto.getId());
             requestMember = memberRepository.save(newMember);
         } else {
             requestMember = foundMember.get(); // 기존 회원일 때

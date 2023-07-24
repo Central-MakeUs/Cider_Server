@@ -5,6 +5,7 @@ import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.request.OauthReqDto;
 import com.cmc.oauth.dto.response.KakaoAccount;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
+import com.cmc.oauth.dto.response.userInfo.KakaoInfoResDto;
 import com.cmc.oauth.service.KakaoLoginService;
 import com.cmc.oauth.service.OauthLoginService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,9 +48,10 @@ public class OauthLoginController {
                 throw new BadRequestException("토큰이 없습니다.");
             }
 
-            KakaoAccount memberInfo = kakaoLoginService.getInfoV2(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).getKakaoAccount();
+            KakaoInfoResDto kakaoInfoResDto = kakaoLoginService.getInfoV2(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+            KakaoAccount memberInfo = kakaoInfoResDto.getKakaoAccount();
 
-            jwtTokenDto = oauthLoginService.createMemberAndJwt(memberInfo, socialType);
+            jwtTokenDto = oauthLoginService.createMemberAndJwt(kakaoInfoResDto, socialType);
 
         } else if (socialType == SocialType.APPLE) {
 

@@ -34,6 +34,8 @@ public class KakaoAccount {
 
     private Boolean is_email_valid;
 
+    private Boolean is_email_verified;
+
     private Boolean birthyear_needs_agreement;
 
     private Boolean gender_needs_agreement;

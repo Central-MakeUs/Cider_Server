@@ -49,13 +49,15 @@ public class Member extends BaseTimeEntity {
 
     private String interestChallenge;
 
+    private Long kakaoId;
+
     @Column(name = "fcm_token", columnDefinition = "VARCHAR(200)")
     private String fcmToken;
 
     @Column(name = "fcm_token_date", columnDefinition = "DATETIME")
     private LocalDateTime fcmTokenDate;
 
-    public static Member create(String nickname, String email, String birthday, String gender, SocialType socialType) {
+    public static Member createKakao(String nickname, String email, String birthday, String gender, SocialType socialType, Long kakaoId) {
 
         return Member.builder()
                 .memberName(nickname)
@@ -64,6 +66,7 @@ public class Member extends BaseTimeEntity {
                 .memberGender(gender)
                 .socialType(socialType)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
+                .kakaoId(kakaoId)
                 .build();
     }
 
@@ -71,7 +74,7 @@ public class Member extends BaseTimeEntity {
 
         return Member.builder()
                 .memberName("")
-                .email("")
+                .email(email)
                 .memberBirth("")
                 .memberGender("")
                 .socialType(socialType)
