@@ -60,4 +60,40 @@ public class ChallengeService {
         }
         return challengeResponseVos;
     }
+
+    // 공식 챌린지 리스트 조회
+    public List<ChallengeResponseVo> getOfficialChallengeList(String filter) {
+
+        List<ChallengeResponseVo> challengeResponseVos = new ArrayList<>();
+        switch (filter){
+            case "latest":
+                challengeResponseVos = challengeRepository.getOfficialChallengeByLatest();
+                break;
+            case "participate":
+                challengeResponseVos = challengeRepository.getOfficialChallengeByParticipate();
+                break;
+            case "like":
+                challengeResponseVos = challengeRepository.getOfficialChallengeByLike();
+                break;
+        }
+        return challengeResponseVos;
+    }
+
+    // 전체 챌린지 리스트 조회
+    public List<ChallengeResponseVo> getChallengeList(String filter) {
+
+        List<ChallengeResponseVo> challengeResponseVos = new ArrayList<>();
+        switch (filter){
+            case "latest":
+                challengeResponseVos = challengeRepository.getChallengeByLatest();
+                break;
+            case "participate":
+                challengeResponseVos = challengeRepository.getChallengeByParticipate();
+                break;
+            case "like":
+                challengeResponseVos = challengeRepository.getChallengeByLike();
+                break;
+        }
+        return challengeResponseVos;
+    }
 }

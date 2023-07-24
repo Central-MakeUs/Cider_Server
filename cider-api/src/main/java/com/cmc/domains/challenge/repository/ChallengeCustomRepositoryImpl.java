@@ -113,6 +113,93 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
                 .fetch();
     }
 
+    @Override
+    public List<ChallengeResponseVo> getOfficialChallengeByLatest() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.POSSIBLE)
+                        .and(challenge.isOfficial.eq(true)))
+                .groupBy(challenge)
+                .orderBy(challenge.createdDate.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getOfficialChallengeByParticipate() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.POSSIBLE)
+                        .and(challenge.isOfficial.eq(true)))
+                .groupBy(challenge)
+                .orderBy(participate.count().desc())
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getOfficialChallengeByLike() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.POSSIBLE)
+                        .and(challenge.isOfficial.eq(true)))
+                .groupBy(challenge)
+                .orderBy(challenge.challengeLikes.size().desc())
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getChallengeByLatest() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .groupBy(challenge)
+                .orderBy(challenge.createdDate.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getChallengeByParticipate() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .groupBy(challenge)
+                .orderBy(participate.count().desc())
+                .fetch();
+    }
+
+    @Override
+    public List<ChallengeResponseVo> getChallengeByLike() {
+
+        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
+                        challenge,
+                        participate.count()))
+                .from(challenge, participate)
+                .innerJoin(participate.challenge, challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .groupBy(challenge)
+                .orderBy(challenge.challengeLikes.size().desc())
+                .fetch();
+    }
+
     private Long getDateBetween(QChallenge challenge){
 
         return ChronoUnit.DAYS.between((Temporal) challenge.challengeStartDate, LocalDate.now());

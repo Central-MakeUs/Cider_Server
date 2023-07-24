@@ -17,4 +17,16 @@ public interface ChallengeCustomRepository {
     List<ChallengeResponseVo> getPopularChallengeByParticipate();
 
     List<ChallengeResponseVo> getPopularChallengeByLike();
+
+    List<ChallengeResponseVo> getOfficialChallengeByLatest();
+
+    List<ChallengeResponseVo> getOfficialChallengeByParticipate();
+
+    List<ChallengeResponseVo> getOfficialChallengeByLike();
+
+    List<ChallengeResponseVo> getChallengeByLatest();
+
+    List<ChallengeResponseVo> getChallengeByParticipate();
+
+    List<ChallengeResponseVo> getChallengeByLike();
 }
