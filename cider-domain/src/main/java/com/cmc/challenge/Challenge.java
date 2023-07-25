@@ -1,6 +1,7 @@
 package com.cmc.challenge;
 
 import com.cmc.base.BaseTimeEntity;
+import com.cmc.challenge.constant.InterestField;
 import com.cmc.challenge.constant.Status;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.image.certifyExample.CertifyExampleImage;
@@ -37,7 +38,9 @@ public class Challenge extends BaseTimeEntity {
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChallengeLike> challengeLikes;
 
-    private String challengeBranch;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "challenge_branch", columnDefinition = "VARCHAR(30)")
+    private InterestField challengeBranch;
 
     private String challengeName;
 

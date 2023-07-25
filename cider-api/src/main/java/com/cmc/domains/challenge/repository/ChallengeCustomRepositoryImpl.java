@@ -2,6 +2,7 @@ package com.cmc.domains.challenge.repository;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.QChallenge;
+import com.cmc.challenge.constant.InterestField;
 import com.cmc.challenge.constant.Status;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -60,7 +61,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
                 .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .and(challenge.challengeBranch.eq(category)))
+                        .and(challenge.challengeBranch.eq(InterestField.valueOf(category))))
                 .groupBy(challenge)
                 .fetch();
 

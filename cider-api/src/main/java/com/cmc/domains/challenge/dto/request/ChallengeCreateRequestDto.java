@@ -39,7 +39,7 @@ public class ChallengeCreateRequestDto {
 
     public Challenge toEntity(){
         return Challenge.builder()
-                .challengeBranch(String.valueOf(InterestField.of(challengeBranch)))
+                .challengeBranch(InterestField.of(challengeBranch))
                 .challengeName(challengeName)
                 .challengeInfo(challengeInfo)
                 .certifyMission(certifyMission)

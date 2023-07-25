@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
@@ -19,7 +18,10 @@ public enum InterestField {
     private String alias;
     private String description;
 
-    public static Optional<InterestField> of(String alias) {
-        return Arrays.stream(values()).filter(F -> F.alias.equals(alias)).findFirst();
+    public static InterestField of(String alias) {
+        return Arrays.stream(values())
+                .filter(f -> f.alias.equals(alias))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("InterestField's alias is not found"));
     }
 }

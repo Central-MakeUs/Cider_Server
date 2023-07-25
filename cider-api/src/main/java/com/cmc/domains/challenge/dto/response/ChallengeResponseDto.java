@@ -1,6 +1,7 @@
 package com.cmc.domains.challenge.dto.response;
 
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.InterestField;
 import com.cmc.challenge.constant.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class ChallengeResponseDto {
     private Long recruitLeft;
 
     @Schema(description = "챌린지 분야", example = "재태크/돈관리/금융학습/소비절약")
-    private String interestField;
+    private InterestField interestField;
 
     @Schema(description = "챌린지 진행 기간", example = "4")
     private Integer challengePeriod;
