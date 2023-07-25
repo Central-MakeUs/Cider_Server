@@ -13,16 +13,16 @@ import java.util.List;
 public class ChallengeHomeResponseDto {
 
     @Schema(description = "인기 챌린지 리스트")
-    private List<ChallengeResponseDto> challengeResponseDto;
+    private List<ChallengeResponseDto> popularChallengeResponseDto;
 
     @Schema(description = "공식 챌린지 리스트")
     private List<ChallengeResponseDto> officialChallengeResponseDto;
 
-    public static ChallengeHomeResponseDto from(List<ChallengeResponseDto> challengeResponseDto,
+    public static ChallengeHomeResponseDto from(List<ChallengeResponseDto> popularChallengeResponseDto,
                                                 List<ChallengeResponseDto> officialChallengeResponseDto){
 
         return new ChallengeHomeResponseDtoBuilder()
-                .challengeResponseDto(challengeResponseDto)
+                .popularChallengeResponseDto(popularChallengeResponseDto)
                 .officialChallengeResponseDto(officialChallengeResponseDto)
                 .build();
     }

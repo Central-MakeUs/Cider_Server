@@ -1,11 +1,9 @@
 package com.cmc.domains.challenge.repository;
 
+import com.cmc.challenge.Challenge;
 import com.cmc.challenge.QChallenge;
-import com.cmc.challenge.constant.InterestField;
 import com.cmc.challenge.constant.Status;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +12,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cmc.challenge.QChallenge.challenge;
-import static com.cmc.challengeLike.QChallengeLike.challengeLike;
 import static com.cmc.participate.QParticipate.participate;
 
 @Repository
@@ -27,177 +25,190 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
      private final JPAQueryFactory jpaQueryFactory;
 
+     // 홈 - 인기챌린지 조회
     @Override
     public List<ChallengeResponseVo> getPopularChallenges() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                challenge,
-                participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
-                .groupBy(challenge)
-                .orderBy(participate.count().desc())
-                .limit(10)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING)
+                        .or(challenge.challengeStatus.eq(Status.POSSIBLE)))
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 홈 - 공식챌린지 조회
     @Override
     public List<ChallengeResponseVo> getOfficialChallenges() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
                 .where(challenge.challengeStatus.eq(Status.POSSIBLE).and(challenge.isOfficial.eq(true)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .limit(10)
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 홈 - 카테고리 조회
     @Override
     public List<ChallengeResponseVo> getCategoryChallenges(String category) {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
                 .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
                         .and(challenge.challengeBranch.eq(category)))
                 .groupBy(challenge)
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 인기 챌린지 리스트 조회 - 최신순
     @Override
     public List<ChallengeResponseVo> getPopularChallengeByLatest() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
                 .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 인기 챌린지 리스트 조회 - 참여순
     @Override
     public List<ChallengeResponseVo> getPopularChallengeByParticipate() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
                 .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
-                .groupBy(challenge)
-                .orderBy(participate.count().desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 인기 챌린지 리스트 조회 - 좋아요순
     @Override
     public List<ChallengeResponseVo> getPopularChallengeByLike() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
                 .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeLikes.size().desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+
+    // 공식 챌린지 리스트 조회 - 최신순
     @Override
     public List<ChallengeResponseVo> getOfficialChallengeByLatest() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
-                .where(challenge.challengeStatus.eq(Status.POSSIBLE)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE))
                         .and(challenge.isOfficial.eq(true)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 공식 챌린지 리스트 조회 - 참여순
     @Override
     public List<ChallengeResponseVo> getOfficialChallengeByParticipate() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
-                .where(challenge.challengeStatus.eq(Status.POSSIBLE)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE))
                         .and(challenge.isOfficial.eq(true)))
-                .groupBy(challenge)
-                .orderBy(participate.count().desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 공식 챌린지 리스트 조회 - 좋아요순
     @Override
     public List<ChallengeResponseVo> getOfficialChallengeByLike() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
-                .where(challenge.challengeStatus.eq(Status.POSSIBLE)
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE))
                         .and(challenge.isOfficial.eq(true)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeLikes.size().desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 전체 챌린지 리스트 조회 - 최신순
     @Override
     public List<ChallengeResponseVo> getChallengeByLatest() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 전체 챌린지 리스트 조회 - 참여순
     @Override
     public List<ChallengeResponseVo> getChallengeByParticipate() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
-                .groupBy(challenge)
-                .orderBy(participate.count().desc())
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE)))
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
     }
 
+    // 전체 챌린지 리스트 조회 - 좋아요순
     @Override
     public List<ChallengeResponseVo> getChallengeByLike() {
 
-        return jpaQueryFactory.selectDistinct(Projections.fields(ChallengeResponseVo.class,
-                        challenge,
-                        participate.count()))
-                .from(challenge, participate)
-                .innerJoin(participate.challenge, challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+        List<Challenge> challenges =  jpaQueryFactory
+                .selectFrom(challenge)
+                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeLikes.size().desc())
                 .fetch();
+
+        return makeChallengeResponseVos(challenges);
+    }
+
+    private List<ChallengeResponseVo> makeChallengeResponseVos(List<Challenge> challenges) {
+        List<ChallengeResponseVo> responseVos = new ArrayList<>();
+        for(Challenge thisChallenge : challenges){
+
+            Integer participateNum = jpaQueryFactory.selectFrom(participate)
+                    .leftJoin(challenge).on(participate.challenge.challengeId.eq(challenge.challengeId))
+                    .where(participate.challenge.challengeId.eq(thisChallenge.getChallengeId()))
+                    .fetch().size();
+
+            responseVos.add(new ChallengeResponseVo(thisChallenge, participateNum));
+        }
+        return responseVos;
     }
 
     private Long getDateBetween(QChallenge challenge){
