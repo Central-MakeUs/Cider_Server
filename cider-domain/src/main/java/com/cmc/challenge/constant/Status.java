@@ -13,7 +13,8 @@ public enum Status {
     WAITING("W", "심사중"),
     RECRUITING("R", "모집중"),
     POSSIBLE("P", "참여 가능"),
-    IMPOSSIBLE("I", "참여 불가능")
+    IMPOSSIBLE("I", "참여 불가능"),
+    END("E", "종료")
     ;
 
     private String alias;

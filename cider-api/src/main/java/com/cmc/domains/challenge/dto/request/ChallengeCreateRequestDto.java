@@ -1,6 +1,7 @@
 package com.cmc.domains.challenge.dto.request;
 
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.InterestField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
@@ -35,7 +36,7 @@ public class ChallengeCreateRequestDto {
 
     public Challenge toEntity(){
         return Challenge.builder()
-                .challengeBranch(challengeBranch)
+                .challengeBranch(String.valueOf(InterestField.of(challengeBranch)))
                 .challengeName(challengeName)
                 .challengeInfo(challengeInfo)
                 .challengeCapacity(challengeCapacity)
