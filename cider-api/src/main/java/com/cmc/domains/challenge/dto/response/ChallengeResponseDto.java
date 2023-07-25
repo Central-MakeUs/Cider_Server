@@ -19,7 +19,7 @@ public class ChallengeResponseDto {
     @Schema(description = "챌린지 제목", example = "소비습관 고치기")
     private String challengeName;
 
-    @Schema(description = "챌린지 상태", example = "RECRUITING: 모집중, POSSIBLE: 참여 가능, IMPOSSIBLE: 참여 불가(종료)")
+    @Schema(description = "챌린지 상태", example = "RECRUITING: 모집중, POSSIBLE: 참여 가능, IMPOSSIBLE: 참여 불가(모집 종료)")
     private Status challengeStatus;
 
     @Schema(description = "챌린지 대기/참여중 인원", example = "5")

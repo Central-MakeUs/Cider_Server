@@ -92,7 +92,7 @@ public class ChallengeController {
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")
-    @Operation(summary = "홈 - 카테고리 별 챌린지 조회 api")
+    @Operation(summary = "홈 - 카테고리 별 챌린지 조회 api", description = "- {category} - T: 재테크, M: 돈관리, L: 금융학습, C: 소비절약")
     @GetMapping("/home/{category}")
     public ResponseEntity<List<ChallengeResponseDto>> getChallengeHomeCategory(HttpServletRequest httpServletRequest,
                                                                                @PathVariable("category") String category) {
@@ -105,7 +105,7 @@ public class ChallengeController {
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")
-    @Operation(summary = "인기 챌린지 리스트 조회 api")
+    @Operation(summary = "인기 챌린지 리스트 조회 api", description = "- {filter} - latest: 최신순, participate: 참여순, like: 좋아요순")
     @GetMapping("/popular/{filter}")
     public ResponseEntity<List<ChallengeResponseDto>> getPopularChallengeList(HttpServletRequest httpServletRequest,
                                                                                @PathVariable("filter") String filter) {
@@ -118,7 +118,7 @@ public class ChallengeController {
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")
-    @Operation(summary = "공식 챌린지 리스트 조회 api")
+    @Operation(summary = "공식 챌린지 리스트 조회 api", description = "- {filter} - latest: 최신순, participate: 참여순, like: 좋아요순")
     @GetMapping("/official/{filter}")
     public ResponseEntity<List<ChallengeResponseDto>> getOfficialChallengeList(HttpServletRequest httpServletRequest,
                                                                               @PathVariable("filter") String filter) {
@@ -131,7 +131,7 @@ public class ChallengeController {
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")
-    @Operation(summary = "전체 챌린지 리스트 조회 api")
+    @Operation(summary = "전체 챌린지 리스트 조회 api", description = "- {filter} - latest: 최신순, participate: 참여순, like: 좋아요순")
     @GetMapping("/{filter}")
     public ResponseEntity<List<ChallengeResponseDto>> getChallengeList(HttpServletRequest httpServletRequest,
                                                                        @PathVariable("filter") String filter) {

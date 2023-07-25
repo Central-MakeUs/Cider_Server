@@ -61,7 +61,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
                 .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .and(challenge.challengeBranch.eq(InterestField.valueOf(category))))
+                        .and(challenge.challengeBranch.eq(InterestField.of(category))))
                 .groupBy(challenge)
                 .fetch();
 
