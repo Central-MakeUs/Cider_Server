@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "challenge", description = "챌린지 API")
 @RequestMapping("/api/challenge")
 public class ChallengeController {
 
@@ -46,7 +45,7 @@ public class ChallengeController {
     private final ImageService imageService;
     private final ParticipateService participateService;
 
-    @Tag(name = "challenge")
+    @Tag(name = "challenge", description = "챌린지 API")
     @Operation(summary = "챌린지 생성 api")
     @PostMapping(value="")
     public ResponseEntity<ChallengeCreateResponseDto> createChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId,
@@ -57,7 +56,7 @@ public class ChallengeController {
         return ResponseEntity.ok(ChallengeCreateResponseDto.create(challenge));
     }
 
-    @Tag(name = "challenge")
+    @Tag(name = "challenge", description = "챌린지 API")
     @Operation(summary = "챌린지 인증 예시 이미지 업로드 api", description = "- form-data 형태로 보내주시고, content-type는 따로 지정 안해주셔도 됩니다.\n" +
             "- challengeId는 직전에 호출한 챌린지 생성 api response값 보내주시면 됩니다.")
     @PostMapping(value="/images/{challengeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -74,7 +73,7 @@ public class ChallengeController {
         return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
     }
 
-    @Tag(name = "challenge")
+    @Tag(name = "home", description = "홈(둘러보기) API")
     @Operation(summary = "홈 - 인기 챌린지, 공식 챌린지 조회 api")
     @GetMapping("/home")
     public ResponseEntity<ChallengeHomeResponseDto> getChallengeHome(HttpServletRequest httpServletRequest) {
@@ -92,7 +91,7 @@ public class ChallengeController {
         return ResponseEntity.ok(ChallengeHomeResponseDto.from(popularChallengeResponseDtos, officialChallengeResponseDtos));
     }
 
-    @Tag(name = "challenge")
+    @Tag(name = "home", description = "홈(둘러보기) API")
     @Operation(summary = "홈 - 카테고리 별 챌린지 조회 api")
     @GetMapping("/home/{category}")
     public ResponseEntity<List<ChallengeResponseDto>> getChallengeHomeCategory(HttpServletRequest httpServletRequest,
@@ -104,6 +103,46 @@ public class ChallengeController {
         List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
         return ResponseEntity.ok(challengeResponseDtos);
     }
+
+    @Tag(name = "home", description = "홈(둘러보기) API")
+    @Operation(summary = "인기 챌린지 리스트 조회 api")
+    @GetMapping("/popular/{filter}")
+    public ResponseEntity<List<ChallengeResponseDto>> getPopularChallengeList(HttpServletRequest httpServletRequest,
+                                                                               @PathVariable("filter") String filter) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        List<ChallengeResponseVo> challengeVos = challengeService.getPopularChallengeList(filter);
+        List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
+        return ResponseEntity.ok(challengeResponseDtos);
+    }
+
+    @Tag(name = "home", description = "홈(둘러보기) API")
+    @Operation(summary = "공식 챌린지 리스트 조회 api")
+    @GetMapping("/official/{filter}")
+    public ResponseEntity<List<ChallengeResponseDto>> getOfficialChallengeList(HttpServletRequest httpServletRequest,
+                                                                              @PathVariable("filter") String filter) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        List<ChallengeResponseVo> challengeVos = challengeService.getOfficialChallengeList(filter);
+        List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
+        return ResponseEntity.ok(challengeResponseDtos);
+    }
+
+    @Tag(name = "home", description = "홈(둘러보기) API")
+    @Operation(summary = "전체 챌린지 리스트 조회 api")
+    @GetMapping("/{filter}")
+    public ResponseEntity<List<ChallengeResponseDto>> getChallengeList(HttpServletRequest httpServletRequest,
+                                                                       @PathVariable("filter") String filter) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        List<ChallengeResponseVo> challengeVos = challengeService.getChallengeList(filter);
+        List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
+        return ResponseEntity.ok(challengeResponseDtos);
+    }
+
 
     private List<ChallengeResponseDto> makeChallengeResponseDto(String tokenString, List<ChallengeResponseVo> challengeVos){
 

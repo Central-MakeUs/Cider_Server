@@ -7,10 +7,7 @@ import com.cmc.image.certifyExample.CertifyExampleImage;
 import com.cmc.member.Member;
 import com.cmc.participate.Participate;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "challenge")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
