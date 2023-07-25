@@ -1,6 +1,7 @@
 package com.cmc.domains.challenge.service;
 
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.Status;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
@@ -22,6 +23,7 @@ public class ChallengeService {
     public Challenge create(ChallengeCreateRequestDto req, Long memberId) {
 
         Challenge challenge = req.toEntity();
+        challenge.setChallengeStatus(Status.WAITING);
         return challengeRepository.save(challenge);
     }
 
