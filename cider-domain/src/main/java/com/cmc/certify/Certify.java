@@ -1,5 +1,7 @@
 package com.cmc.certify;
 
+import com.cmc.certifyLike.CertifyLike;
+import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.image.certify.CertifyImage;
 import com.cmc.image.certifyExample.CertifyExampleImage;
 import com.cmc.participate.Participate;
@@ -30,6 +32,10 @@ public class Certify {
     private String certifyName;
 
     private String certifyContent;
+
+
+    @OneToMany(mappedBy = "certify", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CertifyLike> certifyLikeList;
 
     @Builder.Default
     @OneToMany(mappedBy = "certify", fetch = FetchType.LAZY)
