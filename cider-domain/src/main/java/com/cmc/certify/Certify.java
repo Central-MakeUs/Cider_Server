@@ -1,8 +1,13 @@
 package com.cmc.certify;
 
+import com.cmc.image.certify.CertifyImage;
+import com.cmc.image.certifyExample.CertifyExampleImage;
 import com.cmc.participate.Participate;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "certify")
@@ -25,6 +30,10 @@ public class Certify {
     private String certifyName;
 
     private String certifyContent;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "certify", fetch = FetchType.LAZY)
+    private List<CertifyImage> certifyImageList = new ArrayList<>();
 
     public static Certify create(Participate participate, String certifyName, String certifyContent){
 
