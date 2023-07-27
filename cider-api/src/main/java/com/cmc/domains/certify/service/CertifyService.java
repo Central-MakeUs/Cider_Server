@@ -44,6 +44,12 @@ public class CertifyService {
         return certifyRepository.save(certify);
     }
 
+    // 홈 추천 피드 조회
+    public List<Certify> getCertifyList() {
+
+        return certifyRepository.getCertifyList();
+    }
+
     // 인증 좋아요
     public CertifyLike createLike(Long memberId, Long certifyId) {
 

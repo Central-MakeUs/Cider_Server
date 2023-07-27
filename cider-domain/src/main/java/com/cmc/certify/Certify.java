@@ -1,5 +1,6 @@
 package com.cmc.certify;
 
+import com.cmc.base.BaseTimeEntity;
 import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.image.certify.CertifyImage;
@@ -18,7 +19,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Certify {
+public class Certify extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

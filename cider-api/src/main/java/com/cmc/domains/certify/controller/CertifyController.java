@@ -1,28 +1,40 @@
 package com.cmc.domains.certify.controller;
 
 import com.cmc.certify.Certify;
+import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challenge.Challenge;
+import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.certify.dto.request.CertifyCreateRequestDto;
 import com.cmc.domains.certify.dto.request.CertifyLikeCreateRequestDto;
 import com.cmc.domains.certify.dto.response.CertifyCreateResponseDto;
+import com.cmc.domains.certify.dto.response.CertifyResponseDto;
 import com.cmc.domains.certify.service.CertifyService;
+import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
+import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.challengeLike.dto.request.ChallengeLikeCreateRequestDto;
 import com.cmc.domains.image.service.ImageService;
 import com.cmc.global.resolver.RequestMemberId;
+import com.cmc.oauth.service.TokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -56,6 +68,38 @@ public class CertifyController {
         }
         imageService.uploadCertifyImages(certifyImages, certifyId);
         return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
+    }
+
+    @Tag(name = "home", description = "홈(둘러보기) API")
+    @Operation(summary = "홈 - 추천 피드 조회 api")
+    @GetMapping("/home")
+    public ResponseEntity<List<CertifyResponseDto>> getPopularChallengeList(HttpServletRequest httpServletRequest) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        List<Certify> certifies = certifyService.getCertifyList();
+
+        List<CertifyResponseDto> certifyResponseDtos = new ArrayList<>();
+        if (tokenString == null || tokenString.isEmpty()) {
+            // 로그인 x
+            certifyResponseDtos = certifies.stream().map(CertifyResponseDto::from).collect(Collectors.toList());
+        } else{
+            // 로그인 o
+            certifyResponseDtos = certifies.stream().map(certify -> {
+                return CertifyResponseDto.from(certify, findIsLike(certify,  TokenProvider.getMemberIdKakao(tokenString)));
+            }).collect(Collectors.toList());
+        }
+        return ResponseEntity.ok(certifyResponseDtos);
+    }
+
+    private Boolean findIsLike(Certify certify, Long memberId){
+
+        for(CertifyLike certifyLike : certify.getCertifyLikeList()){
+            if (certifyLike.getMember().getMemberId().equals(memberId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Tag(name = "certifyLike", description = "인증 좋아요 API")

@@ -157,7 +157,7 @@ public class ChallengeController {
             // 로그인 o
             challengeResponseDtos = challengeVos.stream().map(vo -> {
                 return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
-                        findIsLike(vo.getChallenge(), TokenProvider.getMemberId(tokenString)), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+                        findIsLike(vo.getChallenge(), TokenProvider.getMemberIdKakao(tokenString)), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
             }).toList();
         }
 
