@@ -5,8 +5,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
 import com.cmc.image.Image;
+import com.cmc.image.certify.CertifyImage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +57,33 @@ public class S3Uploader {
 
         //파일 이름
         String frontName = String.valueOf(challenge.getChallengeId());
+        String fileName = createFileName(frontName, multipartFile.getOriginalFilename());
+
+        return s3Upload(folderPath, fileName, multipartFile);
+    }
+
+    // 챌린지 인증 이미지 리스트 업로드
+    public List<String> s3UploadOfCertifyImages(Certify certify, List<MultipartFile> certifyImages) throws IOException {
+
+        List<String> imageUrlList = new ArrayList<>();
+
+        if(!certifyImages.isEmpty() && !certifyImages.get(0).isEmpty()){
+            for(MultipartFile multipartFile : certifyImages){
+                imageUrlList.add(s3UploadOfCertifyImage(certify, multipartFile));
+            }
+        }
+        return imageUrlList;
+    }
+
+
+    // 챌린지 인증 이미지 단일 업로드
+    private String s3UploadOfCertifyImage(Certify certify, MultipartFile multipartFile) throws IOException {
+
+        //폴더 경로
+        String folderPath = "certify";
+
+        //파일 이름
+        String frontName = String.valueOf(certify.getCertifyId());
         String fileName = createFileName(frontName, multipartFile.getOriginalFilename());
 
         return s3Upload(folderPath, fileName, multipartFile);

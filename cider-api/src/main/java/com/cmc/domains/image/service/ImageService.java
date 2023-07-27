@@ -1,14 +1,16 @@
 package com.cmc.domains.image.service;
 
+import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.NoSuchIdException;
+import com.cmc.domains.certify.repository.CertifyRepository;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
+import com.cmc.domains.image.certify.repository.CertifyImageRepository;
 import com.cmc.domains.image.certifyExample.repository.CertifyExampleImageRepository;
-import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.global.s3.S3Uploader;
+import com.cmc.image.certify.CertifyImage;
 import com.cmc.image.certifyExample.CertifyExampleImage;
-import com.cmc.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,9 @@ public class ImageService {
 
     private final S3Uploader s3Uploader;
     private final ChallengeRepository challengeRepository;
+    private final CertifyRepository certifyRepository;
     private final CertifyExampleImageRepository certifyExampleImageRepository;
+    private final CertifyImageRepository certifyImageRepository;
 
 
     // 챌린지 인증 성공 예시 사진 업로드
@@ -53,10 +57,34 @@ public class ImageService {
         return certifyExampleImageList;
     }
 
+    // 챌린지 인증 사진 업로드
+    public List<CertifyImage> uploadCertifyImages(List<MultipartFile> certifyImages, Long certifyId) throws IOException {
+
+        Certify certify = findCertifyOrThrow(certifyId);
+
+        List<String> imageUrlList = s3Uploader.s3UploadOfCertifyImages(certify, certifyImages);
+
+        List<CertifyImage> certifyImageList = new ArrayList<>();
+        if(!imageUrlList.isEmpty()){
+            for(String imageUrl : imageUrlList){
+                CertifyImage certifyImage = certifyImageRepository.save(new CertifyImage(certify, imageUrl));
+                certifyImageList.add(certifyImage);
+            }
+        }
+
+        return certifyImageList;
+    }
+
 
     private Challenge findChallengeOrThrow(Long challengeId){
         return challengeRepository.findById(challengeId).orElseThrow(() -> {
             throw new NoSuchIdException("요청하신 챌린지는 존재하지 않습니다.");
+        });
+    }
+
+    private Certify findCertifyOrThrow(Long certifyId){
+        return certifyRepository.findById(certifyId).orElseThrow(() -> {
+            throw new NoSuchIdException("요청하신 챌린지 인증은 존재하지 않습니다.");
         });
     }
 

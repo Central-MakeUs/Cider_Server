@@ -1,5 +1,6 @@
 package com.cmc.participate;
 
+import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
 import com.cmc.member.Member;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "participate")
@@ -30,6 +32,9 @@ public class Participate {
     @ManyToOne
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
+
+    @OneToMany(mappedBy = "participate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Certify> certifies;
 
     private Boolean isCreator;
 
