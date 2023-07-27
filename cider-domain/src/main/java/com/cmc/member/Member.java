@@ -68,6 +68,7 @@ public class Member extends BaseTimeEntity {
                 .email(email)
                 .memberBirth(birthday)
                 .memberGender(gender)
+                .memberLevel(1)
                 .socialType(socialType)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .build();
@@ -80,6 +81,7 @@ public class Member extends BaseTimeEntity {
                 .email("")
                 .memberBirth("")
                 .memberGender("")
+                .memberLevel(1)
                 .socialType(socialType)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .build();
