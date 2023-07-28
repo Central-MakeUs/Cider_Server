@@ -53,6 +53,8 @@ public class Challenge extends BaseTimeEntity {
 
     private LocalDate challengeStartDate;
 
+    private LocalDate challengeEndDate;
+
     private Integer recruitPeriod;
 
     private String certifyMission;

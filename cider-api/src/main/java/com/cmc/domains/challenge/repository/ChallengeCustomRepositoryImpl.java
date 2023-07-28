@@ -5,6 +5,7 @@ import com.cmc.challenge.QChallenge;
 import com.cmc.challenge.constant.InterestField;
 import com.cmc.challenge.constant.Status;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
+import com.cmc.participate.constant.ParticipateStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -196,6 +197,41 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
                 .fetch();
 
         return makeChallengeResponseVos(challenges);
+    }
+
+    // 내 챌린지 - 진행 중인 챌린지
+    @Override
+    public List<Challenge> getMyOngoingChallenge(Long memberId) {
+
+        return jpaQueryFactory.selectFrom(challenge)
+                .leftJoin(participate).on(challenge.challengeId.eq(participate.challenge.challengeId))
+                .where(participate.participateStatus.eq(ParticipateStatus.ONGOING)
+                        .and(participate.member.memberId.eq(memberId)))
+                .fetch();
+    }
+
+    // 내 챌린지 - 최근 종료된 챌린지
+    @Override
+    public List<Challenge> getMyPassedChallenge(Long memberId) {
+
+        return jpaQueryFactory.selectFrom(challenge)
+                .leftJoin(participate).on(challenge.challengeId.eq(participate.challenge.challengeId))
+                .where(challenge.challengeStatus.eq(Status.END)
+                        .and(participate.member.memberId.eq(memberId)))
+                .groupBy(challenge)
+                .orderBy(challenge.challengeEndDate.desc())
+                .limit(8)
+                .fetch();
+    }
+
+    // 내 챌린지 - 심사중인 챌린지
+    @Override
+    public List<Challenge> getMyJudgingChallenge(Long memberId) {
+
+        return jpaQueryFactory.selectFrom(challenge)
+                .leftJoin(participate).on(challenge.challengeId.eq(participate.challenge.challengeId))
+                .where(participate.isCreator.eq(true))
+                .fetch();
     }
 
     private List<ChallengeResponseVo> makeChallengeResponseVos(List<Challenge> challenges) {

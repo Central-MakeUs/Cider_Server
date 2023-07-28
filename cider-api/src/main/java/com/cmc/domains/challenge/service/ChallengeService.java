@@ -100,4 +100,22 @@ public class ChallengeService {
         }
         return challengeResponseVos;
     }
+
+    // 내 챌린지 - 진행중인 챌린지
+    public List<Challenge> getMyOngoingChallenge(Long memberId) {
+
+        return challengeRepository.getMyOngoingChallenge(memberId);
+    }
+
+    // 내 챌린지 - 최근 종료된 챌린지
+    public List<Challenge> getMyPassedChallenge(Long memberId) {
+
+        return challengeRepository.getMyPassedChallenge(memberId);
+    }
+
+    // 내 챌린지 - 심사중인 챌린지
+    public List<Challenge> getMyJudgingChallenge(Long memberId) {
+
+        return challengeRepository.getMyJudgingChallenge(memberId);
+    }
 }

@@ -2,19 +2,21 @@ package com.cmc.domains.challenge.controller;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.challengeLike.ChallengeLike;
-import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
 import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeHomeResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
+import com.cmc.domains.challenge.dto.response.myChallenge.*;
 import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.image.service.ImageService;
 import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
 import com.cmc.oauth.service.TokenProvider;
+import com.cmc.participate.Participate;
+import com.cmc.participate.constant.ParticipateStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -183,4 +185,64 @@ public class ChallengeController {
         participateService.create(req.getChallengeId(), memberId);
         return ResponseEntity.ok(CommonResponse.from("챌린지 참여가 완료되었습니다"));
     }
+
+    @Tag(name = "challenge")
+    @Operation(summary = "내 챌린지 조회 api")
+    @GetMapping(value="/my")
+    public ResponseEntity<MyChallengeResponseDto> getMyChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId){
+
+        // 진행중인 챌린지
+        List<Challenge> ongoingChallenges = challengeService.getMyOngoingChallenge(memberId);
+        List<OngoingChallengeResponseDto> ongoingChallengeResponseDtos = ongoingChallenges.stream().map(challenge -> {
+            return OngoingChallengeResponseDto.from(challenge, getCertifyNum(challenge, memberId));
+        }).toList();
+
+        // 최근 종료된 챌린지
+        List<Challenge> passedChallenges = challengeService.getMyPassedChallenge(memberId);
+        List<PassedChallengeResponseDto> passedChallengeResponseDtos = passedChallenges.stream().map(challenge -> {
+            return PassedChallengeResponseDto.from(challenge, String.valueOf(getParticipate(challenge, memberId).getParticipateStatus()), getSuccessNum(challenge));
+        }).toList();
+
+        // 심사 중인 챌린지
+        List<Challenge> judgingChallenges = challengeService.getMyJudgingChallenge(memberId);
+        List<JudgingChallengeResponseDto> judgingChallengeResponseDtos = judgingChallenges.stream().map(challenge -> {
+            return JudgingChallengeResponseDto.from(challenge);
+        }).toList();
+
+        return ResponseEntity.ok(MyChallengeResponseDto.from(OngoingChallengeListResponseDto.from(ongoingChallengeResponseDtos),
+                PassedChallengeListResponseDto.from(passedChallengeResponseDtos), JudgingChallengeListResponseDto.from(judgingChallengeResponseDtos)));
+    }
+
+    private Integer getSuccessNum(Challenge challenge){
+
+        int cnt = 0;
+        for(Participate participate : challenge.getParticipates()){
+            if(participate.getParticipateStatus().equals(ParticipateStatus.SUCCESS)){
+                cnt += 1;
+            }
+        }
+        return cnt;
+    }
+
+    private Participate getParticipate(Challenge challenge, Long memberId){
+
+        for(Participate participate : challenge.getParticipates()){
+            if(participate.getMember().getMemberId().equals(memberId)){
+                return participate;
+            }
+        }
+        return null;
+    }
+
+    private Integer getCertifyNum(Challenge challenge, Long memberId){
+
+        for(Participate participate : challenge.getParticipates()){
+            if(participate.getMember().getMemberId().equals(memberId)){
+                return participate.getCertifies().size();
+            }
+        }
+        return null;
+    }
+
+
 }
