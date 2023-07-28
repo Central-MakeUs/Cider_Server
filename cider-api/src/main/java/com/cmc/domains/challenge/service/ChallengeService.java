@@ -1,6 +1,7 @@
 package com.cmc.domains.challenge.service;
 
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challenge.constant.Status;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
@@ -24,6 +25,7 @@ public class ChallengeService {
 
         Challenge challenge = req.toEntity();
         challenge.setChallengeStatus(Status.WAITING);
+        challenge.setJudgeStatus(JudgeStatus.JUDGING);
         return challengeRepository.save(challenge);
     }
 
@@ -97,5 +99,23 @@ public class ChallengeService {
                 break;
         }
         return challengeResponseVos;
+    }
+
+    // 내 챌린지 - 진행중인 챌린지
+    public List<Challenge> getMyOngoingChallenge(Long memberId) {
+
+        return challengeRepository.getMyOngoingChallenge(memberId);
+    }
+
+    // 내 챌린지 - 최근 종료된 챌린지
+    public List<Challenge> getMyPassedChallenge(Long memberId) {
+
+        return challengeRepository.getMyPassedChallenge(memberId);
+    }
+
+    // 내 챌린지 - 심사중인 챌린지
+    public List<Challenge> getMyJudgingChallenge(Long memberId) {
+
+        return challengeRepository.getMyJudgingChallenge(memberId);
     }
 }

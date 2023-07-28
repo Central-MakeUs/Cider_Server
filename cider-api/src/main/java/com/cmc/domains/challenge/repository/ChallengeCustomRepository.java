@@ -1,5 +1,6 @@
 package com.cmc.domains.challenge.repository;
 
+import com.cmc.challenge.Challenge;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 
 import java.util.List;
@@ -29,4 +30,10 @@ public interface ChallengeCustomRepository {
     List<ChallengeResponseVo> getChallengeByParticipate();
 
     List<ChallengeResponseVo> getChallengeByLike();
+
+    List<Challenge> getMyOngoingChallenge(Long memberId);
+
+    List<Challenge> getMyPassedChallenge(Long memberId);
+
+    List<Challenge> getMyJudgingChallenge(Long memberId);
 }

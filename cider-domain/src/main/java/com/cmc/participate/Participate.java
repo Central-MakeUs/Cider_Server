@@ -3,6 +3,7 @@ package com.cmc.participate;
 import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
 import com.cmc.member.Member;
+import com.cmc.participate.constant.ParticipateStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,10 @@ public class Participate {
     @ManyToOne
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "participate_status", columnDefinition = "VARCHAR(30)")
+    private ParticipateStatus participateStatus;
 
     @OneToMany(mappedBy = "participate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certify> certifies;
