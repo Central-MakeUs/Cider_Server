@@ -88,4 +88,9 @@ public class ImageService {
         });
     }
 
+    // 인증 성공 예시 이미지 조회
+    public List<CertifyExampleImage> getCertifyImage(Challenge challenge) {
+
+        return certifyExampleImageRepository.findCertifyImage(challenge.getChallengeId());
+    }
 }

@@ -29,10 +29,6 @@ public class Challenge extends BaseTimeEntity {
     @Column(name = "challenge_id", columnDefinition = "BIGINT", nullable = false, unique = true)
     private Long challengeId;
 
-//    @ManyToOne
-//    @JoinColumn(name = "creator_id")
-//    private Member member;
-
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participate> participates;
 
@@ -55,6 +51,10 @@ public class Challenge extends BaseTimeEntity {
 
     private LocalDate challengeEndDate;
 
+    private LocalDate recruitStartDate;
+
+    private LocalDate recruitEndDate;
+
     private Integer recruitPeriod;
 
     private String certifyMission;
@@ -67,6 +67,8 @@ public class Challenge extends BaseTimeEntity {
 
     private Integer certifyNum;
 
+    private String failureRule;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "challenge_status", columnDefinition = "VARCHAR(30)")
     private Status challengeStatus;
@@ -78,6 +80,15 @@ public class Challenge extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY)
     private List<CertifyExampleImage> certifyExampleImageList = new ArrayList<>();
+
+    public Integer getAverageCondition(){
+
+        int cnt = 0;
+        for(Participate participate : this.getParticipates()){
+            cnt += participate.getCertifies().size();
+        }
+        return Math.toIntExact(Math.round((cnt / this.getParticipates().size()) * 0.01));
+    }
 
 //    public boolean isCreator(Long memberId) {
 //

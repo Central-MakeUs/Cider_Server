@@ -1,5 +1,6 @@
 package com.cmc.domains.challenge.controller;
 
+import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
@@ -8,12 +9,16 @@ import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
 import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeHomeResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
-import com.cmc.domains.challenge.dto.response.myChallenge.*;
+import com.cmc.domains.challenge.dto.response.detail.*;
+import com.cmc.domains.challenge.dto.response.my.*;
 import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.image.service.ImageService;
+import com.cmc.domains.member.dto.response.SimpleMemberResponseDto;
 import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
+import com.cmc.image.certifyExample.CertifyExampleImage;
+import com.cmc.member.Member;
 import com.cmc.oauth.service.TokenProvider;
 import com.cmc.participate.Participate;
 import com.cmc.participate.constant.ParticipateStatus;
@@ -32,10 +37,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
 @Slf4j
 @RestController
@@ -130,6 +136,67 @@ public class ChallengeController {
         List<ChallengeResponseVo> challengeVos = challengeService.getOfficialChallengeList(filter);
         List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
         return ResponseEntity.ok(challengeResponseDtos);
+    }
+
+    @Tag(name = "challenge", description = "챌린지 API")
+    @Operation(summary = "챌린지 상세 조회 api")
+    @GetMapping("/{challengeId}")
+    public ResponseEntity<ChallengeDetailResponseDto> getChallengeDetail(HttpServletRequest httpServletRequest,
+                                                                               @PathVariable("challengeId") Long challengeId) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        Challenge challenge = challengeService.getChallenge(challengeId);
+
+        // 챌린지 현황
+        Integer myCondition = 0;
+        for(Participate participate : challenge.getParticipates()){
+            if(participate.getMember().getMemberId().equals(challengeId)){
+                myCondition = Math.toIntExact(Math.round(((participate.getCertifies().size() / challenge.getCertifyNum()) * 0.01)));
+            }
+        }
+        ChallengeConditionResponseDto challengeConditionResponseDto = ChallengeConditionResponseDto.from(challenge, myCondition);
+
+        // 챌린지 정보
+        String recruitPeriod = challenge.getRecruitStartDate().getMonthValue() + "월 " + challenge.getRecruitStartDate().getDayOfMonth() + "일("
+                 + challenge.getRecruitStartDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN) + ") ~ "
+                + challenge.getRecruitEndDate().getMonthValue() + "월 " + challenge.getRecruitEndDate().getDayOfMonth() + "일("
+                + challenge.getRecruitEndDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
+
+        String challengePeriod = challenge.getChallengeStartDate().getMonthValue() + "월 " + challenge.getChallengeStartDate().getDayOfMonth() + "일("
+                + challenge.getChallengeStartDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN) + ") ~ "
+                + challenge.getChallengeEndDate().getMonthValue() + "월 " + challenge.getChallengeEndDate().getDayOfMonth() + "일("
+                + challenge.getChallengeEndDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
+
+        ChallengeInfoResponseDto challengeInfoResponseDto = ChallengeInfoResponseDto.from(challenge, recruitPeriod, challengePeriod);
+
+        // 챌린지 규칙
+        ChallengeRuleResponseDto challengeRuleResponseDto = ChallengeRuleResponseDto.from(challenge);
+
+        // 인증 미션
+        List<CertifyExampleImage> certifyImages = imageService.getCertifyImage(challenge);
+        CertifyExampleImage success = null;
+        CertifyExampleImage failure = null;
+        for(CertifyExampleImage image : certifyImages){
+            if(image.getExampleType().equals("SUCCESS")){
+                success = image;
+            } else if(image.getExampleType().equals("FAILURE")){
+                failure = image;
+            }
+        }
+        CertifyMissionResponseDto certifyMissionResponseDto = CertifyMissionResponseDto.from(challenge, success.getImageUrl(), failure.getImageUrl());
+
+        // 챌린지 호스트
+        Member member = null;
+        for(Participate participate : challenge.getParticipates()){
+            if(participate.getIsCreator().equals(true)){
+                member = participate.getMember();
+            }
+        }
+        SimpleMemberResponseDto simpleMemberResponseDto = SimpleMemberResponseDto.from(member);
+        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, challengeConditionResponseDto, challengeInfoResponseDto, challengeRuleResponseDto, certifyMissionResponseDto, simpleMemberResponseDto);
+
+        return ResponseEntity.ok(result);
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")
