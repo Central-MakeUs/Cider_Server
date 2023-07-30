@@ -42,6 +42,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -149,54 +150,39 @@ public class ChallengeController {
         Challenge challenge = challengeService.getChallenge(challengeId);
 
         // 챌린지 현황
-        Integer myCondition = 0;
-        for(Participate participate : challenge.getParticipates()){
-            if(participate.getMember().getMemberId().equals(challengeId)){
-                myCondition = Math.toIntExact(Math.round(((participate.getCertifies().size() / challenge.getCertifyNum()) * 0.01)));
-            }
-        }
-        ChallengeConditionResponseDto challengeConditionResponseDto = ChallengeConditionResponseDto.from(challenge, myCondition);
+        ChallengeConditionResponseDto challengeCondition = ChallengeConditionResponseDto.from(challenge);
 
         // 챌린지 정보
-        String recruitPeriod = challenge.getRecruitStartDate().getMonthValue() + "월 " + challenge.getRecruitStartDate().getDayOfMonth() + "일("
-                 + challenge.getRecruitStartDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN) + ") ~ "
-                + challenge.getRecruitEndDate().getMonthValue() + "월 " + challenge.getRecruitEndDate().getDayOfMonth() + "일("
-                + challenge.getRecruitEndDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
-
-        String challengePeriod = challenge.getChallengeStartDate().getMonthValue() + "월 " + challenge.getChallengeStartDate().getDayOfMonth() + "일("
-                + challenge.getChallengeStartDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN) + ") ~ "
-                + challenge.getChallengeEndDate().getMonthValue() + "월 " + challenge.getChallengeEndDate().getDayOfMonth() + "일("
-                + challenge.getChallengeEndDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
-
-        ChallengeInfoResponseDto challengeInfoResponseDto = ChallengeInfoResponseDto.from(challenge, recruitPeriod, challengePeriod);
+        ChallengeInfoResponseDto challengeInfo = ChallengeInfoResponseDto.from(challenge);
 
         // 챌린지 규칙
-        ChallengeRuleResponseDto challengeRuleResponseDto = ChallengeRuleResponseDto.from(challenge);
+        ChallengeRuleResponseDto challengeRule = ChallengeRuleResponseDto.from(challenge);
 
         // 인증 미션
-        List<CertifyExampleImage> certifyImages = imageService.getCertifyImage(challenge);
-        CertifyExampleImage success = null;
-        CertifyExampleImage failure = null;
-        for(CertifyExampleImage image : certifyImages){
-            if(image.getExampleType().equals("SUCCESS")){
-                success = image;
-            } else if(image.getExampleType().equals("FAILURE")){
-                failure = image;
-            }
-        }
-        CertifyMissionResponseDto certifyMissionResponseDto = CertifyMissionResponseDto.from(challenge, success.getImageUrl(), failure.getImageUrl());
+        CertifyMissionResponseDto certifyMission = CertifyMissionResponseDto.from(
+                challenge,
+                getImageUrlByType("SUCCESS", challenge),
+                getImageUrlByType("FAILURE", challenge)
+        );
 
         // 챌린지 호스트
-        Member member = null;
-        for(Participate participate : challenge.getParticipates()){
-            if(participate.getIsCreator().equals(true)){
-                member = participate.getMember();
-            }
-        }
-        SimpleMemberResponseDto simpleMemberResponseDto = SimpleMemberResponseDto.from(member);
-        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, challengeConditionResponseDto, challengeInfoResponseDto, challengeRuleResponseDto, certifyMissionResponseDto, simpleMemberResponseDto);
+        Optional<Member> hostMember = challenge.getParticipates().stream()
+                .filter(participate -> participate.getIsCreator().equals(true))
+                .map(Participate::getMember)
+                .findFirst();
+        SimpleMemberResponseDto simpleMember = hostMember.map(SimpleMemberResponseDto::from).orElse(null);
+
+        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
 
         return ResponseEntity.ok(result);
+    }
+
+    private String getImageUrlByType(String type, Challenge challenge) {
+        return imageService.getCertifyImage(challenge).stream()
+                .filter(image -> image.getExampleType().equals(type))
+                .map(CertifyExampleImage::getImageUrl)
+                .findFirst()
+                .orElse(null);
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")
