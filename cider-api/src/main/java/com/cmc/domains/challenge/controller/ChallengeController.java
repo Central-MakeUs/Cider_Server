@@ -153,13 +153,6 @@ public class ChallengeController {
         final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
         Challenge challenge = challengeService.getChallenge(challengeId);
-        Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
-
-        // 챌린지 상태값 조회
-        String myChallengeStatus = getMyChallengeStatus(challenge, member);
-
-        // 챌린지 현황
-        ChallengeConditionResponseDto challengeCondition = ChallengeConditionResponseDto.from(challenge);
 
         // 챌린지 정보
         ChallengeInfoResponseDto challengeInfo = ChallengeInfoResponseDto.from(challenge);
@@ -181,13 +174,36 @@ public class ChallengeController {
                 .findFirst();
         SimpleMemberResponseDto simpleMember = hostMember.map(SimpleMemberResponseDto::from).orElse(null);
 
-        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challenge.isLike(member), challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
+        String myChallengeStatus = "";
+        ChallengeConditionResponseDto challengeCondition = null;
+        ChallengeDetailResponseDto result = null;
+        if (tokenString == null || tokenString.isEmpty()) {     // 로그인 x
+            // 챌린지 상태값 조회
+            myChallengeStatus = getChallengeStatus(challenge);
+
+            // 챌린지 현황
+            challengeCondition = ChallengeConditionResponseDto.from(challenge);
+
+            result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
+
+        } else{
+            // 로그인 o
+            Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
+
+            // 챌린지 상태값 조회
+            myChallengeStatus = getMyChallengeStatus(challenge, member);
+
+            // 챌린지 현황
+            challengeCondition = ChallengeConditionResponseDto.from(challenge, member);
+
+            result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challenge.isLike(member), challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
+        }
 
         return ResponseEntity.ok(result);
     }
 
 
-    // 챌린지 상세 조회 - 버튼 리턴값 조회
+    // 챌린지 상세 조회 - 버튼 리턴값 조회 (로그인 o)
     private String getMyChallengeStatus(Challenge challenge, Member member) {
 
         if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
@@ -229,6 +245,29 @@ public class ChallengeController {
         else if(challenge.getJudgeStatus().equals(JudgeStatus.COMPLETE)
                 && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
             return "챌린지 심사 완료";
+        }
+        else{
+            return "예외 케이스 발생!! ! ! !";
+        }
+
+    }
+
+    // 챌린지 상세 조회 - 버튼 리턴값 조회 (로그인 x)
+    private String getChallengeStatus(Challenge challenge) {
+
+        if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
+            return "챌린지 종료";
+        }
+        else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)){
+            return "이 챌린지 참여하기";
+        }
+        else if(challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
+                && challenge.getRecruitStartDate().isBefore(LocalDate.now())){
+            return "챌린지 진행중";
+        }
+        else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 기다리기 D-" + ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
         }
         else{
             return "예외 케이스 발생!! ! ! !";

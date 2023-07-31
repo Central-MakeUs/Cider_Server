@@ -63,4 +63,26 @@ public class ChallengeDetailResponseDto {
                 .build();
 
     }
+
+    public static ChallengeDetailResponseDto from(Challenge challenge, String myChallengeStatus, ChallengeConditionResponseDto challengeConditionResponseDto, ChallengeInfoResponseDto challengeInfoResponseDto,
+                                                  ChallengeRuleResponseDto challengeRuleResponseDto, CertifyMissionResponseDto certifyMissionResponseDto, SimpleMemberResponseDto simpleMemberResponseDto){
+
+        return new ChallengeDetailResponseDtoBuilder()
+                .challengeId(challenge.getChallengeId())
+                .myChallengeStatus(myChallengeStatus)
+                .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
+                .challengeCapacity(Long.valueOf(challenge.getChallengeCapacity()))
+                .participateNum((long) challenge.getParticipates().size())
+                .challengeStatus(String.valueOf(challenge.getChallengeStatus()))
+                .challengeIntro(challenge.getChallengeInfo())
+                .challengeLikeNum((long) challenge.getChallengeLikes().size())
+                .isLike(false)
+                .challengeConditionResponseDto(challengeConditionResponseDto)
+                .challengeInfoResponseDto(challengeInfoResponseDto)
+                .challengeRuleResponseDto(challengeRuleResponseDto)
+                .certifyMissionResponseDto(certifyMissionResponseDto)
+                .simpleMemberResponseDto(simpleMemberResponseDto)
+                .build();
+
+    }
 }
