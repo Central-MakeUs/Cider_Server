@@ -2,6 +2,7 @@ package com.cmc.domains.participate.service;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.common.exception.BadRequestException;
+import com.cmc.common.exception.CiderException;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.participate.repository.ParticipateRepository;
@@ -25,6 +26,10 @@ public class ParticipateService {
 
         Member member = findMemberOrThrow(memberId);
         Challenge challenge = findChallengeOrThrow(challengeId);
+
+        if(challenge.getParticipates().size() >= challenge.getChallengeCapacity()){
+            throw new CiderException("모집 인원이 마감된 챌린지입니다.");
+        }
 
         Participate participate = Participate.create(member, challenge);
         participate.updateIsCreator();

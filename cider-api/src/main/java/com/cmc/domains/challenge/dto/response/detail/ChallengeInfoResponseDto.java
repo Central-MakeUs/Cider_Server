@@ -1,6 +1,7 @@
 package com.cmc.domains.challenge.dto.response.detail;
 
 import com.cmc.challenge.Challenge;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,16 +14,22 @@ import java.util.Locale;
 @AllArgsConstructor
 public class ChallengeInfoResponseDto {
 
+    @Schema(description = "모집 기간", example = "06월 6일(금) ~ 06월 24일(토)")
     private String recruitPeriod;
 
+    @Schema(description = "챌린지 기간", example = "06월 6일(금) ~ 06월 24일(토)")
     private String challengePeriod;
 
+    @Schema(description = "모집 인원", example = "30")
     private Integer challengeCapacity;
 
+    @Schema(description = "인증 횟수", example = "20")
     private Integer certifyNum;
 
+    @Schema(description = "인증 시간", example = "매일 자정까지")
     private String certifyTime;
 
+    @Schema(description = "리워드 여부", example = "true/false")
     private Boolean isReward;
 
     public static ChallengeInfoResponseDto from(Challenge challenge){

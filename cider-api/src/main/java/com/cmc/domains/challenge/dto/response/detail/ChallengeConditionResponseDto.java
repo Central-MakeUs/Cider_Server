@@ -28,7 +28,6 @@ public class ChallengeConditionResponseDto {
     @Schema(description = "나의 현황", example = "% 기준")
     private Integer myCondition;
 
-    // TODO : ???
     public static ChallengeConditionResponseDto from(Challenge challenge){
 
         return new ChallengeConditionResponseDtoBuilder()
