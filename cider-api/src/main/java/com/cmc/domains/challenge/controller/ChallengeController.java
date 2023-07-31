@@ -153,9 +153,10 @@ public class ChallengeController {
         final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
         Challenge challenge = challengeService.getChallenge(challengeId);
+        Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
 
         // 챌린지 상태값 조회
-        String myChallengeStatus = getMyChallengeStatus(challenge, TokenProvider.getMemberIdKakao(tokenString));
+        String myChallengeStatus = getMyChallengeStatus(challenge, member);
 
         // 챌린지 현황
         ChallengeConditionResponseDto challengeCondition = ChallengeConditionResponseDto.from(challenge);
@@ -180,16 +181,14 @@ public class ChallengeController {
                 .findFirst();
         SimpleMemberResponseDto simpleMember = hostMember.map(SimpleMemberResponseDto::from).orElse(null);
 
-        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
+        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challenge.isLike(member), challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
 
         return ResponseEntity.ok(result);
     }
 
 
     // 챌린지 상세 조회 - 버튼 리턴값 조회
-    private String getMyChallengeStatus(Challenge challenge, Long memberId) {
-
-        Member member = memberService.find(memberId);
+    private String getMyChallengeStatus(Challenge challenge, Member member) {
 
         if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
             return "챌린지 종료";

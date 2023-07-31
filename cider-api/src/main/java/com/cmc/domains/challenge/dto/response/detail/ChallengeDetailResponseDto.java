@@ -24,9 +24,13 @@ public class ChallengeDetailResponseDto {
 
     private Long participateNum;
 
-    // private String challengeStatus;
+    private String challengeStatus;
 
     private String challengeIntro;
+
+    private Long challengeLikeNum;
+
+    private Boolean isLike;
 
     private ChallengeConditionResponseDto challengeConditionResponseDto;
 
@@ -38,7 +42,7 @@ public class ChallengeDetailResponseDto {
 
     private SimpleMemberResponseDto simpleMemberResponseDto;
 
-    public static ChallengeDetailResponseDto from(Challenge challenge, String myChallengeStatus, ChallengeConditionResponseDto challengeConditionResponseDto, ChallengeInfoResponseDto challengeInfoResponseDto,
+    public static ChallengeDetailResponseDto from(Challenge challenge, String myChallengeStatus, Boolean isLike,ChallengeConditionResponseDto challengeConditionResponseDto, ChallengeInfoResponseDto challengeInfoResponseDto,
                                                   ChallengeRuleResponseDto challengeRuleResponseDto, CertifyMissionResponseDto certifyMissionResponseDto, SimpleMemberResponseDto simpleMemberResponseDto){
 
         return new ChallengeDetailResponseDtoBuilder()
@@ -47,8 +51,10 @@ public class ChallengeDetailResponseDto {
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
                 .challengeCapacity(Long.valueOf(challenge.getChallengeCapacity()))
                 .participateNum((long) challenge.getParticipates().size())
-               // .challengeStatus(String.valueOf(challenge.getChallengeStatus()))
+                .challengeStatus(String.valueOf(challenge.getChallengeStatus()))
                 .challengeIntro(challenge.getChallengeInfo())
+                .challengeLikeNum((long) challenge.getChallengeLikes().size())
+                .isLike(isLike)
                 .challengeConditionResponseDto(challengeConditionResponseDto)
                 .challengeInfoResponseDto(challengeInfoResponseDto)
                 .challengeRuleResponseDto(challengeRuleResponseDto)

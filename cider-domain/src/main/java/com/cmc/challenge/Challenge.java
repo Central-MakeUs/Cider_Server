@@ -117,6 +117,16 @@ public class Challenge extends BaseTimeEntity {
         return false;
     }
 
+    public Boolean isLike(Member member){
+
+        for(ChallengeLike challengeLike : this.getChallengeLikes()){
+            if(challengeLike.getMember().equals(member)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 //    public boolean isCreator(Long memberId) {
 //
 //        return this.member.getMemberId().equals(memberId);
