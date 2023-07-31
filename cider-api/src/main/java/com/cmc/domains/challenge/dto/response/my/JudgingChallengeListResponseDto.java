@@ -1,6 +1,5 @@
-package com.cmc.domains.challenge.dto.response.myChallenge;
+package com.cmc.domains.challenge.dto.response.my;
 
-import com.cmc.challenge.constant.JudgeStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

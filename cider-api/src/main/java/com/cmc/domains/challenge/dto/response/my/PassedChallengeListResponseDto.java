@@ -1,4 +1,4 @@
-package com.cmc.domains.challenge.dto.response.myChallenge;
+package com.cmc.domains.challenge.dto.response.my;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

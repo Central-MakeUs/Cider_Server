@@ -1,6 +1,9 @@
 package com.cmc.domains.challenge.controller;
 
+import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.ChallengeStatus;
+import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
@@ -8,12 +11,17 @@ import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
 import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeHomeResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
-import com.cmc.domains.challenge.dto.response.myChallenge.*;
+import com.cmc.domains.challenge.dto.response.detail.*;
+import com.cmc.domains.challenge.dto.response.my.*;
 import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.image.service.ImageService;
+import com.cmc.domains.member.dto.response.SimpleMemberResponseDto;
+import com.cmc.domains.member.service.MemberService;
 import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
+import com.cmc.image.certifyExample.CertifyExampleImage;
+import com.cmc.member.Member;
 import com.cmc.oauth.service.TokenProvider;
 import com.cmc.participate.Participate;
 import com.cmc.participate.constant.ParticipateStatus;
@@ -32,10 +40,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -45,6 +56,7 @@ public class ChallengeController {
 
     private final ChallengeService challengeService;
     private final ImageService imageService;
+    private final MemberService memberService;
     private final ParticipateService participateService;
 
     @Tag(name = "challenge", description = "챌린지 API")
@@ -130,6 +142,145 @@ public class ChallengeController {
         List<ChallengeResponseVo> challengeVos = challengeService.getOfficialChallengeList(filter);
         List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDto(tokenString, challengeVos);
         return ResponseEntity.ok(challengeResponseDtos);
+    }
+
+    @Tag(name = "challenge", description = "챌린지 API")
+    @Operation(summary = "챌린지 상세 조회 api")
+    @GetMapping("/detail/{challengeId}")
+    public ResponseEntity<ChallengeDetailResponseDto> getChallengeDetail(HttpServletRequest httpServletRequest,
+                                                                               @PathVariable("challengeId") Long challengeId) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        Challenge challenge = challengeService.getChallenge(challengeId);
+
+        // 챌린지 정보
+        ChallengeInfoResponseDto challengeInfo = ChallengeInfoResponseDto.from(challenge);
+
+        // 챌린지 규칙
+        ChallengeRuleResponseDto challengeRule = ChallengeRuleResponseDto.from(challenge);
+
+        // 인증 미션
+        CertifyMissionResponseDto certifyMission = CertifyMissionResponseDto.from(
+                challenge,
+                getImageUrlByType("SUCCESS", challenge),
+                getImageUrlByType("FAILURE", challenge)
+        );
+
+        // 챌린지 호스트
+        Optional<Member> hostMember = challenge.getParticipates().stream()
+                .filter(participate -> participate.getIsCreator().equals(true))
+                .map(Participate::getMember)
+                .findFirst();
+        SimpleMemberResponseDto simpleMember = hostMember.map(SimpleMemberResponseDto::from).orElse(null);
+
+        String myChallengeStatus = "";
+        ChallengeConditionResponseDto challengeCondition = null;
+        ChallengeDetailResponseDto result = null;
+        if (tokenString == null || tokenString.isEmpty()) {     // 로그인 x
+            // 챌린지 상태값 조회
+            myChallengeStatus = getChallengeStatus(challenge);
+
+            // 챌린지 현황
+            challengeCondition = ChallengeConditionResponseDto.from(challenge);
+
+            result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
+
+        } else{
+            // 로그인 o
+            Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
+
+            // 챌린지 상태값 조회
+            myChallengeStatus = getMyChallengeStatus(challenge, member);
+
+            // 챌린지 현황
+            challengeCondition = ChallengeConditionResponseDto.from(challenge, member);
+
+            result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challenge.isLike(member), challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    // 챌린지 상세 조회 - 버튼 리턴값 조회 (로그인 o)
+    private String getMyChallengeStatus(Challenge challenge, Member member) {
+
+        if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
+            return "챌린지 종료";
+        }
+        else if (challenge.isParticipants(member)
+                    && (challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE) || challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE))
+                    && (!challenge.checkCertifyToday(member))){
+            return "오늘 참여 인증하기";
+        }
+        else if (challenge.isParticipants(member)
+                && (challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE) || challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE))
+                && (challenge.checkCertifyToday(member))) {
+            return "오늘 인증완료";
+        }
+        else if(challenge.isParticipants(member)
+                && challenge.getChallengeStatus().equals(ChallengeStatus.RECRUITING)){
+            return "챌린지 기다리는 중";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)){
+            return "이 챌린지 참여하기";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
+                && challenge.getRecruitStartDate().isBefore(LocalDate.now())){
+            return "챌린지 진행중";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 모집 마감";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 기다리기 D-" + ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
+        }
+        else if(challenge.getJudgeStatus().equals(JudgeStatus.COMPLETE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 심사 완료";
+        }
+        else{
+            return "예외 케이스 발생!! ! ! !";
+        }
+
+    }
+
+    // 챌린지 상세 조회 - 버튼 리턴값 조회 (로그인 x)
+    private String getChallengeStatus(Challenge challenge) {
+
+        if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
+            return "챌린지 종료";
+        }
+        else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)){
+            return "이 챌린지 참여하기";
+        }
+        else if(challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
+                && challenge.getRecruitStartDate().isBefore(LocalDate.now())){
+            return "챌린지 진행중";
+        }
+        else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 기다리기 D-" + ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
+        }
+        else{
+            return "예외 케이스 발생!! ! ! !";
+        }
+
+    }
+
+    private String getImageUrlByType(String type, Challenge challenge) {
+        return imageService.getCertifyImage(challenge).stream()
+                .filter(image -> image.getExampleType().equals(type))
+                .map(CertifyExampleImage::getImageUrl)
+                .findFirst()
+                .orElse(null);
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")

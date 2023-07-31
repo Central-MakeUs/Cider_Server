@@ -2,8 +2,8 @@ package com.cmc.domains.challenge.repository;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.QChallenge;
+import com.cmc.challenge.constant.ChallengeStatus;
 import com.cmc.challenge.constant.InterestField;
-import com.cmc.challenge.constant.Status;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.participate.constant.ParticipateStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,8 +33,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING)
-                        .or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING)
+                        .or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)))
                 .fetch();
 
         return makeChallengeResponseVos(challenges);
@@ -46,7 +46,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.POSSIBLE).and(challenge.isOfficial.eq(true)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE).and(challenge.isOfficial.eq(true)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .limit(10)
@@ -61,7 +61,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
                         .and(challenge.challengeBranch.eq(InterestField.of(category))))
                 .groupBy(challenge)
                 .fetch();
@@ -75,7 +75,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .fetch();
@@ -89,7 +89,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)))
                 .fetch();
 
         return makeChallengeResponseVos(challenges);
@@ -101,7 +101,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeLikes.size().desc())
                 .fetch();
@@ -116,8 +116,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE))
                         .and(challenge.isOfficial.eq(true)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
@@ -132,8 +132,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE))
                         .and(challenge.isOfficial.eq(true)))
                 .fetch();
 
@@ -146,8 +146,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE))
                         .and(challenge.isOfficial.eq(true)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeLikes.size().desc())
@@ -162,8 +162,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .fetch();
@@ -177,8 +177,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
                 .fetch();
 
         return makeChallengeResponseVos(challenges);
@@ -190,8 +190,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(Status.RECRUITING).or(challenge.challengeStatus.eq(Status.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(Status.IMPOSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
+                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeLikes.size().desc())
                 .fetch();
@@ -216,7 +216,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         return jpaQueryFactory.selectFrom(challenge)
                 .leftJoin(participate).on(challenge.challengeId.eq(participate.challenge.challengeId))
-                .where(challenge.challengeStatus.eq(Status.END)
+                .where(challenge.challengeStatus.eq(ChallengeStatus.END)
                         .and(participate.member.memberId.eq(memberId)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeEndDate.desc())

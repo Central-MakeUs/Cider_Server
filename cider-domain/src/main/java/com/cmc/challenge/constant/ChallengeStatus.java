@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
+public enum ChallengeStatus {
 
     WAITING("W", "심사중"),
     RECRUITING("R", "모집중"),
@@ -20,7 +20,7 @@ public enum Status {
     private String alias;
     private String description;
 
-    public static Optional<Status> of(String alias) {
+    public static Optional<ChallengeStatus> of(String alias) {
         return Arrays.stream(values()).filter(S -> S.alias.equals(alias)).findFirst();
     }
 }
