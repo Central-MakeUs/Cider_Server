@@ -146,7 +146,7 @@ public class ChallengeController {
 
     @Tag(name = "challenge", description = "챌린지 API")
     @Operation(summary = "챌린지 상세 조회 api")
-    @GetMapping("/{challengeId}")
+    @GetMapping("/detail/{challengeId}")
     public ResponseEntity<ChallengeDetailResponseDto> getChallengeDetail(HttpServletRequest httpServletRequest,
                                                                                @PathVariable("challengeId") Long challengeId) {
 
