@@ -2,7 +2,7 @@ package com.cmc.domains.challenge.service;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.constant.JudgeStatus;
-import com.cmc.challenge.constant.Status;
+import com.cmc.challenge.constant.ChallengeStatus;
 import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
@@ -25,7 +25,7 @@ public class ChallengeService {
     public Challenge create(ChallengeCreateRequestDto req, Long memberId) {
 
         Challenge challenge = req.toEntity();
-        challenge.setChallengeStatus(Status.WAITING);
+        challenge.setChallengeStatus(ChallengeStatus.WAITING);
         challenge.setJudgeStatus(JudgeStatus.JUDGING);
         return challengeRepository.save(challenge);
     }

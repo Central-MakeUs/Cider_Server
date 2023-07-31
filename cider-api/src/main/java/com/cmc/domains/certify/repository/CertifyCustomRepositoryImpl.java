@@ -1,8 +1,6 @@
 package com.cmc.domains.certify.repository;
 
 import com.cmc.certify.Certify;
-import com.cmc.challenge.Challenge;
-import com.cmc.challenge.constant.Status;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

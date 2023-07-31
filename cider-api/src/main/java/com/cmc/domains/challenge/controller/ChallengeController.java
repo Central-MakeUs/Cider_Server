@@ -2,6 +2,8 @@ package com.cmc.domains.challenge.controller;
 
 import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.ChallengeStatus;
+import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
@@ -15,6 +17,7 @@ import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.image.service.ImageService;
 import com.cmc.domains.member.dto.response.SimpleMemberResponseDto;
+import com.cmc.domains.member.service.MemberService;
 import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
 import com.cmc.image.certifyExample.CertifyExampleImage;
@@ -39,6 +42,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -52,6 +56,7 @@ public class ChallengeController {
 
     private final ChallengeService challengeService;
     private final ImageService imageService;
+    private final MemberService memberService;
     private final ParticipateService participateService;
 
     @Tag(name = "challenge", description = "챌린지 API")
@@ -149,6 +154,9 @@ public class ChallengeController {
 
         Challenge challenge = challengeService.getChallenge(challengeId);
 
+        // 챌린지 상태값 조회
+        String myChallengeStatus = getMyChallengeStatus(challenge, TokenProvider.getMemberIdKakao(tokenString));
+
         // 챌린지 현황
         ChallengeConditionResponseDto challengeCondition = ChallengeConditionResponseDto.from(challenge);
 
@@ -172,9 +180,61 @@ public class ChallengeController {
                 .findFirst();
         SimpleMemberResponseDto simpleMember = hostMember.map(SimpleMemberResponseDto::from).orElse(null);
 
-        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
+        ChallengeDetailResponseDto result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
 
         return ResponseEntity.ok(result);
+    }
+
+
+    // 챌린지 상세 조회 - 버튼 리턴값 조회
+    private String getMyChallengeStatus(Challenge challenge, Long memberId) {
+
+        Member member = memberService.find(memberId);
+
+        if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
+            return "챌린지 종료";
+        }
+        else if (challenge.isParticipants(member)
+                    && (challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE) || challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE))
+                    && (!challenge.checkCertifyToday(member))){
+            return "오늘 참여 인증하기";
+        }
+        else if (challenge.isParticipants(member)
+                && (challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE) || challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE))
+                && (challenge.checkCertifyToday(member))) {
+            return "오늘 인증완료";
+        }
+        else if(challenge.isParticipants(member)
+                && challenge.getChallengeStatus().equals(ChallengeStatus.RECRUITING)){
+            return "챌린지 기다리는 중";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)){
+            return "이 챌린지 참여하기";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
+                && challenge.getRecruitStartDate().isBefore(LocalDate.now())){
+            return "챌린지 진행중";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 모집 마감";
+        }
+        else if((!challenge.isParticipants(member))
+                && challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 기다리기 D-" + ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
+        }
+        else if(challenge.getJudgeStatus().equals(JudgeStatus.COMPLETE)
+                && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+            return "챌린지 심사 완료";
+        }
+        else{
+            return "예외 케이스 발생!! ! ! !";
+        }
+
     }
 
     private String getImageUrlByType(String type, Challenge challenge) {

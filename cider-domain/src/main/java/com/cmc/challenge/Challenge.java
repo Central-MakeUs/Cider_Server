@@ -1,9 +1,10 @@
 package com.cmc.challenge;
 
 import com.cmc.base.BaseTimeEntity;
+import com.cmc.certify.Certify;
 import com.cmc.challenge.constant.InterestField;
 import com.cmc.challenge.constant.JudgeStatus;
-import com.cmc.challenge.constant.Status;
+import com.cmc.challenge.constant.ChallengeStatus;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.image.certifyExample.CertifyExampleImage;
 import com.cmc.member.Member;
@@ -12,6 +13,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +73,7 @@ public class Challenge extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "challenge_status", columnDefinition = "VARCHAR(30)")
-    private Status challengeStatus;
+    private ChallengeStatus challengeStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "judge_status", columnDefinition = "VARCHAR(30)")
@@ -88,6 +90,31 @@ public class Challenge extends BaseTimeEntity {
             cnt += participate.getCertifies().size();
         }
         return Math.toIntExact(Math.round((cnt / this.getParticipates().size()) * 0.01));
+    }
+
+    // TODO : 이 메서드 어디서 만들었던 것 같은데
+    public Boolean isParticipants(Member member){
+
+        for(Participate participate : this.getParticipates()){
+            if(participate.getMember().equals(member)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Boolean checkCertifyToday(Member member){
+
+        for(Participate participate : this.getParticipates()){
+            if(participate.getMember().equals(member)){
+                for(Certify certify : participate.getCertifies()){
+                    if (certify.getCreatedDate().toLocalDate().equals(LocalDate.now())){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 //    public boolean isCreator(Long memberId) {

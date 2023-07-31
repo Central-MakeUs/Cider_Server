@@ -14,6 +14,8 @@ public class ChallengeDetailResponseDto {
 
     private Long challengeId;
 
+    private String myChallengeStatus;
+
     private String challengeBranch;
 
     private String challengeName;
@@ -22,7 +24,7 @@ public class ChallengeDetailResponseDto {
 
     private Long participateNum;
 
-    private String challengeStatus;
+    // private String challengeStatus;
 
     private String challengeIntro;
 
@@ -36,15 +38,16 @@ public class ChallengeDetailResponseDto {
 
     private SimpleMemberResponseDto simpleMemberResponseDto;
 
-    public static ChallengeDetailResponseDto from(Challenge challenge, ChallengeConditionResponseDto challengeConditionResponseDto, ChallengeInfoResponseDto challengeInfoResponseDto,
+    public static ChallengeDetailResponseDto from(Challenge challenge, String myChallengeStatus, ChallengeConditionResponseDto challengeConditionResponseDto, ChallengeInfoResponseDto challengeInfoResponseDto,
                                                   ChallengeRuleResponseDto challengeRuleResponseDto, CertifyMissionResponseDto certifyMissionResponseDto, SimpleMemberResponseDto simpleMemberResponseDto){
 
         return new ChallengeDetailResponseDtoBuilder()
                 .challengeId(challenge.getChallengeId())
+                .myChallengeStatus(myChallengeStatus)
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
                 .challengeCapacity(Long.valueOf(challenge.getChallengeCapacity()))
                 .participateNum((long) challenge.getParticipates().size())
-                .challengeStatus(String.valueOf(challenge.getChallengeStatus()))
+               // .challengeStatus(String.valueOf(challenge.getChallengeStatus()))
                 .challengeIntro(challenge.getChallengeInfo())
                 .challengeConditionResponseDto(challengeConditionResponseDto)
                 .challengeInfoResponseDto(challengeInfoResponseDto)

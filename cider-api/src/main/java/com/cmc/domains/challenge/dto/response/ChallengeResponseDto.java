@@ -2,7 +2,7 @@ package com.cmc.domains.challenge.dto.response;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.constant.InterestField;
-import com.cmc.challenge.constant.Status;
+import com.cmc.challenge.constant.ChallengeStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +20,7 @@ public class ChallengeResponseDto {
     private String challengeName;
 
     @Schema(description = "챌린지 상태", example = "RECRUITING: 모집중, POSSIBLE: 참여 가능, IMPOSSIBLE: 참여 불가(모집 종료)")
-    private Status challengeStatus;
+    private ChallengeStatus challengeStatus;
 
     @Schema(description = "챌린지 대기/참여중 인원", example = "5")
     private Integer participateNum;
