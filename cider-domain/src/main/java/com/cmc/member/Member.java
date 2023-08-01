@@ -53,7 +53,9 @@ public class Member extends BaseTimeEntity {
 
     private String interestChallenge;
 
-    private Integer memberLevel;
+    private Integer memberLevel; // 레벨
+
+    private Integer memberExperience;   // 경험치
 
     @Column(name = "fcm_token", columnDefinition = "VARCHAR(200)")
     private String fcmToken;
