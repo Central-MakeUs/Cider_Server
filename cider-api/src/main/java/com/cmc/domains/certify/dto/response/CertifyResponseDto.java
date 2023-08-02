@@ -29,11 +29,17 @@ public class CertifyResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdDate;
 
+    @Schema(description = "인증글 id", example = "10")
+    private Long certifyId;
+
     @Schema(description = "인증글 제목", example = "오늘도 인증해요")
     private String certifyName;
 
     @Schema(description = "인증글 내용", example = "커피값을 아꼈어요")
     private String certifyContent;
+
+    @Schema(description = "인증사진 url", example = "url~")
+    private String certifyImageUrl;
 
     @Schema(description = "인증글 좋아요수", example = "200")
     private Long certifyLike;
@@ -47,8 +53,10 @@ public class CertifyResponseDto {
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
                 .simpleChallengeResponseDto(SimpleChallengeResponseDto.from(certify.getParticipate().getChallenge()))
                 .createdDate(certify.getCreatedDate())
+                .certifyId(certify.getCertifyId())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())
+                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
                 .certifyLike((long) certify.getCertifyLikeList().size())
                 .isLike(false)
                 .build();
@@ -60,8 +68,10 @@ public class CertifyResponseDto {
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
                 .simpleChallengeResponseDto(SimpleChallengeResponseDto.from(certify.getParticipate().getChallenge()))
                 .createdDate(certify.getCreatedDate())
+                .certifyId(certify.getCertifyId())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())
+                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
                 .certifyLike((long) certify.getCertifyLikeList().size())
                 .isLike(isLike)
                 .build();

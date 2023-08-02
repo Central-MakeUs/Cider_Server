@@ -102,24 +102,15 @@ public class CertifyController {
         return false;
     }
 
-    @Tag(name = "certifyLike", description = "인증 좋아요 API")
-    @Operation(summary = "인증 좋아요 등록 api")
-    @PostMapping(value="/like")
-    public ResponseEntity<CommonResponse> createCertifyLike(@Parameter(hidden = true) @RequestMemberId Long memberId,
-                                                              @RequestBody @Valid CertifyLikeCreateRequestDto req){
+//    @Tag(name = "myPage", description = "마이페이지 API")
+//    @Operation(summary = "나의 인증글 조회 api")
+//    @GetMapping("/mypage/{category}")
+//    public ResponseEntity<> getPopularChallengeList(@Parameter(hidden = true) @RequestMemberId Long memberId,
+//                                                    @PathVariable("category") String category) {
+//
+//
+//        return ResponseEntity.ok(certifyResponseDtos);
+//    }
 
-        certifyService.createLike(memberId, req.getCertifyId());
-        return ResponseEntity.ok(CommonResponse.from("인증글 좋아요가 등록되었습니다"));
-    }
-
-    @Tag(name = "certifyLike", description = "인증 좋아요 API")
-    @Operation(summary = "인증 좋아요 삭제 api")
-    @DeleteMapping(value="/like/{certifyId}")
-    public ResponseEntity<CommonResponse> deleteCertifyLike(@Parameter(hidden = true) @RequestMemberId Long memberId,
-                                                              @PathVariable("certifyId") Long certifyId) {
-
-        certifyService.deleteLike(memberId, certifyId);
-        return ResponseEntity.ok(CommonResponse.from("인증글 좋아요가 삭제되었습니다"));
-    }
 
 }
