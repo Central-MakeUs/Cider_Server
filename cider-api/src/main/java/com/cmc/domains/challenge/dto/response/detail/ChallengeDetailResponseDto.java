@@ -26,10 +26,10 @@ public class ChallengeDetailResponseDto {
     private String challengeName;
 
     @Schema(description = "챌린지 모집 인원", example = "30")
-    private Long challengeCapacity;
+    private Integer challengeCapacity;
 
     @Schema(description = "챌린지 참여 인원", example = "29")
-    private Long participateNum;
+    private Integer participateNum;
 
     @Schema(description = "챌린지 상태", example = "RECRUITING: 모집중, POSSIBLE: 참여 가능, IMPOSSIBLE: 참여 불가(모집 종료)")
     private String challengeStatus;
@@ -65,8 +65,8 @@ public class ChallengeDetailResponseDto {
                 .challengeId(challenge.getChallengeId())
                 .myChallengeStatus(myChallengeStatus)
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
-                .challengeCapacity(Long.valueOf(challenge.getChallengeCapacity()))
-                .participateNum((long) challenge.getParticipates().size())
+                .challengeCapacity(challenge.getChallengeCapacity())
+                .participateNum(challenge.getParticipates().size())
                 .challengeStatus(String.valueOf(challenge.getChallengeStatus()))
                 .challengeIntro(challenge.getChallengeInfo())
                 .challengeLikeNum((long) challenge.getChallengeLikes().size())
@@ -87,8 +87,8 @@ public class ChallengeDetailResponseDto {
                 .challengeId(challenge.getChallengeId())
                 .myChallengeStatus(myChallengeStatus)
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
-                .challengeCapacity(Long.valueOf(challenge.getChallengeCapacity()))
-                .participateNum((long) challenge.getParticipates().size())
+                .challengeCapacity(challenge.getChallengeCapacity())
+                .participateNum(challenge.getParticipates().size())
                 .challengeStatus(String.valueOf(challenge.getChallengeStatus()))
                 .challengeIntro(challenge.getChallengeInfo())
                 .challengeLikeNum((long) challenge.getChallengeLikes().size())

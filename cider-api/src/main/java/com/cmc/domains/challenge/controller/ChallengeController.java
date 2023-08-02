@@ -6,9 +6,12 @@ import com.cmc.challenge.constant.ChallengeStatus;
 import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
+import com.cmc.domains.certify.dto.response.CertifyResponseDto;
+import com.cmc.domains.certify.service.CertifyService;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
 import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
+import com.cmc.domains.challenge.dto.response.ChallengeDetailFeedResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeHomeResponseDto;
 import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
 import com.cmc.domains.challenge.dto.response.detail.*;
@@ -47,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -58,6 +62,7 @@ public class ChallengeController {
     private final ImageService imageService;
     private final MemberService memberService;
     private final ParticipateService participateService;
+    private final CertifyService certifyService;
 
     @Tag(name = "challenge", description = "챌린지 API")
     @Operation(summary = "챌린지 생성 api")
@@ -145,8 +150,8 @@ public class ChallengeController {
     }
 
     @Tag(name = "challenge", description = "챌린지 API")
-    @Operation(summary = "챌린지 상세 조회 api")
-    @GetMapping("/detail/{challengeId}")
+    @Operation(summary = "챌린지 상세 조회 api - 챌린지")
+    @GetMapping("/detail/info/{challengeId}")
     public ResponseEntity<ChallengeDetailResponseDto> getChallengeDetail(HttpServletRequest httpServletRequest,
                                                                                @PathVariable("challengeId") Long challengeId) {
 
@@ -202,6 +207,39 @@ public class ChallengeController {
         return ResponseEntity.ok(result);
     }
 
+    @Tag(name = "challenge", description = "챌린지 API")
+    @Operation(summary = "챌린지 상세 조회 api - 피드",  description = "- {filter} - latest: 최신순, like: 좋아요순")
+    @GetMapping("/detail/feed/{challengeId}/{filter}")
+    public ResponseEntity<ChallengeDetailFeedResponseDto> getChallengeDetailFeed(HttpServletRequest httpServletRequest,
+                                                                                 @PathVariable("challengeId") Long challengeId,
+                                                                                 @PathVariable("filter") String filter) {
+
+        final String tokenString = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        Challenge challenge = challengeService.getChallenge(challengeId);
+        List<Certify> certifies = certifyService.getChallengeCertifyList(challenge, filter);
+
+        List<String> certifyImageUrlList = certifies.stream().map(certify -> {
+            return certify.getCertifyImageList().get(0).getImageUrl();
+        }).toList();
+
+        List<CertifyResponseDto> certifyResponseDtos = new ArrayList<>();
+        if (tokenString == null || tokenString.isEmpty()) {     // 로그인 x
+
+            for(Certify certify : certifies){
+                certifyResponseDtos.add(CertifyResponseDto.from(certify));
+            }
+
+        } else{
+            // 로그인 o
+            Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
+            for(Certify certify : certifies){
+                certifyResponseDtos.add(CertifyResponseDto.from(certify, findIsLike(challenge, member.getMemberId())));
+            }
+        }
+
+        return ResponseEntity.ok(ChallengeDetailFeedResponseDto.from(challenge, certifyImageUrlList, certifyResponseDtos));
+    }
 
     // 챌린지 상세 조회 - 버튼 리턴값 조회 (로그인 o)
     private String getMyChallengeStatus(Challenge challenge, Member member) {

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.cmc.certify.QCertify.certify;
+import static com.cmc.participate.QParticipate.participate;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,6 +28,32 @@ public class CertifyCustomRepositoryImpl implements CertifyCustomRepository{
                 .groupBy(certify)
                 .orderBy(certify.certifyLikeList.size().desc())
                 .limit(5)
+                .fetch();
+    }
+
+    @Override
+    public List<Certify> getCertifyByChallengeLike(Long challengeId) {
+
+        return jpaQueryFactory
+                .selectFrom(certify)
+                .leftJoin(participate).on(participate.participateId.eq(certify.participate.participateId))
+                .leftJoin(certify).on(certify.participate.participateId.eq(participate.participateId))
+                .where(certify.participate.challenge.challengeId.eq(challengeId))
+                .groupBy(certify)
+                .orderBy(certify.certifyLikeList.size().desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Certify> getCertifyByChallengeRecent(Long challengeId) {
+
+        return jpaQueryFactory
+                .selectFrom(certify)
+                .leftJoin(participate).on(participate.participateId.eq(certify.participate.participateId))
+                .leftJoin(certify).on(certify.participate.participateId.eq(participate.participateId))
+                .where(certify.participate.challenge.challengeId.eq(challengeId))
+                .groupBy(certify)
+                .orderBy(certify.createdDate.desc())
                 .fetch();
     }
 }
