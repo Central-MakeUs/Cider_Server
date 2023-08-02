@@ -7,4 +7,8 @@ import java.util.List;
 public interface CertifyCustomRepository {
 
     List<Certify> getCertifyList();
+
+    List<Certify> getCertifyByChallengeLike(Long challengeId);
+
+    List<Certify> getCertifyByChallengeRecent(Long challengeId);
 }
