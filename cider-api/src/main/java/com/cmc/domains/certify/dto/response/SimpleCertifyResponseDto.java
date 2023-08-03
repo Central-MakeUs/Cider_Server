@@ -38,6 +38,18 @@ public class SimpleCertifyResponseDto {
     @Schema(description = "로그인 한 사용자 - 인증글 좋아요 여부", example = "false")
     private Boolean isLike;
 
+    public static SimpleCertifyResponseDto from(Certify certify) {
+
+        return new SimpleCertifyResponseDtoBuilder()
+                .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
+                .createdDate(certify.getCreatedDate())
+                .certifyName(certify.getCertifyName())
+                .certifyContent(certify.getCertifyContent())
+                .certifyLike((long) certify.getCertifyLikeList().size())
+                .isLike(false)
+                .build();
+    }
+
     public static SimpleCertifyResponseDto from(Certify certify, Boolean isLike) {
 
         return new SimpleCertifyResponseDtoBuilder()

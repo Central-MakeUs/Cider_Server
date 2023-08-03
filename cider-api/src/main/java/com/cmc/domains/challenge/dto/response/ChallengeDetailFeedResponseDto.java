@@ -2,6 +2,7 @@ package com.cmc.domains.challenge.dto.response;
 
 import com.cmc.challenge.Challenge;
 import com.cmc.domains.certify.dto.response.CertifyResponseDto;
+import com.cmc.domains.certify.dto.response.SimpleCertifyResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +30,13 @@ public class ChallengeDetailFeedResponseDto {
     @Schema(description = "챌린지 참여 인원", example = "29")
     private Integer participateNum;
 
-    @Schema(description = "활동 한눈에 보기 - 이미지 url", example = "url list")
+    @Schema(description = "활동 한눈에 보기 - 이미지 url", example = "List<String> urlList")
     List<String> certifyImageUrlList;
 
     @Schema(description = "인증글 리스트")
-    List<CertifyResponseDto> certifyResponseDtoList;
+    List<SimpleCertifyResponseDto> simpleCertifyResponseDtoList;
 
-    public static ChallengeDetailFeedResponseDto from(Challenge challenge, List<String> certifyImageUrlList, List<CertifyResponseDto> certifyResponseDtos){
+    public static ChallengeDetailFeedResponseDto from(Challenge challenge, List<String> certifyImageUrlList, List<SimpleCertifyResponseDto> certifyResponseDtos){
 
         return new ChallengeDetailFeedResponseDtoBuilder()
                 .challengeId(challenge.getChallengeId())
@@ -44,7 +45,7 @@ public class ChallengeDetailFeedResponseDto {
                 .challengeCapacity(challenge.getChallengeCapacity())
                 .participateNum(challenge.getParticipates().size())
                 .certifyImageUrlList(certifyImageUrlList)
-                .certifyResponseDtoList(certifyResponseDtos)
+                .simpleCertifyResponseDtoList(certifyResponseDtos)
                 .build();
     }
 }

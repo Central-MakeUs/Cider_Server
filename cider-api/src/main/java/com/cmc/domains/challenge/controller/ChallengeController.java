@@ -7,6 +7,7 @@ import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.certify.dto.response.CertifyResponseDto;
+import com.cmc.domains.certify.dto.response.SimpleCertifyResponseDto;
 import com.cmc.domains.certify.service.CertifyService;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
@@ -223,18 +224,18 @@ public class ChallengeController {
             return certify.getCertifyImageList().get(0).getImageUrl();
         }).toList();
 
-        List<CertifyResponseDto> certifyResponseDtos = new ArrayList<>();
+        List<SimpleCertifyResponseDto> certifyResponseDtos = new ArrayList<>();
         if (tokenString == null || tokenString.isEmpty()) {     // 로그인 x
 
             for(Certify certify : certifies){
-                certifyResponseDtos.add(CertifyResponseDto.from(certify));
+                certifyResponseDtos.add(SimpleCertifyResponseDto.from(certify));
             }
 
         } else{
             // 로그인 o
             Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
             for(Certify certify : certifies){
-                certifyResponseDtos.add(CertifyResponseDto.from(certify, findIsLike(challenge, member.getMemberId())));
+                certifyResponseDtos.add(SimpleCertifyResponseDto.from(certify, findIsLike(challenge, member.getMemberId())));
             }
         }
 
