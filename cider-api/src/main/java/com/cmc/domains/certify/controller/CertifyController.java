@@ -9,6 +9,7 @@ import com.cmc.domains.certify.dto.request.CertifyCreateRequestDto;
 import com.cmc.domains.certify.dto.request.CertifyLikeCreateRequestDto;
 import com.cmc.domains.certify.dto.response.CertifyCreateResponseDto;
 import com.cmc.domains.certify.dto.response.CertifyResponseDto;
+import com.cmc.domains.certify.dto.response.SimpleCertifyResponseDto;
 import com.cmc.domains.certify.service.CertifyService;
 import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
@@ -90,6 +91,18 @@ public class CertifyController {
             }).collect(Collectors.toList());
         }
         return ResponseEntity.ok(certifyResponseDtos);
+    }
+
+    @Tag(name = "myPage", description = "마이페이지 API")
+    @Operation(summary = "마이페이지 - 나의 인증글 조회 api", description = "- {category} - T: 재테크, M: 돈관리, L: 금융학습, C: 소비절약")
+    @GetMapping("/mypage/{category}")
+    public ResponseEntity<List<SimpleCertifyResponseDto>> getMyCertifyList(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                                           @PathVariable("category") String category) {
+
+        List<Certify> certifies = certifyService.getMyCertifyList(memberId, category);
+        return ResponseEntity.ok(certifies.stream().map(certify -> {
+            return SimpleCertifyResponseDto.from(certify, findIsLike(certify, memberId));
+        }).collect(Collectors.toList()));
     }
 
     private Boolean findIsLike(Certify certify, Long memberId){

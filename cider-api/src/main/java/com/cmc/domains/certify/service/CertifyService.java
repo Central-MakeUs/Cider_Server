@@ -3,6 +3,9 @@ package com.cmc.domains.certify.service;
 import com.cmc.certify.Certify;
 import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.InterestField;
+import com.cmc.challengeLike.ChallengeLike;
+
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.certify.repository.CertifyRepository;
@@ -94,6 +97,13 @@ public class CertifyService {
         }
 
         return certifyLike;
+    }
+
+    public List<Certify> getMyCertifyList(Long memberId, String category) {
+
+        return certifyRepository.getMyCertifyList(memberId).stream().filter(certify -> {
+            return certify.getParticipate().getChallenge().getChallengeBranch().equals(InterestField.of(category));
+        }).toList();
     }
 
     private Challenge findChallengeOrThrow(Long challengeId){
