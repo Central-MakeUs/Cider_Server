@@ -5,9 +5,9 @@ import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.constant.InterestField;
 import com.cmc.challengeLike.ChallengeLike;
+
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.NoSuchIdException;
-import com.cmc.domains.certify.dto.request.CertifyCreateRequestDto;
 import com.cmc.domains.certify.repository.CertifyRepository;
 import com.cmc.domains.certifyLike.repository.CertifyLikeRepository;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
@@ -49,6 +49,18 @@ public class CertifyService {
     public List<Certify> getCertifyList() {
 
         return certifyRepository.getCertifyList();
+    }
+
+    // 챌린지 - 인증 리스트 조회
+    public List<Certify> getChallengeCertifyList(Challenge challenge, String filter) {
+
+        if(filter.equals("like")){
+            return certifyRepository.getCertifyByChallengeLike(challenge.getChallengeId());
+        }else {
+            return certifyRepository.getCertifyByChallengeRecent(challenge.getChallengeId());
+        }
+
+
     }
 
     // 인증 좋아요
