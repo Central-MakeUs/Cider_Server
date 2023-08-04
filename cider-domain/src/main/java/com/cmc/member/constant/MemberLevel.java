@@ -23,7 +23,7 @@ public enum MemberLevel {
     private String levelName;
 
     // TODO : 확인
-    public static String getLevelNameByLevel(Integer level) {
+    public static String getLevelNameByLevel(Long level) {
 
         return Arrays.stream(values()).filter(lv -> lv.level.equals(level)).map(MemberLevel::getLevelName).toString();
     }

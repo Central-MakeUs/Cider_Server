@@ -21,7 +21,7 @@ public class SimpleMemberResponseDto {
     private String profilePath;
 
     @Schema(description = "멤버 레벨", example = "LV 2 성실한 챌린저")
-    private String memberLevel;
+    private String memberLevelName;
 
     @Schema(description = "n번째 챌린지", example = "3")
     private Integer participateNum;
@@ -31,7 +31,7 @@ public class SimpleMemberResponseDto {
         return SimpleMemberResponseDto.builder()
                 .memberName(member.getMemberName())
                 .profilePath(member.getProfilePath())
-                .memberLevel(MemberLevel.getLevelNameByLevel(member.getMemberLevel()))
+                .memberLevelName("LV " + member.getMemberLevel().getMemberLevelId() + " " + member.getMemberLevel().getLevelName())
                 .participateNum(member.getParticipates().size())    // TODO: 반려된 챌린지 예외처리
                 .build();
     }
