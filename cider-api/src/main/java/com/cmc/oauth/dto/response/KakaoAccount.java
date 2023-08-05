@@ -7,7 +7,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-@JsonIgnoreProperties({"age_range_needs_agreement", "age_range", "birthday_type", "phone_number_needs_agreement", "phone_number", "ci_needs_agreement", "has_email", "ci", "ci_authenticated_at"})
+@JsonIgnoreProperties({"is_email_verified", "age_range_needs_agreement", "age_range", "birthday_type", "phone_number_needs_agreement", "phone_number", "ci_needs_agreement", "has_email", "ci", "ci_authenticated_at"})
 public class KakaoAccount {
 
     private Profile profile;
