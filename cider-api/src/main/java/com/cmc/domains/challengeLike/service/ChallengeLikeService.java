@@ -8,6 +8,7 @@ import com.cmc.domains.challengeLike.repository.ChallengeLikeRepository;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.member.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class ChallengeLikeService {
 
     private final ChallengeLikeRepository challengeLikeRepository;
@@ -42,8 +44,11 @@ public class ChallengeLikeService {
         if (challengeLike == null){
             throw new BadRequestException("관심 챌린지에 등록하지 않은 챌린지입니다.");
         }
+        log.info("challengeLikeId ::: " + challengeLike.getChallengeLikeId());
 
+        // 연관관계까지 삭제
         challengeLikeRepository.deleteById(challengeLike.getChallengeLikeId());
+        challenge.getChallengeLikes().removeIf(like -> like.getChallengeLikeId().equals(challengeLike.getChallengeLikeId()));
     }
 
     private Member findMemberOrThrow(Long memberId) {
