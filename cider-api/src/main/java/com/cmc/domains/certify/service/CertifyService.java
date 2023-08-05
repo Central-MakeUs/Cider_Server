@@ -81,10 +81,12 @@ public class CertifyService {
 
         CertifyLike certifyLike = findCertifyLike(certifyLikeList, memberId);
         if (certifyLike == null){
-            throw new BadRequestException("관심 챌린지에 등록하지 않은 챌린지입니다.");
+            throw new BadRequestException("좋아요가 등록하지 않은 인증글입니다.");
         }
 
         certifyLikeRepository.deleteById(certifyLike.getCertifyLikeId());
+        certify.getCertifyLikeList().removeIf(like -> like.getCertifyLikeId().equals(certifyLike.getCertifyLikeId()));
+
     }
 
     private CertifyLike findCertifyLike(List<CertifyLike> certifyLikes, Long memberId){

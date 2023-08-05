@@ -16,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "member")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -60,6 +61,8 @@ public class Member extends BaseTimeEntity {
 
     private Integer memberExperience;   // 경험치
 
+    private Boolean isUpdatedMember; // 멤버 업데이트 api 실행여부
+
     @Column(name = "fcm_token", columnDefinition = "VARCHAR(200)")
     private String fcmToken;
 
@@ -76,6 +79,7 @@ public class Member extends BaseTimeEntity {
                 .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
+                .isUpdatedMember(false)
                 .build();
     }
 
@@ -89,6 +93,7 @@ public class Member extends BaseTimeEntity {
                 .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
+                .isUpdatedMember(false)
                 .build();
     }
 

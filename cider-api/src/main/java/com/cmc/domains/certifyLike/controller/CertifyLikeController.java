@@ -23,7 +23,7 @@ public class CertifyLikeController {
 
     @Tag(name = "certifyLike", description = "인증 좋아요 API")
     @Operation(summary = "인증 좋아요 등록 api")
-    @PostMapping(value="/like")
+    @PostMapping(value="")
     public ResponseEntity<CommonResponse> createCertifyLike(@Parameter(hidden = true) @RequestMemberId Long memberId,
                                                             @RequestBody @Valid CertifyLikeCreateRequestDto req){
 
@@ -33,7 +33,7 @@ public class CertifyLikeController {
 
     @Tag(name = "certifyLike", description = "인증 좋아요 API")
     @Operation(summary = "인증 좋아요 삭제 api")
-    @DeleteMapping(value="/like/{certifyId}")
+    @DeleteMapping(value="/{certifyId}")
     public ResponseEntity<CommonResponse> deleteCertifyLike(@Parameter(hidden = true) @RequestMemberId Long memberId,
                                                             @PathVariable("certifyId") Long certifyId) {
 

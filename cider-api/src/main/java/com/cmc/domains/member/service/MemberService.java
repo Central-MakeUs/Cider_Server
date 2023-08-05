@@ -30,6 +30,7 @@ public class MemberService {
 
         Member member = findMemberOrThrow(memberId);
         member.update(memberGender, memberBirth, interestChallenge);
+        member.setIsUpdatedMember(true);
         return memberRepository.save(member);
     }
 

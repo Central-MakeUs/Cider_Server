@@ -24,4 +24,6 @@ public class TokenDto {
 
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date refreshTokenExpireTime;
+
+    private Boolean isUpdatedMember;
 }

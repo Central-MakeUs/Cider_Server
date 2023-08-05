@@ -45,4 +45,7 @@ public class ResponseJwtTokenDto {
     @Schema(description = "멤버 성별")
     private String gender;
 
+    @Schema(description = "멤버 업데이트 api 실행 여부", example = "실행 전적 있으면 true")
+    private Boolean isUpdatedMember;
+
 }
