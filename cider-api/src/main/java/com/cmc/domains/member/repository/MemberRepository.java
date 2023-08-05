@@ -19,6 +19,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByMemberName(String nickName);
 
-
-    LevelInfoResponseDto getNextLevel(Integer memberLevelId);
 }
