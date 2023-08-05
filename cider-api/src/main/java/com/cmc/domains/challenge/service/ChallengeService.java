@@ -3,6 +3,7 @@ package com.cmc.domains.challenge.service;
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challenge.constant.ChallengeStatus;
+import com.cmc.common.exception.CiderException;
 import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
@@ -123,8 +124,13 @@ public class ChallengeService {
     // 챌린지 단일 조회
     public Challenge getChallenge(Long challengeId) {
 
-        return challengeRepository.findById(challengeId).orElseThrow(() -> {
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(() -> {
             throw new NoSuchIdException("요청하신 챌린지는 존재하지 않습니다.");
         });
+
+        if(challenge.getJudgeStatus().equals(JudgeStatus.JUDGING)){
+            throw new CiderException("심사중인 챌린지 입니다.");
+        }
+        return challenge;
     }
 }
