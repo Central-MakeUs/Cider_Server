@@ -3,6 +3,7 @@ package com.cmc.member;
 import com.cmc.base.BaseTimeEntity;
 import com.cmc.challenge.Challenge;
 import com.cmc.challengeLike.ChallengeLike;
+import com.cmc.memberLevel.MemberLevel;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.participate.Participate;
 import lombok.*;
@@ -53,7 +54,9 @@ public class Member extends BaseTimeEntity {
 
     private String interestChallenge;
 
-    private Integer memberLevel; // 레벨
+    @OneToOne
+    @JoinColumn(name = "member_level_id")
+    private MemberLevel memberLevel; // 레벨
 
     private Integer memberExperience;   // 경험치
 
@@ -70,7 +73,7 @@ public class Member extends BaseTimeEntity {
                 .email(email)
                 .memberBirth(birthday)
                 .memberGender(gender)
-                .memberLevel(1)
+                .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .build();
@@ -83,7 +86,7 @@ public class Member extends BaseTimeEntity {
                 .email("")
                 .memberBirth("")
                 .memberGender("")
-                .memberLevel(1)
+                .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .build();

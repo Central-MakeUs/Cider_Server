@@ -23,7 +23,7 @@ public class MyActivityInfoResponseDto {
         }
 
         return new MyActivityInfoResponseDtoBuilder()
-                .myLevel(member.getMemberLevel())
+                .myLevel(member.getMemberLevel().getMemberLevelId())
                 .myCertifyNum(myCertifyNum)
                 .myLikeChallengeNum((long) member.getChallengeLikes().size())
                 .build();

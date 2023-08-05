@@ -2,10 +2,7 @@ package com.cmc.domains.member.controller;
 
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.member.dto.request.MemberUpdateReqDto;
-import com.cmc.domains.member.dto.response.MemberResponseDto;
-import com.cmc.domains.member.dto.response.MemberUpdateResDto;
-import com.cmc.domains.member.dto.response.RandomNameResponseDto;
-import com.cmc.domains.member.dto.response.SimpleMemberResponseDto;
+import com.cmc.domains.member.dto.response.*;
 import com.cmc.domains.member.dto.response.mypage.MyActivityInfoResponseDto;
 import com.cmc.domains.member.dto.response.mypage.MyLevelInfoResponseDto;
 import com.cmc.domains.member.dto.response.mypage.MyPageResponseDto;
@@ -82,7 +79,8 @@ public class MemberController {
         MyActivityInfoResponseDto myActivityInfo = MyActivityInfoResponseDto.from(member);
 
         // TODO : 레벨, 경험치 정보 - 로직 구체화
-        MyLevelInfoResponseDto myLevelInfo = null;
+        LevelInfoResponseDto nextLevel = memberService.getLevel(member.getMemberLevel());
+        MyLevelInfoResponseDto myLevelInfo = MyLevelInfoResponseDto.from(member, LevelInfoResponseDto.from(member.getMemberLevel()), nextLevel);
 
         return ResponseEntity.ok(MyPageResponseDto.from(simpleMember, myActivityInfo, myLevelInfo));
     }

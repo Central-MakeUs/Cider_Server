@@ -2,11 +2,14 @@ package com.cmc.domains.member.service;
 
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.response.CommonResponse;
+import com.cmc.domains.member.dto.response.LevelInfoResponseDto;
+import com.cmc.domains.member.repository.MemberLevelRepository;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.member.repository.nickname.NameAdjectiveRepository;
 import com.cmc.domains.member.repository.nickname.NameAnimalRepository;
 import com.cmc.domains.member.repository.nickname.NameNounRepository;
 import com.cmc.member.Member;
+import com.cmc.memberLevel.MemberLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ public class MemberService {
     private final NameAdjectiveRepository nameAdjectiveRepository;
     private final NameNounRepository nameNounRepository;
     private final NameAnimalRepository nameAnimalRepository;
+    private final MemberLevelRepository memberLevelRepository;
 
     // 멤버 정보 업데이트
     public Member updateMember(Long memberId, String memberGender, String memberBirth, String interestChallenge) {
@@ -70,5 +74,11 @@ public class MemberService {
     private boolean isValidNickName(String nickname) {
 
         return !memberRepository.existsByMemberName(nickname);
+    }
+
+    public LevelInfoResponseDto getLevel(MemberLevel memberLevel) {
+
+        // TODO : 만렙 처리
+        return memberLevelRepository.getNextLevel(memberLevel.getMemberLevelId() + 1);
     }
 }
