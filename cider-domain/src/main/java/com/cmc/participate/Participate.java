@@ -5,10 +5,7 @@ import com.cmc.challenge.Challenge;
 import com.cmc.member.Member;
 import com.cmc.participate.constant.ParticipateStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +40,16 @@ public class Participate {
 
     private Boolean isCreator;
 
+    private Boolean isFirstCertify;
+
     public void updateIsCreator() {
 
         this.isCreator = true;
+    }
+
+    public void updateIsFirstCertify(){
+
+        this.isFirstCertify = false;
     }
 
     public static Participate create(Member member, Challenge challenge){
@@ -54,6 +58,9 @@ public class Participate {
                 .member(member)
                 .challenge(challenge)
                 .isCreator(false)
+                .isFirstCertify(false)
                 .build();
     }
+
+
 }

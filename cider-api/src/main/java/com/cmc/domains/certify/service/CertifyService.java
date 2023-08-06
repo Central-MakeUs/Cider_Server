@@ -41,7 +41,13 @@ public class CertifyService {
         Member member = findMemberOrThrow(memberId);
         Participate participate = participateRepository.findByChallengeAndMember(challenge, member);
 
+        // TODO : 첫 입장 경험치 지급 위치 옮겨야 할지도
+//        if (!participate.getIsFirstCertify()) {
+//            member.setMemberExperience(member.getMemberExperience() + 100);
+//        }
         Certify certify = Certify.create(participate, certifyName, certifyContent);
+        member.setMemberExperience(member.getMemberExperience() + 10);  // 챌린지 인증 - 경험치 +10
+        certify.getParticipate().updateIsFirstCertify();    // 첫 인증 처리
         return certifyRepository.save(certify);
     }
 
