@@ -8,6 +8,7 @@ import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
+import com.cmc.participate.Participate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,7 +107,25 @@ public class ChallengeService {
     // 내 챌린지 - 진행중인 챌린지
     public List<Challenge> getMyOngoingChallenge(Long memberId) {
 
-        return challengeRepository.getMyOngoingChallenge(memberId);
+        List<Challenge> challenges = challengeRepository.getMyOngoingChallenge(memberId);
+        updateExperience(challenges, memberId);
+        return challenges;
+    }
+
+    private void updateExperience(List<Challenge> challenges, long memberId){
+
+        for(Challenge challenge : challenges){
+            for(Participate participate : challenge.getParticipates()){
+                if(participate.getMember().getMemberId().equals(memberId)){
+                    if(participate.getIsFirstCertify()){
+
+                        // 챌린지 첫 입장 경험치 +100
+                        participate.getMember().setMemberExperience(participate.getMember().getMemberExperience() + 100);
+                    }
+                }
+            }
+        }
+
     }
 
     // 내 챌린지 - 최근 종료된 챌린지

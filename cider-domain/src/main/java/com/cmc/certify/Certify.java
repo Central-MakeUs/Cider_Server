@@ -34,7 +34,6 @@ public class Certify extends BaseTimeEntity {
 
     private String certifyContent;
 
-
     @OneToMany(mappedBy = "certify", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CertifyLike> certifyLikeList;
 
