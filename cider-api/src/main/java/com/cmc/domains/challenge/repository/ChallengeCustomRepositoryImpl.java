@@ -230,7 +230,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         return jpaQueryFactory.selectFrom(challenge)
                 .leftJoin(participate).on(challenge.challengeId.eq(participate.challenge.challengeId))
-                .where(participate.isCreator.eq(true))
+                .where(participate.isCreator.eq(true).and(participate.member.memberId.eq(memberId)))
                 .fetch();
     }
 

@@ -47,10 +47,7 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -395,9 +392,16 @@ public class ChallengeController {
 
         // 심사 중인 챌린지
         List<Challenge> judgingChallenges = challengeService.getMyJudgingChallenge(memberId);
-        List<JudgingChallengeResponseDto> judgingChallengeResponseDtos = judgingChallenges.stream().map(challenge -> {
-            return JudgingChallengeResponseDto.from(challenge);
-        }).toList();
+        List<JudgingChallengeResponseDto> judgingChallengeResponseDtos = new ArrayList<>(judgingChallenges.stream().map(JudgingChallengeResponseDto::from).toList());
+
+        // 심사 상태 COMPLETE 정렬
+        judgingChallengeResponseDtos.sort(Comparator.comparing(dto -> {
+            if (dto.getJudgingStatus().equals("COMPLETE")) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }));
 
         return ResponseEntity.ok(MyChallengeResponseDto.from(OngoingChallengeListResponseDto.from(ongoingChallengeResponseDtos),
                 PassedChallengeListResponseDto.from(passedChallengeResponseDtos), JudgingChallengeListResponseDto.from(judgingChallengeResponseDtos)));

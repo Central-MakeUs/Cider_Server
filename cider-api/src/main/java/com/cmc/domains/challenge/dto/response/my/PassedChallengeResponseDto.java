@@ -26,6 +26,9 @@ public class PassedChallengeResponseDto {
     @Schema(description = "공식 챌린지 여부", example = "true")
     private Boolean isOfficial;
 
+    @Schema(description = "챌린지 리워드 여부", example = "true")
+    private Boolean isReward;
+
     @Schema(description = "나의 챌린지 성공 여부", example = "SUCCESS/FAILURE")
     private String isSuccess;
 
@@ -39,6 +42,7 @@ public class PassedChallengeResponseDto {
                 .challengeName(challenge.getChallengeName())
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
                 .challengePeriod(challenge.getChallengePeriod())
+                .isReward(challenge.getIsReward())
                 .isOfficial(challenge.getIsOfficial())
                 .isSuccess(isSuccess)
                 .successNum(successNum)
