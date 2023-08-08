@@ -189,15 +189,23 @@ public class ChallengeController {
 
             result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
 
-        } else{
-            // 로그인 o
+        } else{     // 로그인 o
+            // 참여하는 챌린지인지 확인
             Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
+            boolean isParticipate = false;
+            for(Participate participate : member.getParticipates()){
+                if(participate.getChallenge().equals(challenge)){
+                    isParticipate = true;
+                }
+            }
 
-            // 챌린지 상태값 조회
-            myChallengeStatus = getMyChallengeStatus(challenge, member);
-
-            // 챌린지 현황
-            challengeCondition = ChallengeConditionResponseDto.from(challenge, member);
+            if(isParticipate){
+                myChallengeStatus = getMyChallengeStatus(challenge, member);       // 챌린지 상태값 조회
+                challengeCondition = ChallengeConditionResponseDto.from(challenge, member);       // 챌린지 현황
+            }else{
+                myChallengeStatus = getChallengeStatus(challenge);
+                challengeCondition = ChallengeConditionResponseDto.from(challenge);
+            }
 
             result = ChallengeDetailResponseDto.from(challenge, myChallengeStatus, challenge.isLike(member), challengeCondition, challengeInfo, challengeRule, certifyMission, simpleMember);
         }
@@ -239,7 +247,7 @@ public class ChallengeController {
         return ResponseEntity.ok(ChallengeDetailFeedResponseDto.from(challenge, certifyImageUrlList, certifyResponseDtos));
     }
 
-    // 챌린지 상세 조회 - 버튼 리턴값 조회 (로그인 o)
+    // 챌린지 상세 조회 - 버튼 리턴값 조회 (참여 o)
     private String getMyChallengeStatus(Challenge challenge, Member member) {
 
         if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
@@ -288,13 +296,13 @@ public class ChallengeController {
 
     }
 
-    // 챌린지 상세 조회 - 버튼 리턴값 조회 (로그인 x)
+    // 챌린지 상세 조회 - 버튼 리턴값 조회 (참여 x)
     private String getChallengeStatus(Challenge challenge) {
 
         if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
             return "챌린지 종료";
         }
-        else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)){
+        else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE) || challenge.getChallengeStatus().equals(ChallengeStatus.RECRUITING)){
             return "이 챌린지 참여하기";
         }
         else if(challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
