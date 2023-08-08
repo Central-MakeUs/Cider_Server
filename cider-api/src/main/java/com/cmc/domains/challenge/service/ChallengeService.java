@@ -27,9 +27,36 @@ public class ChallengeService {
     public Challenge create(ChallengeCreateRequestDto req, Long memberId) {
 
         Challenge challenge = req.toEntity();
+
         challenge.setChallengeStatus(ChallengeStatus.WAITING);
         challenge.setJudgeStatus(JudgeStatus.JUDGING);
+        challenge.setIsOfficial(false);
+        challenge.setCertifyNum(req.getChallengePeriod() * 7);
+        challenge.setIsReward(false);
+        challenge.setFailureRule(getFailureRule(req.getChallengePeriod()));
+
         return challengeRepository.save(challenge);
+    }
+
+    private int getFailureRule(Integer challengePeriod){
+
+        int failureRule = 0;
+        switch(challengePeriod){
+            case 1 :
+                failureRule = 4; break;
+            case 2 :
+                failureRule = 7; break;
+            case 3 :
+            case 4 :
+                failureRule = 14; break;
+            case 5 :
+            case 6 :
+                failureRule = 21; break;
+            case 7 :
+            case 8 :
+                failureRule = 28; break;
+        }
+        return failureRule;
     }
 
     // 인기 챌린지 조회

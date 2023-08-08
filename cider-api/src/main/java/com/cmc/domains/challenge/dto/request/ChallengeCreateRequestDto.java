@@ -28,10 +28,10 @@ public class ChallengeCreateRequestDto {
     @Schema(description = "참여 정원", example = "15", required=true)
     private Integer challengeCapacity;
 
-    @Schema(description = "모집 기간", example = "7 (일 단위)", required=true)
+    @Schema(description = "모집 기간 (일 단위)", example = "7", required=true)
     private Integer recruitPeriod;
 
-    @Schema(description = "챌린지 기간", example = "8 (주 단위)", required=true)
+    @Schema(description = "챌린지 기간 (주 단위)", example = "2", required=true)
     private Integer challengePeriod;
 
     @Schema(description = "챌린지 공개 여부", example = "true: 공개, fale: 비공개", required=true)

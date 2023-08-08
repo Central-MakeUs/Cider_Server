@@ -69,7 +69,7 @@ public class Challenge extends BaseTimeEntity {
 
     private Integer certifyNum;
 
-    private String failureRule;
+    private Integer failureRule;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "challenge_status", columnDefinition = "VARCHAR(30)")

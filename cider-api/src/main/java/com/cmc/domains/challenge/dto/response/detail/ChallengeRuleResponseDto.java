@@ -20,7 +20,7 @@ public class ChallengeRuleResponseDto {
     public static ChallengeRuleResponseDto from(Challenge challenge){
 
         return new ChallengeRuleResponseDtoBuilder()
-                .failureRule(challenge.getFailureRule())
+                .failureRule(challenge.getFailureRule() + "회 미만 인증")
                 .certifyRule("실시간 사진촬영")
                 .build();
     }
