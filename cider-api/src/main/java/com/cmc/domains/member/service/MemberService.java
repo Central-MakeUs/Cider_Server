@@ -13,6 +13,7 @@ import com.cmc.memberLevel.MemberLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -37,6 +38,14 @@ public class MemberService {
     // 내 정보 조회
     public Member find(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> new BadRequestException("해당하는 멤버를 찾을 수 없습니다."));
+    }
+
+    // 프로필 업데이트
+    public void updateProfile(String memberName, String memberIntro, Long memberId) {
+
+        Member member = findMemberOrThrow(memberId);
+        member.updateName(memberName);
+        member.updateIntro(memberIntro);
     }
 
     private Member findMemberOrThrow(Long memberId) {
