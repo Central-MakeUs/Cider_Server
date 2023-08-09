@@ -9,6 +9,7 @@ import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
 import com.cmc.image.Image;
 import com.cmc.image.certify.CertifyImage;
+import com.cmc.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,6 +88,19 @@ public class S3Uploader {
         String fileName = createFileName(frontName, multipartFile.getOriginalFilename());
 
         return s3Upload(folderPath, fileName, multipartFile);
+    }
+
+    // 프로필 이미지 업로드
+    public String s3UploadOfProfileImage(Member member, MultipartFile profileImage) throws IOException{
+
+        //폴더 경로
+        String folderPath = "profile";
+
+        //파일 이름
+        String frontName = String.valueOf(member.getMemberId());
+        String fileName = createFileName(frontName, profileImage.getOriginalFilename());
+
+        return s3Upload(folderPath, fileName, profileImage);
     }
 
 

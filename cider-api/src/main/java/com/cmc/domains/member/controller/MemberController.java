@@ -1,6 +1,8 @@
 package com.cmc.domains.member.controller;
 
 import com.cmc.common.response.CommonResponse;
+import com.cmc.domains.image.service.ImageService;
+import com.cmc.domains.member.dto.request.MemberProfileUpdateRequestDto;
 import com.cmc.domains.member.dto.request.MemberUpdateReqDto;
 import com.cmc.domains.member.dto.response.*;
 import com.cmc.domains.member.dto.response.mypage.MyActivityInfoResponseDto;
@@ -15,9 +17,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Random;
 
 
@@ -29,11 +34,12 @@ import java.util.Random;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ImageService imageService;
 
     @Tag(name = "members", description = "멤버 API")
     @Operation(summary = "멤버 업데이트")
     @PatchMapping(value = "")
-    public ResponseEntity<MemberUpdateResDto> updateTeam(@Parameter(hidden = true) @RequestMemberId Long memberId, @Valid @RequestBody MemberUpdateReqDto request) {
+    public ResponseEntity<MemberUpdateResDto> updateMember(@Parameter(hidden = true) @RequestMemberId Long memberId, @Valid @RequestBody MemberUpdateReqDto request) {
 
         Member member = memberService.updateMember(memberId, request.getMemberGender(), request.getMemberBirth(), request.getInterestChallenge());
         return ResponseEntity.ok(MemberUpdateResDto.from(member));
@@ -45,6 +51,26 @@ public class MemberController {
     public ResponseEntity<MemberResponseDto> getMe(@Parameter(hidden = true) @RequestMemberId Long memberId) {
 
         return ResponseEntity.ok(MemberResponseDto.from(memberService.find(memberId)));
+    }
+
+    @Tag(name = "myPage", description = "마이페이지 API")
+    @Operation(summary = "프로필 수정 api")
+    @PatchMapping(value = "/profile")
+    public ResponseEntity<CommonResponse> updateProfileImage(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                             @Valid @RequestBody MemberProfileUpdateRequestDto request) {
+
+        memberService.updateProfile(request.getMemberName(), request.getMemberIntro(), memberId);
+        return ResponseEntity.ok(CommonResponse.from("프로필 수정이 완료되었습니다."));
+    }
+
+    @Tag(name = "myPage", description = "마이페이지 API")
+    @Operation(summary = "프로필 이미지 수정 api")
+    @PatchMapping(value = "/profile/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CommonResponse> updateProfileImage(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                                 @RequestPart(value = "profileImage") MultipartFile profileImage) throws IOException {
+
+        imageService.updateProfileImage(profileImage, memberId);
+        return ResponseEntity.ok(CommonResponse.from("프로필 이미지 수정이 완료되었습니다."));
     }
 
     @Tag(name = "members", description = "멤버 API")

@@ -49,6 +49,8 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_name", columnDefinition = "VARCHAR(50)")
     private String memberName;
 
+    private String memberIntro;
+
     private String memberBirth;     // TODO : memberBirth 타입 점검
 
     private String memberGender;
@@ -102,5 +104,20 @@ public class Member extends BaseTimeEntity {
         this.memberGender = memberGender;
         this.memberBirth = memberBirth;
         this.interestChallenge = interestChallenge;
+    }
+
+    public void updateProfileImage(String imageUrl){
+
+        this.profilePath = imageUrl;
+    }
+
+    public void updateName(String memberName){
+
+        this.memberName = memberName;
+    }
+
+    public void updateIntro(String memberIntro){
+
+        this.memberIntro = memberIntro;
     }
 }

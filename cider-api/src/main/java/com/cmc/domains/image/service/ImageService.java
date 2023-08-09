@@ -8,9 +8,11 @@ import com.cmc.domains.certify.repository.CertifyRepository;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
 import com.cmc.domains.image.certify.repository.CertifyImageRepository;
 import com.cmc.domains.image.certifyExample.repository.CertifyExampleImageRepository;
+import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.global.s3.S3Uploader;
 import com.cmc.image.certify.CertifyImage;
 import com.cmc.image.certifyExample.CertifyExampleImage;
+import com.cmc.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class ImageService {
     private final CertifyRepository certifyRepository;
     private final CertifyExampleImageRepository certifyExampleImageRepository;
     private final CertifyImageRepository certifyImageRepository;
+    private final MemberRepository memberRepository;
 
 
     // 챌린지 인증 성공 예시 사진 업로드
@@ -75,6 +78,14 @@ public class ImageService {
         return certifyImageList;
     }
 
+    // 멤버 프로필 이미지 업데이트
+    public void updateProfileImage(MultipartFile profileImage, Long memberId) throws IOException {
+
+        Member member = findMemberOrThrow(memberId);
+        String imageUrl = s3Uploader.s3UploadOfProfileImage(member, profileImage);
+        member.updateProfileImage(imageUrl);
+    }
+
 
     private Challenge findChallengeOrThrow(Long challengeId){
         return challengeRepository.findById(challengeId).orElseThrow(() -> {
@@ -92,5 +103,11 @@ public class ImageService {
     public List<CertifyExampleImage> getCertifyImage(Challenge challenge) {
 
         return certifyExampleImageRepository.findCertifyImage(challenge.getChallengeId());
+    }
+
+    private Member findMemberOrThrow(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> {
+            throw new BadRequestException("요청한 멤버는 존재하지 않습니다.");
+        });
     }
 }
