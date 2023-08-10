@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberLevelRepository extends JpaRepository<MemberLevel, Integer> {
 
-    @Query("select l from MemberLevel l where l.memberLevelId =:i+1")
+    @Query("select l from MemberLevel l where l.memberLevelId =:i")
     LevelInfoResponseDto getNextLevel(int i);
 }

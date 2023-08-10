@@ -28,8 +28,8 @@ public class MyLevelInfoResponseDto {
 
         return new MyLevelInfoResponseDtoBuilder()
                 .myLevel(member.getMemberLevel().getMemberLevelId())
-                .levelPercent((int) ((member.getMemberExperience() / (nextLevel.getRequiredExperience() - currentLevel.getRequiredExperience())) * 0.01))
-                .percentComment(MemberLevel.getPercentComment((int) ((member.getMemberExperience() / (nextLevel.getRequiredExperience() - currentLevel.getRequiredExperience())) * 0.01)))
+                .levelPercent((int)((double) member.getMemberExperience() / (nextLevel.getRequiredExperience() - currentLevel.getRequiredExperience()) * 100))
+                .percentComment(MemberLevel.getPercentComment((((int)((double) member.getMemberExperience() / (nextLevel.getRequiredExperience() - currentLevel.getRequiredExperience())) * 100))))
                 .experienceLeft(nextLevel.getRequiredExperience() - member.getMemberExperience())
                 .myLevelName(member.getMemberLevel().getLevelName())
                 .currentLevel(currentLevel)

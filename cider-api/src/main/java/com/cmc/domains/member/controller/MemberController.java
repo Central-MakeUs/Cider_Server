@@ -105,7 +105,7 @@ public class MemberController {
         MyActivityInfoResponseDto myActivityInfo = MyActivityInfoResponseDto.from(member);
 
         // TODO : 레벨, 경험치 정보 - 로직 구체화
-        LevelInfoResponseDto nextLevel = memberService.getLevel(member.getMemberLevel());
+        LevelInfoResponseDto nextLevel = memberService.getNextLevel(member.getMemberLevel());
         MyLevelInfoResponseDto myLevelInfo = MyLevelInfoResponseDto.from(member, LevelInfoResponseDto.from(member.getMemberLevel()), nextLevel);
 
         return ResponseEntity.ok(MyPageResponseDto.from(simpleMember, myActivityInfo, myLevelInfo));

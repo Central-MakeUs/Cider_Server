@@ -24,7 +24,7 @@ public class SimpleMemberResponseDto {
     private String memberLevelName;
 
     @Schema(description = "n번째 챌린지", example = "3")
-    private Integer participateNum;
+    private Integer participateChallengeNum;
 
     public static SimpleMemberResponseDto from(Member member) {
 
@@ -32,7 +32,7 @@ public class SimpleMemberResponseDto {
                 .memberName(member.getMemberName())
                 .profilePath(member.getProfilePath())
                 .memberLevelName("LV " + member.getMemberLevel().getMemberLevelId() + " " + member.getMemberLevel().getLevelName())
-                .participateNum(member.getParticipates().size())    // TODO: 반려된 챌린지 예외처리
+                .participateChallengeNum(member.getParticipates().size())    // TODO: 반려된 챌린지 예외처리
                 .build();
     }
 }
