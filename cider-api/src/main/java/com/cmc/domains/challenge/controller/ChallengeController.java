@@ -361,6 +361,17 @@ public class ChallengeController {
         return challengeResponseDtos;
     }
 
+    private List<ChallengeResponseDto> makeChallengeResponseDtoV2(Long memberId, List<ChallengeResponseVo> challengeVos){
+
+        List<ChallengeResponseDto> challengeResponseDtos = new ArrayList<>();
+        challengeResponseDtos = challengeVos.stream().map(vo -> {
+            return ChallengeResponseDto.from(vo.getChallenge(), vo.getParticipateNum(),
+                    findIsLike(vo.getChallenge(), memberId), ChronoUnit.DAYS.between(LocalDate.now(), vo.getChallenge().getChallengeStartDate()));
+        }).toList();
+
+        return challengeResponseDtos;
+    }
+
     private Boolean findIsLike(Challenge challenge, Long memberId){
 
         for(ChallengeLike challengeLike : challenge.getChallengeLikes()){
@@ -413,6 +424,20 @@ public class ChallengeController {
 
         return ResponseEntity.ok(MyChallengeResponseDto.from(OngoingChallengeListResponseDto.from(ongoingChallengeResponseDtos),
                 PassedChallengeListResponseDto.from(passedChallengeResponseDtos), JudgingChallengeListResponseDto.from(judgingChallengeResponseDtos)));
+    }
+
+    @Tag(name = "myPage", description = "마이페이지 API")
+    @Operation(summary = "관심 챌린지 리스트 조회 api")
+    @GetMapping("/like")
+    public ResponseEntity<List<ChallengeResponseDto>> getMyChallengeLike(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+
+        List<Challenge> challenges = challengeService.getMyChallengeLike(memberId);
+        List<ChallengeResponseVo>challengeVos = challenges.stream().map(challenge -> {
+            return new ChallengeResponseVo(challenge, challenge.getParticipates().size());
+        }).collect(Collectors.toList());
+
+        List<ChallengeResponseDto> challengeResponseDtos = makeChallengeResponseDtoV2(memberId, challengeVos);
+        return ResponseEntity.ok(challengeResponseDtos);
     }
 
     private Integer getSuccessNum(Challenge challenge){

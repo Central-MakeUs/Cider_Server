@@ -86,7 +86,7 @@ public class MemberService {
         return !memberRepository.existsByMemberName(nickname);
     }
 
-    public LevelInfoResponseDto getLevel(MemberLevel memberLevel) {
+    public LevelInfoResponseDto getNextLevel(MemberLevel memberLevel) {
 
         // TODO : 만렙 처리
         return memberLevelRepository.getNextLevel(memberLevel.getMemberLevelId() + 1);
