@@ -3,11 +3,15 @@ package com.cmc.domains.challenge.service;
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challenge.constant.ChallengeStatus;
+import com.cmc.challengeLike.ChallengeLike;
+import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.CiderException;
 import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
+import com.cmc.domains.member.repository.MemberRepository;
+import com.cmc.member.Member;
 import com.cmc.participate.Participate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,6 +27,7 @@ import java.util.List;
 public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
+    private final MemberRepository memberRepository;
 
     // 챌린지 생성
     public Challenge create(ChallengeCreateRequestDto req, Long memberId) {
@@ -178,5 +184,21 @@ public class ChallengeService {
             throw new CiderException("심사중인 챌린지 입니다.");
         }
         return challenge;
+    }
+
+    // 마이페이지 - 관심 챌린지 조회
+    public List<Challenge> getMyChallengeLike(Long memberId) {
+
+        Member member = findMemberOrThrow(memberId);
+        return member.getChallengeLikes().stream()
+                .map(ChallengeLike::getChallenge)
+                .collect(Collectors.toList());
+    }
+
+    private Member findMemberOrThrow(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> {
+            throw new BadRequestException("요청한 멤버는 존재하지 않습니다.");
+        });
+
     }
 }
