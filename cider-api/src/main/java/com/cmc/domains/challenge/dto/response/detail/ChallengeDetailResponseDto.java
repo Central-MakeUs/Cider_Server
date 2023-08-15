@@ -63,6 +63,7 @@ public class ChallengeDetailResponseDto {
 
         return new ChallengeDetailResponseDtoBuilder()
                 .challengeId(challenge.getChallengeId())
+                .challengeName(challenge.getChallengeName())
                 .myChallengeStatus(myChallengeStatus)
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
                 .challengeCapacity(challenge.getChallengeCapacity())
@@ -85,6 +86,7 @@ public class ChallengeDetailResponseDto {
 
         return new ChallengeDetailResponseDtoBuilder()
                 .challengeId(challenge.getChallengeId())
+                .challengeName(challenge.getChallengeName())
                 .myChallengeStatus(myChallengeStatus)
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
                 .challengeCapacity(challenge.getChallengeCapacity())
