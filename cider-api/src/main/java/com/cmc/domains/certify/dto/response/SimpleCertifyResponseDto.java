@@ -21,6 +21,9 @@ public class SimpleCertifyResponseDto {
     @Schema(description = "간단 멤버 정보")
     private SimpleMemberResponseDto simpleMemberResponseDto;
 
+    @Schema(description = "인증글 id", example = "20")
+    private Long certifyId;
+
     @Schema(description = "인증글 생성일", example = "2023-07-27T14:27")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
@@ -32,6 +35,9 @@ public class SimpleCertifyResponseDto {
     @Schema(description = "인증글 내용", example = "커피값을 아꼈어요")
     private String certifyContent;
 
+    @Schema(description = "인증 사진 url", example = "urlurl")
+    private String certifyImageUrl;
+
     @Schema(description = "인증글 좋아요수", example = "200")
     private Long certifyLike;
 
@@ -42,6 +48,8 @@ public class SimpleCertifyResponseDto {
 
         return new SimpleCertifyResponseDtoBuilder()
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
+                .certifyId(certify.getCertifyId())
+                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
                 .createdDate(certify.getCreatedDate())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())
@@ -54,6 +62,8 @@ public class SimpleCertifyResponseDto {
 
         return new SimpleCertifyResponseDtoBuilder()
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
+                .certifyId(certify.getCertifyId())
+                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
                 .createdDate(certify.getCreatedDate())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())
