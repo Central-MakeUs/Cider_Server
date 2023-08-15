@@ -426,6 +426,16 @@ public class ChallengeController {
                 PassedChallengeListResponseDto.from(passedChallengeResponseDtos), JudgingChallengeListResponseDto.from(judgingChallengeResponseDtos)));
     }
 
+    @Tag(name = "challenge")
+    @Operation(summary = "챌린지 삭제 api")
+    @DeleteMapping(value="/{challengeId}")
+    public ResponseEntity<CommonResponse> deleteChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                            @PathVariable("challengeId") Long challengeId) {
+
+        certifyService.deleteChallenge(memberId, challengeId);
+        return ResponseEntity.ok(CommonResponse.from("챌린지가 삭제되었습니다"));
+    }
+
     @Tag(name = "myPage", description = "마이페이지 API")
     @Operation(summary = "관심 챌린지 리스트 조회 api")
     @GetMapping("/like")

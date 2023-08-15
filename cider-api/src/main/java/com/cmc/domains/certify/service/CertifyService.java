@@ -4,9 +4,11 @@ import com.cmc.certify.Certify;
 import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.constant.InterestField;
+import com.cmc.challenge.constant.JudgeStatus;
 import com.cmc.challengeLike.ChallengeLike;
 
 import com.cmc.common.exception.BadRequestException;
+import com.cmc.common.exception.CiderException;
 import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.certify.repository.CertifyRepository;
 import com.cmc.domains.certifyLike.repository.CertifyLikeRepository;
@@ -107,6 +109,28 @@ public class CertifyService {
         return certifyRepository.getMyCertifyList(memberId).stream().filter(certify -> {
             return certify.getParticipate().getChallenge().getChallengeBranch().equals(InterestField.of(category));
         }).toList();
+    }
+
+    // 챌린지 삭제
+    public void deleteChallenge(Long memberId, Long challengeId) {
+
+        Challenge challenge = findChallengeOrThrow(challengeId);
+        Member member = findMemberOrThrow(memberId);
+
+        if(challenge.getJudgeStatus().equals(JudgeStatus.COMPLETE)){
+            throw new CiderException("심사완료된 챌린지는 삭제할 수 없습니다.");
+        }
+
+        for(Participate participate : member.getParticipates()){
+            if(participate.getChallenge().equals(challenge)){
+                if(!participate.getIsCreator()){
+                    throw new CiderException("챌린지를 삭제할 권한이 없습니다.");
+                }
+                else{
+                    challengeRepository.deleteById(challengeId);
+                }
+            }
+        }
     }
 
     private Challenge findChallengeOrThrow(Long challengeId){
