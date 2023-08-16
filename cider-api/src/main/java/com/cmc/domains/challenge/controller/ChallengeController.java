@@ -11,10 +11,7 @@ import com.cmc.domains.certify.dto.response.SimpleCertifyResponseDto;
 import com.cmc.domains.certify.service.CertifyService;
 import com.cmc.domains.challenge.dto.request.ChallengeCreateRequestDto;
 import com.cmc.domains.challenge.dto.request.ChallengeParticipateRequestDto;
-import com.cmc.domains.challenge.dto.response.ChallengeCreateResponseDto;
-import com.cmc.domains.challenge.dto.response.ChallengeDetailFeedResponseDto;
-import com.cmc.domains.challenge.dto.response.ChallengeHomeResponseDto;
-import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
+import com.cmc.domains.challenge.dto.response.*;
 import com.cmc.domains.challenge.dto.response.detail.*;
 import com.cmc.domains.challenge.dto.response.my.*;
 import com.cmc.domains.challenge.service.ChallengeService;
@@ -33,6 +30,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +86,19 @@ public class ChallengeController {
         imageService.uploadCertifyExampleImages(successExampleImages, challengeId, memberId, "SUCCESS");
         imageService.uploadCertifyExampleImages(failureExampleImages, challengeId, memberId, "FAILURE");
         return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
+    }
+
+    @Tag(name = "challenge", description = "챌린지 API")
+    @Operation(summary = "내가 참가한 챌린지 리스트 조회 api")
+    @GetMapping("/participate")
+    public ResponseEntity<List<MyParticipateChallengeResponseDto>> getMyParticipateChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+
+        List<Participate> participates = challengeService.getMyParticipateChallenge(memberId);
+        List<MyParticipateChallengeResponseDto> result = participates.stream().map(participate -> {
+            return MyParticipateChallengeResponseDto.from(participate.getChallenge(), String.valueOf(participate.getParticipateStatus()));
+        }).toList();
+
+        return ResponseEntity.ok(result);
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")

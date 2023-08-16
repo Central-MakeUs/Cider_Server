@@ -161,6 +161,14 @@ public class ChallengeService {
 
     }
 
+    // 내가 참여한 챌린지 조회
+    // TODO : 기존 메서드랑 합쳐보기
+    public List<Participate> getMyParticipateChallenge(Long memberId) {
+
+        Member member = findMemberOrThrow(memberId);
+        return member.getParticipates();
+    }
+
     // 내 챌린지 - 최근 종료된 챌린지
     public List<Challenge> getMyPassedChallenge(Long memberId) {
 
