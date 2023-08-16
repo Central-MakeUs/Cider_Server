@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.cmc.certify.QCertify.certify;
+import static com.cmc.challenge.QChallenge.challenge;
 import static com.cmc.participate.QParticipate.participate;
 
 @Repository
@@ -54,6 +55,17 @@ public class CertifyCustomRepositoryImpl implements CertifyCustomRepository{
                 .where(certify.participate.challenge.challengeId.eq(challengeId))
                 .groupBy(certify)
                 .orderBy(certify.createdDate.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Certify> getChallengeCertifyList(Long challengeId) {
+
+        return jpaQueryFactory
+                .selectFrom(certify)
+//                .leftJoin(participate).on(participate.participateId.eq(certify.participate.participateId))
+//                .leftJoin(challenge).on(challenge.challengeId.eq(participate.challenge.challengeId))
+                .where(certify.participate.challenge.challengeId.eq(challengeId))
                 .fetch();
     }
 }

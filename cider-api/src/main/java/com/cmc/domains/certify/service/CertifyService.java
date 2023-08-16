@@ -104,11 +104,10 @@ public class CertifyService {
         return certifyLike;
     }
 
-    public List<Certify> getMyCertifyList(Long memberId, String category) {
+    public List<Certify> getMyCertifyList(Long memberId, Long challengeId) {
 
-        return certifyRepository.getMyCertifyList(memberId).stream().filter(certify -> {
-            return certify.getParticipate().getChallenge().getChallengeBranch().equals(InterestField.of(category));
-        }).toList();
+        Challenge challenge = findChallengeOrThrow(challengeId);
+        return certifyRepository.getChallengeCertifyList(challengeId);
     }
 
     // 챌린지 삭제

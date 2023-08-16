@@ -11,4 +11,6 @@ public interface CertifyCustomRepository {
     List<Certify> getCertifyByChallengeLike(Long challengeId);
 
     List<Certify> getCertifyByChallengeRecent(Long challengeId);
+
+    List<Certify> getChallengeCertifyList(Long challengeId);
 }

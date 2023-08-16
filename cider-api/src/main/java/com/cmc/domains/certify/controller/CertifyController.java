@@ -3,19 +3,23 @@ package com.cmc.domains.certify.controller;
 import com.cmc.certify.Certify;
 import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challenge.Challenge;
+import com.cmc.challenge.constant.ChallengeStatus;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.certify.dto.request.CertifyCreateRequestDto;
 import com.cmc.domains.certify.dto.request.CertifyLikeCreateRequestDto;
-import com.cmc.domains.certify.dto.response.CertifyCreateResponseDto;
-import com.cmc.domains.certify.dto.response.CertifyResponseDto;
-import com.cmc.domains.certify.dto.response.SimpleCertifyResponseDto;
+import com.cmc.domains.certify.dto.response.*;
 import com.cmc.domains.certify.service.CertifyService;
 import com.cmc.domains.challenge.dto.response.ChallengeResponseDto;
+import com.cmc.domains.challenge.dto.response.SimpleChallengeResponseDto;
+import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.challenge.vo.ChallengeResponseVo;
 import com.cmc.domains.challengeLike.dto.request.ChallengeLikeCreateRequestDto;
 import com.cmc.domains.image.service.ImageService;
+import com.cmc.domains.member.dto.response.SimpleMemberResponseDto;
+import com.cmc.domains.member.service.MemberService;
 import com.cmc.global.resolver.RequestMemberId;
+import com.cmc.member.Member;
 import com.cmc.oauth.service.TokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,6 +49,8 @@ public class CertifyController {
 
     private final CertifyService certifyService;
     private final ImageService imageService;
+    private final MemberService memberService;
+    private final ChallengeService challengeService;
 
     @Tag(name = "certify", description = "챌린지 인증 API")
     @Operation(summary = "챌린지 인증 api")
@@ -94,15 +100,22 @@ public class CertifyController {
     }
 
     @Tag(name = "myPage", description = "마이페이지 API")
-    @Operation(summary = "마이페이지 - 나의 인증글 조회 api", description = "- {category} - T: 재테크, M: 돈관리, L: 금융학습, C: 소비절약")
-    @GetMapping("/mypage/{category}")
-    public ResponseEntity<List<SimpleCertifyResponseDto>> getMyCertifyList(@Parameter(hidden = true) @RequestMemberId Long memberId,
-                                                                           @PathVariable("category") String category) {
+    @Operation(summary = "마이페이지 - 나의 인증글 조회 api")
+    @GetMapping("/mypage/{challengeId}")
+    public ResponseEntity<MyCertifyListResponseDto> getMyCertifyListV2(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                                       @PathVariable("challengeId") Long challengeId) {
 
-        List<Certify> certifies = certifyService.getMyCertifyList(memberId, category);
-        return ResponseEntity.ok(certifies.stream().map(certify -> {
-            return SimpleCertifyResponseDto.from(certify, findIsLike(certify, memberId));
-        }).collect(Collectors.toList()));
+        Member member = memberService.find(memberId);
+        Challenge challenge = challengeService.getChallenge(challengeId);
+        List<Certify> certifies = certifyService.getMyCertifyList(memberId, challengeId);
+        List<SimpleCertifyResponseDtoV2> certifyResponseList = certifies.stream().map(certify -> {
+            return SimpleCertifyResponseDtoV2.from(certify, findIsLike(certify, memberId));
+        }).toList();
+
+        MyCertifyListResponseDto result = MyCertifyListResponseDto.from(SimpleMemberResponseDto.from(member),
+                SimpleChallengeResponseDto.from(challenge), certifyResponseList);
+
+        return ResponseEntity.ok(result);
     }
 
     private Boolean findIsLike(Certify certify, Long memberId){
@@ -114,16 +127,5 @@ public class CertifyController {
         }
         return false;
     }
-
-//    @Tag(name = "myPage", description = "마이페이지 API")
-//    @Operation(summary = "나의 인증글 조회 api")
-//    @GetMapping("/mypage/{category}")
-//    public ResponseEntity<> getPopularChallengeList(@Parameter(hidden = true) @RequestMemberId Long memberId,
-//                                                    @PathVariable("category") String category) {
-//
-//
-//        return ResponseEntity.ok(certifyResponseDtos);
-//    }
-
 
 }
