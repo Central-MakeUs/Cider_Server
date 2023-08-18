@@ -28,6 +28,7 @@ public class JudgingChallengeResponseDto {
         return new JudgingChallengeResponseDtoBuilder()
                 .challengeId(challenge.getChallengeId())
                 .challengeName(challenge.getChallengeName())
+                .challengeBranch(String.valueOf(challenge.getChallengeBranch()))
                 .judgingStatus(String.valueOf(challenge.getJudgeStatus()))
                 .build();
     }
