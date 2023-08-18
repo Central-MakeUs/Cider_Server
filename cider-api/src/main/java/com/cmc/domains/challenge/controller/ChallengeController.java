@@ -261,6 +261,7 @@ public class ChallengeController {
     // 챌린지 상세 조회 - 버튼 리턴값 조회 (참여 o)
     private String getMyChallengeStatus(Challenge challenge, Member member) {
 
+        long day = 0;
         if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
             return "챌린지 종료";
         }
@@ -295,7 +296,11 @@ public class ChallengeController {
         else if((!challenge.isParticipants(member))
                 && challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)
                 && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
-            return "챌린지 기다리기 D-" + ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
+
+            if(challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+                day = ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
+            }
+            return "챌린지 기다리기 D-" + day;
         }
         else if(challenge.getJudgeStatus().equals(JudgeStatus.COMPLETE)
                 && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
@@ -310,6 +315,7 @@ public class ChallengeController {
     // 챌린지 상세 조회 - 버튼 리턴값 조회 (참여 x)
     private String getChallengeStatus(Challenge challenge) {
 
+        long day = 0;
         if (challenge.getChallengeStatus().equals(ChallengeStatus.END)){
             return "챌린지 종료";
         }
@@ -322,7 +328,11 @@ public class ChallengeController {
         }
         else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE)
                 && challenge.getRecruitStartDate().isAfter(LocalDate.now())){
-            return "챌린지 기다리기 D-" + ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
+
+            if(challenge.getRecruitStartDate().isAfter(LocalDate.now())){
+                day = ChronoUnit.DAYS.between((Temporal) challenge.getRecruitStartDate(), LocalDate.now());
+            }
+            return "챌린지 기다리기 D-" + day;
         }
         else{
             return "예외 케이스 발생!! ! ! !";
