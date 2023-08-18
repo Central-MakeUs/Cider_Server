@@ -55,6 +55,18 @@ public class ParticipateService {
         return participateRepository.save(participate);
     }
 
+    // 챌린지 생성하기 - 생성자 참여
+    public Participate createFirst(Long challengeId, Long memberId) {
+
+        Member member = findMemberOrThrow(memberId);
+        Challenge challenge = findChallengeOrThrow(challengeId);
+
+
+        Participate participate = Participate.create(member, challenge);
+        participate.updateIsCreator();
+        return participateRepository.save(participate);
+    }
+
 
     private Member findMemberOrThrow(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> {

@@ -67,7 +67,7 @@ public class ChallengeController {
                                                                     @RequestBody @Valid ChallengeCreateRequestDto req){
 
         Challenge challenge = challengeService.create(req, memberId);
-        participateService.create(challenge.getChallengeId(), memberId);
+        participateService.createFirst(challenge.getChallengeId(), memberId);
         return ResponseEntity.ok(ChallengeCreateResponseDto.create(challenge));
     }
 
