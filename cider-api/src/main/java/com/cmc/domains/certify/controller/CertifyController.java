@@ -1,5 +1,7 @@
 package com.cmc.domains.certify.controller;
 
+import com.cmc.block.Block;
+import com.cmc.block.constant.BlockType;
 import com.cmc.certify.Certify;
 import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challenge.Challenge;
@@ -93,10 +95,31 @@ public class CertifyController {
         } else{
             // 로그인 o
             certifyResponseDtos = certifies.stream().map(certify -> {
-                return CertifyResponseDto.from(certify, findIsLike(certify,  TokenProvider.getMemberIdKakao(tokenString)));
+
+                Long memberId = TokenProvider.getMemberIdKakao(tokenString);
+                Member member = memberService.find(memberId);
+
+                if(!checkIsBlocked(member, certify)) {
+                    return CertifyResponseDto.from(certify, findIsLike(certify, memberId));
+                }else {
+                    return null;
+                }
             }).collect(Collectors.toList());
         }
         return ResponseEntity.ok(certifyResponseDtos);
+    }
+
+    private Boolean checkIsBlocked(Member member, Certify certify){
+
+        for (Block block : member.getBlocks()){
+            if (block.getBlockType().equals(BlockType.FEED) && block.getCertify().equals(certify)){
+                return true;
+            }
+            else if (block.getBlockType().equals(BlockType.MEMBER) && block.getMember().equals(member)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Tag(name = "myPage", description = "마이페이지 API")

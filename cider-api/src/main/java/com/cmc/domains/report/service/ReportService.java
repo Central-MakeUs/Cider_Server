@@ -29,32 +29,48 @@ public class ReportService {
     // 게시글 신고하기
     public void createFeedReport(Long contentId, String reason, Long memberId) {
 
+        Member member = findMemberOrThrow(memberId);
+
         Report report = Report.builder().member(findMemberOrThrow(memberId)).certify(findCertifyOrThrow(contentId))
                 .reportType(ReportType.FEED).reportReason(reason).build();
+        member.getReports().add(report);
+
         reportRepository.save(report);
     }
 
     // 게시글 차단하기
     public void createFeedBlock(Long contentId, String reason, Long memberId) {
 
-        Block block = Block.builder().member(findMemberOrThrow(memberId)).certify(findCertifyOrThrow(contentId))
+        Member member = findMemberOrThrow(memberId);
+
+        Block block = Block.builder().member(member).certify(findCertifyOrThrow(contentId))
                 .blockType(BlockType.FEED).blockReason(reason).build();
+        member.getBlocks().add(block);
+
         blockRepository.save(block);
     }
 
     // 사용자 신고하기
     public void createMemberReport(Long contentId, String reason, Long memberId) {
 
-        Report report = Report.builder().member(findMemberOrThrow(memberId)).certify(findCertifyOrThrow(contentId))
+        Member member = findMemberOrThrow(memberId);
+
+        Report report = Report.builder().member(member).certify(findCertifyOrThrow(contentId))
                 .reportType(ReportType.MEMBER).reportReason(reason).build();
+        member.getReports().add(report);
+
         reportRepository.save(report);
     }
 
     // 사용자 차단하기
     public void createMemberBlock(Long contentId, String reason, Long memberId) {
 
-        Block block = Block.builder().member(findMemberOrThrow(memberId)).certify(findCertifyOrThrow(contentId))
+        Member member = findMemberOrThrow(memberId);
+
+        Block block = Block.builder().member(member).certify(findCertifyOrThrow(contentId))
                 .blockType(BlockType.MEMBER).blockReason(reason).build();
+        member.getBlocks().add(block);
+
         blockRepository.save(block);
     }
 
