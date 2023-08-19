@@ -1,11 +1,13 @@
 package com.cmc.member;
 
 import com.cmc.base.BaseTimeEntity;
+import com.cmc.block.Block;
 import com.cmc.challenge.Challenge;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.memberLevel.MemberLevel;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.participate.Participate;
+import com.cmc.report.Report;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -38,6 +40,12 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChallengeLike> challengeLikes;
+
+    @OneToMany(mappedBy = "member")
+    private List<Report> reports;
+
+    @OneToMany(mappedBy = "member")
+    private List<Block> blocks;
 
     @Column(name = "profile_path", columnDefinition = "VARCHAR(200) default ''")
     private String profilePath;
