@@ -2,14 +2,16 @@ package com.cmc.member;
 
 import com.cmc.base.BaseTimeEntity;
 import com.cmc.block.Block;
-import com.cmc.challenge.Challenge;
+import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challengeLike.ChallengeLike;
+import com.cmc.member.constant.MemberType;
 import com.cmc.memberLevel.MemberLevel;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.participate.Participate;
 import com.cmc.report.Report;
 import lombok.*;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +43,9 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChallengeLike> challengeLikes;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CertifyLike> certifyLikes;
+
     @OneToMany(mappedBy = "member")
     private List<Report> reports;
 
@@ -53,6 +58,10 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type", columnDefinition = "VARCHAR(50)", nullable = false)
     SocialType socialType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_type", columnDefinition = "VARCHAR(20)", nullable = false)
+    MemberType memberType;
 
     @Column(name = "member_name", columnDefinition = "VARCHAR(50)")
     private String memberName;
@@ -79,6 +88,8 @@ public class Member extends BaseTimeEntity {
     @Column(name = "fcm_token_date", columnDefinition = "DATETIME")
     private LocalDateTime fcmTokenDate;
 
+    private LocalDateTime isDeleted;
+
     public static Member create(String nickname, String email, String birthday, String gender, SocialType socialType) {
 
         return Member.builder()
@@ -88,6 +99,7 @@ public class Member extends BaseTimeEntity {
                 .memberGender(gender)
                 .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
+                .memberType(MemberType.MEMBER)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .isUpdatedMember(false)
                 .build();
@@ -102,6 +114,7 @@ public class Member extends BaseTimeEntity {
                 .memberGender("")
                 .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
+                .memberType(MemberType.MEMBER)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .isUpdatedMember(false)
                 .build();
@@ -127,5 +140,10 @@ public class Member extends BaseTimeEntity {
     public void updateIntro(String memberIntro){
 
         this.memberIntro = memberIntro;
+    }
+
+    public void updateIsDeleted(){
+
+        this.isDeleted = LocalDateTime.now();
     }
 }

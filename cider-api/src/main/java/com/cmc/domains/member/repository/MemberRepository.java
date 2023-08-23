@@ -19,4 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByMemberName(String nickName);
 
+    @Query("select m from Member m where m.memberType =:ADMIN")
+    Member getAdmin();
 }

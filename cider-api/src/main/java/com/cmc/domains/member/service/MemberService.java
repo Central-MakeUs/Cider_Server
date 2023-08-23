@@ -91,4 +91,9 @@ public class MemberService {
         // TODO : 만렙 처리
         return memberLevelRepository.getNextLevel(memberLevel.getMemberLevelId() + 1);
     }
+
+    public Member getAdmin() {
+
+        return memberRepository.getAdmin();
+    }
 }

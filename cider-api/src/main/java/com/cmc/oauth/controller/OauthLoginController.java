@@ -1,14 +1,22 @@
 package com.cmc.oauth.controller;
 
+import com.cmc.challenge.constant.ChallengeStatus;
 import com.cmc.common.exception.BadRequestException;
+import com.cmc.domains.challenge.service.ChallengeService;
+import com.cmc.domains.member.service.MemberService;
+import com.cmc.domains.participate.service.ParticipateService;
+import com.cmc.global.resolver.RequestMemberId;
+import com.cmc.member.Member;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.request.OauthReqDto;
 import com.cmc.oauth.dto.response.KakaoAccount;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
 import com.cmc.oauth.service.KakaoLoginService;
 import com.cmc.oauth.service.OauthLoginService;
+import com.cmc.participate.Participate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
+import static com.cmc.member.QMember.member;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +40,9 @@ public class OauthLoginController {
 
     private final OauthLoginService oauthLoginService;
     private final KakaoLoginService kakaoLoginService;
+    private final ChallengeService challengeService;
+    private final MemberService memberService;
+    private final ParticipateService participateService;
 
     @Tag(name = "oauth")
     @PostMapping(value = "/login", headers = {"Content-type=application/json"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,6 +91,25 @@ public class OauthLoginController {
     public ResponseEntity<String> logout(@RequestHeader(value = "Authorization") String refreshToken) {
         oauthLoginService.logout(refreshToken, LocalDateTime.now());
         return ResponseEntity.ok().body("로그아웃이 완료되었습니다.");
+    }
+
+    @Tag(name = "oauth")
+    @PostMapping(value = "/signout")
+    @Operation(summary = "회원 탈퇴", description = "토큰에 해당하는 멤버의 refresh token 만료 처리")
+    public ResponseEntity<String> signOut(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+
+        // 개설 챌린지 호스트 관리자로 업데이트
+        Member admin = memberService.getAdmin();
+        Member member = memberService.find(memberId);
+        for(Participate participate : member.getParticipates()){
+            if (participate.getIsCreator()){
+                participateService.createFirst(participate.getChallenge().getChallengeId(), admin.getMemberId());
+            }
+        }
+
+        // 탈퇴
+        oauthLoginService.signOut(memberId);
+        return ResponseEntity.ok().body("회원 탈퇴가 완료되었습니다.");
     }
 
 }

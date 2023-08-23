@@ -1,10 +1,15 @@
 package com.cmc.oauth.service;
 
+import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.CiderException;
 import com.cmc.common.exception.MemberTokenNotFoundException;
+import com.cmc.domains.certify.repository.CertifyRepository;
+import com.cmc.domains.certifyLike.repository.CertifyLikeRepository;
+import com.cmc.domains.challengeLike.repository.ChallengeLikeRepository;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.memberToken.MemberTokenRepository;
+import com.cmc.domains.participate.repository.ParticipateRepository;
 import com.cmc.member.Member;
 import com.cmc.memberToken.MemberToken;
 import com.cmc.oauth.constant.SocialType;
@@ -12,6 +17,7 @@ import com.cmc.oauth.dto.OAuthAttributes;
 import com.cmc.oauth.dto.TokenDto;
 import com.cmc.oauth.dto.response.KakaoAccount;
 import com.cmc.oauth.dto.response.ResponseJwtTokenDto;
+import com.cmc.participate.Participate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +57,10 @@ public class OauthLoginService {
 
     private final MemberRepository memberRepository;
     private final MemberTokenRepository memberTokenRepository;
+    private final ChallengeLikeRepository challengeLikeRepository;
+    private final CertifyRepository certifyRepository;
+    private final ParticipateRepository participateRepository;
+    private final CertifyLikeRepository certifyLikeRepository;
     private final TokenProvider tokenProvider;
     private final ModelMapper modelMapper;
 
@@ -220,12 +230,44 @@ public class OauthLoginService {
         }
     }
 
+    // 로그아웃
     public void logout(String refreshToken, LocalDateTime now) {
         final MemberToken memberToken = memberTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new MemberTokenNotFoundException("해당 리프레시 토큰이 존재하지 않습니다."));
         memberToken.expire(now);
     }
 
+    // 탈퇴
+    public void signOut(Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CiderException("해당 멤버가 존재하지 않습니다."));
+
+        // TODO : 아예 삭제 or isDeleted 처리 논의
+
+        // 챌린지 좋아요 삭제
+        challengeLikeRepository.deleteAll(member.getChallengeLikes());
+
+        // 게시글 좋아요 삭제
+        certifyLikeRepository.deleteAll(member.getCertifyLikes());
+
+        // 피드 삭제
+        for(Participate participate : member.getParticipates()){
+            certifyRepository.deleteAll(participate.getCertifies());
+        }
+
+        // 참여 챌린지 기록 삭제
+        participateRepository.deleteAll(member.getParticipates());
+
+        // member isDeleted 업데이트
+        member.updateIsDeleted();
+
+        // 7일간 재가입 불가 처리
+        // TODO : batch 도입 -> 자동삭제 추가
+
+        // refresh token 만료처리
+        memberTokenRepository.updateExpirationTimeByMemberId(memberId, LocalDateTime.now());
+    }
 
     private JsonArray getApplePublicKeys() {
         StringBuilder apiKey = new StringBuilder();
