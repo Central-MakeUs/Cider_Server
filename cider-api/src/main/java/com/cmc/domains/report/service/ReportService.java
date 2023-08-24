@@ -66,8 +66,9 @@ public class ReportService {
     public void createMemberBlock(Long contentId, String reason, Long memberId) {
 
         Member member = findMemberOrThrow(memberId);
+        Member blocker = findMemberOrThrow(contentId);
 
-        Block block = Block.builder().member(member).certify(findCertifyOrThrow(contentId))
+        Block block = Block.builder().member(member).blocker(blocker)
                 .blockType(BlockType.MEMBER).blockReason(reason).build();
         member.getBlocks().add(block);
 

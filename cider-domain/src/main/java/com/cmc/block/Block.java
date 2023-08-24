@@ -30,6 +30,10 @@ public class Block extends BaseTimeEntity {
     @JoinColumn(name = "certify_id")
     private Certify certify;
 
+    @ManyToOne
+    @JoinColumn(name = "blocker_id")
+    private Member blocker;
+
     @Enumerated(EnumType.STRING)
     private BlockType blockType;
 

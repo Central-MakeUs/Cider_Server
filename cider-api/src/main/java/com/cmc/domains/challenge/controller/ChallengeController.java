@@ -1,5 +1,7 @@
 package com.cmc.domains.challenge.controller;
 
+import com.cmc.block.Block;
+import com.cmc.block.constant.BlockType;
 import com.cmc.certify.Certify;
 import com.cmc.challenge.Challenge;
 import com.cmc.challenge.constant.ChallengeStatus;
@@ -251,11 +253,27 @@ public class ChallengeController {
             // 로그인 o
             Member member = memberService.find(TokenProvider.getMemberIdKakao(tokenString));
             for(Certify certify : certifies){
-                certifyResponseDtos.add(SimpleCertifyResponseDto.from(certify, findIsLike(challenge, member.getMemberId())));
+
+                if(!checkIsBlocked(member, certify)) {
+                    certifyResponseDtos.add(SimpleCertifyResponseDto.from(certify, findIsLike(challenge, member.getMemberId())));
+                }
             }
         }
 
         return ResponseEntity.ok(ChallengeDetailFeedResponseDto.from(challenge, certifyImageUrlList, certifyResponseDtos));
+    }
+
+    private Boolean checkIsBlocked(Member member, Certify certify){
+
+        for (Block block : member.getBlocks()){
+            if (block.getBlockType().equals(BlockType.FEED) && block.getCertify().equals(certify)){
+                return true;
+            }
+            else if (block.getBlockType().equals(BlockType.MEMBER) && block.getMember().equals(member)){
+                return true;
+            }
+        }
+        return false;
     }
 
     // 챌린지 상세 조회 - 버튼 리턴값 조회 (참여 o)

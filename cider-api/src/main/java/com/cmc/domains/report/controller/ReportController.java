@@ -58,7 +58,7 @@ public class ReportController {
                                                           @RequestBody @Valid ReportCreateRequestDto req){
 
         reportService.createMemberBlock(req.getContentId(), req.getReason(), memberId);
-        return ResponseEntity.ok(CommonResponse.from("사ㅛㅇ자 차단이 완료되었습니다."));
+        return ResponseEntity.ok(CommonResponse.from("사용자 차단이 완료되었습니다."));
     }
 
 }
