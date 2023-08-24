@@ -76,6 +76,9 @@ public class OauthLoginService {
             requestMember = memberRepository.save(newMember);
         } else {
             requestMember = foundMember.get(); // 기존 회원일 때
+            if(requestMember.getIsDeleted() != null){
+                throw new CiderException("탈퇴한 회원은 7일간 재가입이 불가합니다.");
+            }
         }
 
         // JWT 토큰 생성
