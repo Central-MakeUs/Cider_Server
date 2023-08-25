@@ -1,8 +1,10 @@
 package com.cmc.domains.challengeLike.service;
 
+import com.cmc.certifyLike.CertifyLike;
 import com.cmc.challenge.Challenge;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.exception.BadRequestException;
+import com.cmc.common.exception.CiderException;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
 import com.cmc.domains.challengeLike.repository.ChallengeLikeRepository;
 import com.cmc.domains.member.repository.MemberRepository;
@@ -29,6 +31,12 @@ public class ChallengeLikeService {
 
         Member member = findMemberOrThrow(memberId);
         Challenge challenge = findChallengeOrThrow(challengeId);
+
+        for(ChallengeLike like : challenge.getChallengeLikes()){
+            if(like.getMember().getMemberId().equals(memberId)){
+                throw new CiderException("이미 좋아요 등록된 챌린지입니다.");
+            }
+        }
 
         ChallengeLike challengeLike = ChallengeLike.create(member, challenge);
         challenge.getChallengeLikes().add(challengeLike);

@@ -72,6 +72,12 @@ public class CertifyService {
         Member member = findMemberOrThrow(memberId);
         Certify certify = findCertifyOrThrow(certifyId);
 
+        for(CertifyLike like : certify.getCertifyLikeList()){
+            if(like.getMember().getMemberId().equals(memberId)){
+                throw new CiderException("이미 좋아요 등록된 게시글입니다.");
+            }
+        }
+
         CertifyLike certifyLike = CertifyLike.create(member, certify);
         certify.getCertifyLikeList().add(certifyLike);
 
