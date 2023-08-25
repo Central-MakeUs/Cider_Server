@@ -96,10 +96,13 @@ public class ChallengeController {
     public ResponseEntity<List<MyParticipateChallengeResponseDto>> getMyParticipateChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId) {
 
         List<Participate> participates = challengeService.getMyParticipateChallenge(memberId);
-        List<MyParticipateChallengeResponseDto> result = participates.stream().map(participate -> {
-            return MyParticipateChallengeResponseDto.from(participate.getChallenge(), String.valueOf(participate.getParticipateStatus()));
-        }).toList();
 
+        List<MyParticipateChallengeResponseDto> result = new ArrayList<>();
+        for(Participate participate : participates){
+            if(participate.getChallenge().getJudgeStatus().equals(JudgeStatus.COMPLETE)){
+                result.add(MyParticipateChallengeResponseDto.from(participate.getChallenge(), String.valueOf(participate.getParticipateStatus())));
+            }
+        }
         return ResponseEntity.ok(result);
     }
 
