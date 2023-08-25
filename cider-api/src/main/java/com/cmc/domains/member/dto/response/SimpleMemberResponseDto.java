@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SimpleMemberResponseDto {
 
+    @Schema(description = "멤버 id", example = "31")
+    private Long memberId;
+
     @Schema(description = "멤버 이름", example = "건조한모래사막")
     private String memberName;
 
@@ -29,6 +32,7 @@ public class SimpleMemberResponseDto {
     public static SimpleMemberResponseDto from(Member member) {
 
         return SimpleMemberResponseDto.builder()
+                .memberId(member.getMemberId())
                 .memberName(member.getMemberName())
                 .profilePath(member.getProfilePath())
                 .memberLevelName("LV " + member.getMemberLevel().getMemberLevelId() + " " + member.getMemberLevel().getLevelName())
