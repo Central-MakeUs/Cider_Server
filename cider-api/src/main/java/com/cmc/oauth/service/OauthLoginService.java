@@ -11,7 +11,9 @@ import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.memberToken.MemberTokenRepository;
 import com.cmc.domains.participate.repository.ParticipateRepository;
 import com.cmc.member.Member;
+import com.cmc.member.constant.MemberType;
 import com.cmc.memberToken.MemberToken;
+import com.cmc.oauth.apple.AppleToken;
 import com.cmc.oauth.constant.SocialType;
 import com.cmc.oauth.dto.OAuthAttributes;
 import com.cmc.oauth.dto.TokenDto;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.JsonArray;
@@ -33,6 +36,8 @@ import com.google.gson.JsonParser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.modelmapper.ModelMapper;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -100,7 +105,7 @@ public class OauthLoginService {
     }
 
     public ResponseJwtTokenDto loginAppleIos(String tokenString) throws JsonProcessingException {
-        Member requestMember;
+        Member requestMember = null;
 
         String[] decodeArray = tokenString.split("\\.");
         String header = new String(Base64.getDecoder().decode(decodeArray[0]));
@@ -111,6 +116,7 @@ public class OauthLoginService {
 
         PublicKey publicKey = this.getPublicKey(kid, alg);
 
+        // Claims !!
         Claims userInfo = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(tokenString).getBody();
 
         // json 파싱 다시
@@ -132,21 +138,30 @@ public class OauthLoginService {
 
         log.info("oauthAttributes: {}", socialUserInfo.toString());
 
-        final Optional<Member> foundMember = memberRepository.findByEmail(email);
+        // 첫 가입인 경우
+        if(socialUserInfo.getEmail() != null){
 
-        if (foundMember.isEmpty()) { // 기존 회원 아닐 때
-            Member newMember = Member.createApple(socialUserInfo.getEmail(), SocialType.APPLE);
+            String socialId = (String) userInfo.get("sub");
+            log.info("처음 가입한 유저 socialId ::::::::::::::::: " + socialId);
+            Member newMember = Member.createApple(socialUserInfo.getEmail(), SocialType.APPLE, socialId);
             requestMember = memberRepository.save(newMember);
-            // alarmRepository.save(Alarm.create(requestMember));
-        } else {
-            requestMember = foundMember.get(); // 기존 회원일 때
+
+            return generateTokenKakao(requestMember);
         }
 
+        // 이미 가입한 경우
+        String socialId = (String) userInfo.get("sub");
+        log.info("이미 가입한 유저 socialId ::::::::::::::::: " + socialId);
+        requestMember = memberRepository.findByMemberBySocialTypeAndSocialId(SocialType.APPLE, socialId).orElseThrow(() -> {
+            throw new CiderException("유저를 찾을 수 없습니다.");
+        });
 
-        return generateTokenKakao(requestMember);
+        return generateTokenNotNew(requestMember);
     }
 
     public ResponseJwtTokenDto generateTokenApple(Member member) {
+
+        //String socialId = (String) claims.get("sub");
 
         // JWT 토큰 생성
         TokenDto tokenDto = tokenProvider.createTokenDtoApple(member.getMemberId());
@@ -166,6 +181,7 @@ public class OauthLoginService {
         return responseJwtTokenDto;
     }
 
+
     public ResponseJwtTokenDto generateTokenKakao(Member member) {
 
         // JWT 토큰 생성
@@ -175,6 +191,7 @@ public class OauthLoginService {
         ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
         final boolean isNewMember = StringUtils.isEmpty(member.getMemberName());
         responseJwtTokenDto.setIsNewMember(isNewMember);
+
         if (!isNewMember) {
             responseJwtTokenDto.setMemberName(member.getMemberName());
         }
@@ -182,6 +199,23 @@ public class OauthLoginService {
         responseJwtTokenDto.setMemberName("");
         responseJwtTokenDto.setBirthday("");
         responseJwtTokenDto.setGender("");
+
+        return responseJwtTokenDto;
+    }
+
+    public ResponseJwtTokenDto generateTokenNotNew(Member member) {
+
+        // JWT 토큰 생성
+        TokenDto tokenDto = tokenProvider.createTokenDtoKakao(member.getMemberId());
+        log.info("tokenDto: {}", tokenDto);
+
+        ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+        responseJwtTokenDto.setIsNewMember(false);
+
+        responseJwtTokenDto.setMemberId(member.getMemberId());
+        responseJwtTokenDto.setMemberName(member.getMemberName());
+        responseJwtTokenDto.setBirthday(member.getMemberBirth());
+        responseJwtTokenDto.setGender(member.getMemberGender());
 
         return responseJwtTokenDto;
     }

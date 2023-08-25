@@ -90,6 +90,8 @@ public class Member extends BaseTimeEntity {
 
     private LocalDateTime isDeleted;
 
+    private String socialId;
+
     public static Member create(String nickname, String email, String birthday, String gender, SocialType socialType) {
 
         return Member.builder()
@@ -105,7 +107,7 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
-    public static Member createApple(String email, SocialType socialType) {
+    public static Member createApple(String email, SocialType socialType, String socialId) {
 
         return Member.builder()
                 .memberName("")
@@ -117,6 +119,7 @@ public class Member extends BaseTimeEntity {
                 .memberType(MemberType.MEMBER)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .isUpdatedMember(false)
+                .socialId(socialId)
                 .build();
     }
 
