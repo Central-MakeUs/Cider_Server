@@ -125,18 +125,21 @@ public class CertifyService {
 
         if(challenge.getJudgeStatus().equals(JudgeStatus.COMPLETE)){
             throw new CiderException("심사완료된 챌린지는 삭제할 수 없습니다.");
+        }else{
+            challengeRepository.deleteById(challengeId);
         }
 
-        for(Participate participate : member.getParticipates()){
-            if(participate.getChallenge().equals(challenge)){
-                if(!participate.getIsCreator()){
-                    throw new CiderException("챌린지를 삭제할 권한이 없습니다.");
-                }
-                else{
-                    challengeRepository.deleteById(challengeId);
-                }
-            }
-        }
+        // TODO : 생성자 검토
+//        for(Participate participate : member.getParticipates()){
+//            if(participate.getChallenge().equals(challenge)){
+//                if(!participate.getIsCreator()){
+//                    throw new CiderException("챌린지를 삭제할 권한이 없습니다.");
+//                }
+//                else{
+//                    challengeRepository.deleteById(challengeId);
+//                }
+//            }
+//        }
     }
 
     private Challenge findChallengeOrThrow(Long challengeId){
