@@ -127,6 +127,7 @@ public class OauthLoginService {
         JsonObject userInfoObject = (JsonObject) JsonParser.parseString(jsonString);
 
         JsonElement appleAlg = userInfoObject.get("email");
+        log.info("getEmail ::::::::: " + userInfoObject.get("email"));
         String email = appleAlg.getAsString();
 
         OAuthAttributes socialUserInfo = OAuthAttributes
@@ -139,10 +140,12 @@ public class OauthLoginService {
         log.info("oauthAttributes: {}", socialUserInfo.toString());
 
         // 첫 가입인 경우
-        if(socialUserInfo.getEmail() != null){
+        Optional<Member> findMember = memberRepository.findByEmail(socialUserInfo.getEmail());
 
+        if(findMember.isEmpty()){
             String socialId = (String) userInfo.get("sub");
             log.info("처음 가입한 유저 socialId ::::::::::::::::: " + socialId);
+
             Member newMember = Member.createApple(socialUserInfo.getEmail(), SocialType.APPLE, socialId);
             requestMember = memberRepository.save(newMember);
 
@@ -152,6 +155,7 @@ public class OauthLoginService {
         // 이미 가입한 경우
         String socialId = (String) userInfo.get("sub");
         log.info("이미 가입한 유저 socialId ::::::::::::::::: " + socialId);
+
         requestMember = memberRepository.findByMemberBySocialTypeAndSocialId(SocialType.APPLE, socialId).orElseThrow(() -> {
             throw new CiderException("유저를 찾을 수 없습니다.");
         });
