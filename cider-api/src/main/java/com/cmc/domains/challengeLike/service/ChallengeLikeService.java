@@ -31,6 +31,8 @@ public class ChallengeLikeService {
         Challenge challenge = findChallengeOrThrow(challengeId);
 
         ChallengeLike challengeLike = ChallengeLike.create(member, challenge);
+        challenge.getChallengeLikes().add(challengeLike);
+
         return challengeLikeRepository.save(challengeLike);
     }
 

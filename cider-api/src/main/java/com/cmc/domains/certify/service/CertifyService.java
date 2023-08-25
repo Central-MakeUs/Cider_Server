@@ -73,6 +73,8 @@ public class CertifyService {
         Certify certify = findCertifyOrThrow(certifyId);
 
         CertifyLike certifyLike = CertifyLike.create(member, certify);
+        certify.getCertifyLikeList().add(certifyLike);
+
         return certifyLikeRepository.save(certifyLike);
     }
 
