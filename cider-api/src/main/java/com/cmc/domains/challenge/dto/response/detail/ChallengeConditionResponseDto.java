@@ -16,16 +16,16 @@ import java.time.temporal.ChronoUnit;
 @AllArgsConstructor
 public class ChallengeConditionResponseDto {
 
-    @Schema(description = "챌린지 기간", example = "'30회 중 6회 진행의 30")
+    @Schema(description = "챌린지 기간 (30회 중 6회 진행의 30)", example = "30")
     private Integer challengePeriod;
 
-    @Schema(description = "챌린지 진행일", example = "30회 중 6회 진행의 6")
+    @Schema(description = "챌린지 진행일 (30회 중 6회 진행의 6)", example = "6")
     private Long ongoingDate;
 
-    @Schema(description = "평균 현황", example = "% 기준")
+    @Schema(description = "평균 현황 (% 기준)", example = "% 기준")
     private Integer averageCondition;
 
-    @Schema(description = "나의 현황", example = "% 기준")
+    @Schema(description = "나의 현황 (% 기준)", example = "% 기준")
     private Integer myCondition;
 
     public static ChallengeConditionResponseDto from(Challenge challenge){
