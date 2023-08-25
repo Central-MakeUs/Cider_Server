@@ -104,10 +104,9 @@ public class CertifyService {
         return certifyLike;
     }
 
-    public List<Certify> getMyCertifyList(Long memberId, Long challengeId) {
+    public List<Certify> getMyCertifyList(Member member, Challenge challenge) {
 
-        Challenge challenge = findChallengeOrThrow(challengeId);
-        return certifyRepository.getChallengeCertifyList(challengeId);
+        return certifyRepository.getChallengeCertifyList(member, challenge);
     }
 
     // 챌린지 삭제

@@ -1,6 +1,8 @@
 package com.cmc.domains.certify.repository;
 
 import com.cmc.certify.Certify;
+import com.cmc.challenge.Challenge;
+import com.cmc.member.Member;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,13 +61,14 @@ public class CertifyCustomRepositoryImpl implements CertifyCustomRepository{
     }
 
     @Override
-    public List<Certify> getChallengeCertifyList(Long challengeId) {
+    public List<Certify> getChallengeCertifyList(Member member, Challenge challenge) {
 
         return jpaQueryFactory
                 .selectFrom(certify)
 //                .leftJoin(participate).on(participate.participateId.eq(certify.participate.participateId))
 //                .leftJoin(challenge).on(challenge.challengeId.eq(participate.challenge.challengeId))
-                .where(certify.participate.challenge.challengeId.eq(challengeId))
+                .where(certify.participate.challenge.eq(challenge)
+                        .and(certify.participate.member.eq(member)))
                 .fetch();
     }
 }
