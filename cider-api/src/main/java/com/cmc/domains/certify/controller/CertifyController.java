@@ -132,6 +132,7 @@ public class CertifyController {
         Challenge challenge = challengeService.getChallenge(challengeId);
 
         List<Certify> certifies = certifyService.getMyCertifyList(member, challenge);
+
         List<SimpleCertifyResponseDtoV2> certifyResponseList = certifies.stream().map(certify -> {
             return SimpleCertifyResponseDtoV2.from(certify, findIsLike(certify, memberId));
         }).toList();
