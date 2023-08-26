@@ -206,6 +206,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
         return jpaQueryFactory.selectFrom(challenge)
                 .leftJoin(participate).on(challenge.challengeId.eq(participate.challenge.challengeId))
                 .where(participate.participateStatus.eq(ParticipateStatus.ONGOING)
+                        .and(participate.challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)
+                                .or(participate.challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
                         .and(participate.member.memberId.eq(memberId)))
                 .fetch();
     }

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 @Data
 @Builder
 @AllArgsConstructor
+@Slf4j
 public class OngoingChallengeResponseDto {
 
     @Schema(description = "챌린지 제목", example = "소비습관 고치기")
@@ -32,6 +34,7 @@ public class OngoingChallengeResponseDto {
 
     public static OngoingChallengeResponseDto from(Challenge challenge, Integer certifyNum){
 
+        log.info("challengeID :::::::: " + challenge.getChallengeId());
         return new OngoingChallengeResponseDtoBuilder()
                 .challengeName(challenge.getChallengeName())
                 .challengeBranch(String.valueOf(challenge.getChallengeBranch()))

@@ -13,6 +13,7 @@ import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.certify.repository.CertifyRepository;
 import com.cmc.domains.certifyLike.repository.CertifyLikeRepository;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
+import com.cmc.domains.image.certifyExample.repository.CertifyExampleImageRepository;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.participate.repository.ParticipateRepository;
 import com.cmc.member.Member;
@@ -34,6 +35,7 @@ public class CertifyService {
     private final ChallengeRepository challengeRepository;
     private final MemberRepository memberRepository;
     private final CertifyLikeRepository certifyLikeRepository;
+    private final CertifyExampleImageRepository certifyExampleImageRepository;
 
     // 인증 생성
     public Certify create(Long challengeId, String certifyName, String certifyContent, Long memberId) {
@@ -130,16 +132,17 @@ public class CertifyService {
         }
 
         // TODO : 생성자 검토
-//        for(Participate participate : member.getParticipates()){
-//            if(participate.getChallenge().equals(challenge)){
-//                if(!participate.getIsCreator()){
-//                    throw new CiderException("챌린지를 삭제할 권한이 없습니다.");
-//                }
-//                else{
-//                    challengeRepository.deleteById(challengeId);
-//                }
-//            }
-//        }
+        for(Participate participate : member.getParticipates()){
+            if(participate.getChallenge().equals(challenge)){
+                if(!participate.getIsCreator()){
+                    throw new CiderException("챌린지를 삭제할 권한이 없습니다.");
+                }
+                else{
+                    certifyExampleImageRepository.deleteAll(challenge.getCertifyExampleImageList());
+                    challengeRepository.deleteById(challengeId);
+                }
+            }
+        }
     }
 
     private Challenge findChallengeOrThrow(Long challengeId){
