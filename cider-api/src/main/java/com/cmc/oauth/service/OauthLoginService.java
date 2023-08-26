@@ -75,12 +75,14 @@ public class OauthLoginService {
         // 회원 가입 or 로그인
         Member requestMember;
         final Optional<Member> foundMember = memberRepository.findByEmail(memberInfo.getEmail());
+
         if (foundMember.isEmpty()) { // 기존 회원 아닐 때
             Member newMember = Member.create(memberInfo.getProfile().getNickname(),
                     memberInfo.getEmail(), memberInfo.getBirthday(), memberInfo.getGender(), socialType);
             requestMember = memberRepository.save(newMember);
         } else {
             requestMember = foundMember.get(); // 기존 회원일 때
+
             if(requestMember.getIsDeleted() != null){
                 throw new CiderException("탈퇴한 회원은 7일간 재가입이 불가합니다.");
             }

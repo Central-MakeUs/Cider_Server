@@ -102,6 +102,7 @@ public class Member extends BaseTimeEntity {
                 .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
                 .memberType(MemberType.MEMBER)
+                .memberExperience(100)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .isUpdatedMember(false)
                 .build();
@@ -117,6 +118,7 @@ public class Member extends BaseTimeEntity {
                 .memberLevel(new MemberLevel(1, "시작 챌린저", 0))
                 .socialType(socialType)
                 .memberType(MemberType.MEMBER)
+                .memberExperience(100)
                 .interestChallenge("") // 회원가입 할때는 빈값으로 세팅, 이후 멤버 업데이트 api 로 변경
                 .isUpdatedMember(false)
                 .socialId(socialId)
