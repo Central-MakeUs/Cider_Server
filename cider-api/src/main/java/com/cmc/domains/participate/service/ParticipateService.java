@@ -41,7 +41,7 @@ public class ParticipateService {
             throw new CiderException("모집 기간이 마감된 챌린지입니다.");
         }
 
-        if(challenge.getParticipates() != null){
+        if(!challenge.getParticipates().isEmpty()){
             if(challenge.getParticipates().size() >= challenge.getChallengeCapacity()){
                 throw new CiderException("모집 인원이 마감된 챌린지입니다.");
             }

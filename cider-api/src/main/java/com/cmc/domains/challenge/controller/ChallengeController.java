@@ -343,6 +343,10 @@ public class ChallengeController {
         else if(challenge.getChallengeStatus().equals(ChallengeStatus.POSSIBLE) || challenge.getChallengeStatus().equals(ChallengeStatus.RECRUITING)){
             return "이 챌린지 참여하기";
         }
+        // TODO : 점검
+        else if(challenge.getRecruitEndDate().isAfter(LocalDate.now()) && challenge.getParticipates().size() >= challenge.getChallengeCapacity()){
+            return "챌린지 모집 마감";
+        }
         else if(challenge.getChallengeStatus().equals(ChallengeStatus.IMPOSSIBLE)
                 && challenge.getRecruitStartDate().isBefore(LocalDate.now())){
             return "챌린지 진행중";
