@@ -153,12 +153,12 @@ public class OauthLoginService {
         JsonObject userInfoObject = (JsonObject) JsonParser.parseString(jsonString);
 
         JsonElement appleAlg = userInfoObject.get("email");
-        log.info("getEmail ::::::::: " + userInfoObject.get("email"));
         String email = appleAlg.getAsString();
+        log.info("email ::::: " + email);
 
         OAuthAttributes socialUserInfo = OAuthAttributes
                 .builder()
-                .email(email) // 이메일 동의 x 경우
+                .email(email)
                 .name("")
                 .socialType(SocialType.APPLE)
                 .build();
@@ -166,22 +166,25 @@ public class OauthLoginService {
         log.info("oauthAttributes: {}", socialUserInfo.toString());
 
         // 첫 가입인 경우
-        Optional<Member> findMember = memberRepository.findByEmail(socialUserInfo.getEmail());
+        Optional<Member> findMember = memberRepository.findByEmailAndSocialType(socialUserInfo.getEmail());
 
         if(findMember.isEmpty()){
             String socialId = (String) userInfo.get("sub");
             log.info("처음 가입한 유저 socialId ::::::::::::::::: " + socialId);
+            log.info("처음 가입한 유저 email ::::::::::::::::: " + email);
 
-            Member newMember = Member.createApple(socialUserInfo.getEmail(), SocialType.APPLE, socialId);
+            Member newMember = Member.createApple(email, SocialType.APPLE, socialId);
+
             newMember.updateProfileImage();
             requestMember = memberRepository.save(newMember);
 
-            return generateTokenKakao(requestMember);
+            return generateTokenApple(requestMember);
         }
 
         // 이미 가입한 경우
         String socialId = (String) userInfo.get("sub");
         log.info("이미 가입한 유저 socialId ::::::::::::::::: " + socialId);
+        log.info("이미 가입한 유저 email ::::::::::::::::: " + email);
 
         requestMember = memberRepository.findByMemberBySocialTypeAndSocialId(SocialType.APPLE, socialId).orElseThrow(() -> {
             throw new CiderException("유저를 찾을 수 없습니다.");
@@ -190,30 +193,30 @@ public class OauthLoginService {
         return generateTokenNotNew(requestMember);
     }
 
+//    public ResponseJwtTokenDto generateTokenApple(Member member) {
+//
+//        //String socialId = (String) claims.get("sub");
+//
+//        // JWT 토큰 생성
+//        TokenDto tokenDto = tokenProvider.createTokenDtoApple(member.getMemberId());
+//        log.info("tokenDto: {}", tokenDto);
+//
+//        ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+//        final boolean isNewMember = StringUtils.isEmpty(member.getMemberName());
+//        responseJwtTokenDto.setIsNewMember(isNewMember);
+//        if (!isNewMember) {
+//            responseJwtTokenDto.setMemberName(member.getMemberName());
+//        }
+//        responseJwtTokenDto.setMemberId(member.getMemberId());
+//        responseJwtTokenDto.setMemberName("");
+//        responseJwtTokenDto.setBirthday("");
+//        responseJwtTokenDto.setGender("");
+//
+//        return responseJwtTokenDto;
+//    }
+
+
     public ResponseJwtTokenDto generateTokenApple(Member member) {
-
-        //String socialId = (String) claims.get("sub");
-
-        // JWT 토큰 생성
-        TokenDto tokenDto = tokenProvider.createTokenDtoApple(member.getMemberId());
-        log.info("tokenDto: {}", tokenDto);
-
-        ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
-        final boolean isNewMember = StringUtils.isEmpty(member.getMemberName());
-        responseJwtTokenDto.setIsNewMember(isNewMember);
-        if (!isNewMember) {
-            responseJwtTokenDto.setMemberName(member.getMemberName());
-        }
-        responseJwtTokenDto.setMemberId(member.getMemberId());
-        responseJwtTokenDto.setMemberName("");
-        responseJwtTokenDto.setBirthday("");
-        responseJwtTokenDto.setGender("");
-
-        return responseJwtTokenDto;
-    }
-
-
-    public ResponseJwtTokenDto generateTokenKakao(Member member) {
 
         // JWT 토큰 생성
         TokenDto tokenDto = tokenProvider.createTokenDtoKakao(member.getMemberId());
@@ -300,6 +303,9 @@ public class OauthLoginService {
 
     // 로그아웃
     public void logout(String refreshToken, LocalDateTime now) {
+
+       // List<MemberToken> memberTokenList = memberTokenRepository.findByMember
+
         final MemberToken memberToken = memberTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new MemberTokenNotFoundException("해당 리프레시 토큰이 존재하지 않습니다."));
         memberToken.expire(now);

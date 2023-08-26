@@ -68,6 +68,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                     .orElseThrow(() -> new MemberTokenNotFoundException("해당 리프레시 토큰이 존재하지 않습니다."));
 
             final LocalDateTime refreshTokenExpirationTime = memberToken.getTokenExpirationTime();
+            log.info("refreshTokenExpirationTime :::: " + refreshTokenExpirationTime);
 
             //refresh token 만료 전이면 access token 재발급 및 Authorization Header 세팅
             if (!tokenProvider.isTokenExpired(LocalDateTime.now(), refreshTokenExpirationTime)) {

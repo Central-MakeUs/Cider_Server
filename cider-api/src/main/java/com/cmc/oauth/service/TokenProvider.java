@@ -90,7 +90,7 @@ public class TokenProvider {
         String accessToken = createAccessToken(memberId, accessTokenExpireTime);
         String refreshToken = createRefreshToken(memberId, refreshTokenExpireTime);
 
-        final MemberToken memberToken = MemberToken.create(refreshToken, DateTimeUtils.convertToLocalDateTime(refreshTokenExpireTime), memberId);
+        final MemberToken memberToken = MemberToken.create(accessToken, refreshToken, DateTimeUtils.convertToLocalDateTime(refreshTokenExpireTime), memberId);
         memberTokenRepository.save(memberToken);
 
         return TokenDto.builder()
@@ -116,7 +116,7 @@ public class TokenProvider {
         String accessToken = createAccessTokenV2(memberId, accessTokenExpireTime);
         String refreshToken = createRefreshTokenV2(memberId, refreshTokenExpireTime);
 
-        final MemberToken memberToken = MemberToken.create(refreshToken, DateTimeUtils.convertToLocalDateTime(refreshTokenExpireTime), memberId);
+        final MemberToken memberToken = MemberToken.create(accessToken, refreshToken, DateTimeUtils.convertToLocalDateTime(refreshTokenExpireTime), memberId);
         memberTokenRepository.save(memberToken);
 
         return TokenDto.builder()

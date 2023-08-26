@@ -114,7 +114,7 @@ public class Member extends BaseTimeEntity {
 
         return Member.builder()
                 .memberName("")
-                .email("")
+                .email(email)
                 .memberBirth("")
                 .memberGender("")
                 .memberLevel(new MemberLevel(1, "시작 챌린저", 0))

@@ -26,12 +26,15 @@ public class MemberToken extends BaseTimeEntity {
 
     private String refreshToken;
 
+    private String accessToken;
+
     private LocalDateTime tokenExpirationTime;
 
     private Long memberId;
 
-    public static MemberToken create(String refreshToken, LocalDateTime tokenExpiredTime, Long memberId) {
+    public static MemberToken create(String accessToken, String refreshToken, LocalDateTime tokenExpiredTime, Long memberId) {
         final MemberToken memberToken = MemberToken.builder()
+                .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenExpirationTime(tokenExpiredTime)
                 .memberId(memberId)
