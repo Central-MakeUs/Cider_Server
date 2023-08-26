@@ -59,7 +59,7 @@ public class MemberController {
     public ResponseEntity<CommonResponse> updateProfileImage(@Parameter(hidden = true) @RequestMemberId Long memberId,
                                                              @Valid @RequestBody MemberProfileUpdateRequestDto request) {
 
-        memberService.updateProfile(request.getMemberName(), request.getMemberIntro(), memberId);
+        memberService.updateProfile(request.getMemberName(), memberId);
         return ResponseEntity.ok(CommonResponse.from("프로필 수정이 완료되었습니다."));
     }
 

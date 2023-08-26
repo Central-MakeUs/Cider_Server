@@ -19,7 +19,7 @@ public class MemberProfileUpdateRequestDto {
     @Schema(description = "멤버 이름", example = "건조한모래의사막", required=true)
     private String memberName;
 
-    @NotNull
-    @Schema(description = "멤버 소개", example = "안녕하세요", required=true)
-    private String memberIntro;
+//    @NotNull
+//    @Schema(description = "멤버 소개", example = "안녕하세요", required=true)
+//    private String memberIntro;
 }

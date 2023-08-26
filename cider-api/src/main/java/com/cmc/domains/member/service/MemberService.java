@@ -41,11 +41,10 @@ public class MemberService {
     }
 
     // 프로필 업데이트
-    public void updateProfile(String memberName, String memberIntro, Long memberId) {
+    public void updateProfile(String memberName, Long memberId) {
 
         Member member = findMemberOrThrow(memberId);
         member.updateName(memberName);
-        member.updateIntro(memberIntro);
     }
 
     private Member findMemberOrThrow(Long memberId) {
