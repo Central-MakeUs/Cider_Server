@@ -203,7 +203,10 @@ public class TokenProvider {
 
     public boolean isTokenExpired(LocalDateTime now, LocalDateTime tokenExpiredTime) {
         if (now.isAfter(tokenExpiredTime)) { // 토큰 만료된 경우
+            log.info("토큰 만료!!!!!!!!");
             return true;
+        }else {
+            log.info("토큰 만료 아님!!!!!!");
         }
         return false;
     }

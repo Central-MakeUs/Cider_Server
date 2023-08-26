@@ -28,11 +28,12 @@ public class MemberService {
     private final MemberLevelRepository memberLevelRepository;
 
     // 멤버 정보 업데이트
-    public Member updateMember(Long memberId, String memberGender, String memberBirth, String interestChallenge) {
+    public Member updateMember(Long memberId, String memberGender, String memberBirth, String interestChallenge, String memberName) {
 
         Member member = findMemberOrThrow(memberId);
         member.update(memberGender, memberBirth, interestChallenge);
         member.setIsUpdatedMember(true);
+        member.updateName(memberName);
         return memberRepository.save(member);
     }
 

@@ -41,7 +41,7 @@ public class MemberController {
     @PatchMapping(value = "")
     public ResponseEntity<MemberUpdateResDto> updateMember(@Parameter(hidden = true) @RequestMemberId Long memberId, @Valid @RequestBody MemberUpdateReqDto request) {
 
-        Member member = memberService.updateMember(memberId, request.getMemberGender(), request.getMemberBirth(), request.getInterestChallenge());
+        Member member = memberService.updateMember(memberId, request.getMemberGender(), request.getMemberBirth(), request.getInterestChallenge(), request.getMemberName());
         return ResponseEntity.ok(MemberUpdateResDto.from(member));
     }
 
