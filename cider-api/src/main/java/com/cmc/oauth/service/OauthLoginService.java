@@ -169,7 +169,7 @@ public class OauthLoginService {
         log.info("oauthAttributes: {}", socialUserInfo.toString());
 
         // 첫 가입인 경우
-        Optional<Member> findMember = memberRepository.findByEmailAndSocialType(socialUserInfo.getEmail(), "APPLE");
+        Optional<Member> findMember = memberRepository.findByEmailAndSocialType(socialUserInfo.getEmail(), SocialType.APPLE);
 
         if(findMember.isEmpty()){
             String socialId = (String) userInfo.get("sub");
@@ -189,7 +189,11 @@ public class OauthLoginService {
         log.info("이미 가입한 유저 socialId ::::::::::::::::: " + socialId);
         log.info("이미 가입한 유저 email ::::::::::::::::: " + email);
 
-        requestMember = memberRepository.findByMemberBySocialTypeAndSocialId(SocialType.APPLE, socialId).orElseThrow(() -> {
+//        requestMember = memberRepository.findByMemberBySocialTypeAndSocialId(SocialType.APPLE, socialId).orElseThrow(() -> {
+//            throw new CiderException("유저를 찾을 수 없습니다.");
+//        });
+
+        requestMember = memberRepository.findByEmailAndSocialType(email, SocialType.APPLE).orElseThrow(() -> {
             throw new CiderException("유저를 찾을 수 없습니다.");
         });
 

@@ -28,5 +28,5 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
     Optional<Member> findByMemberBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
     @Query("select m from Member m where m.email =:email and m.socialType =:socialType")
-    Optional<Member> findByEmailAndSocialType(String email, String socialType);
+    Optional<Member> findByEmailAndSocialType(String email, SocialType socialType);
 }
