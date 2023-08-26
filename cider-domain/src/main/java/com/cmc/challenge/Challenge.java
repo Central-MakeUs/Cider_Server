@@ -127,6 +127,11 @@ public class Challenge extends BaseTimeEntity {
         return false;
     }
 
+    public void updateStatus(ChallengeStatus status){
+
+        this.challengeStatus = status;
+    }
+
 //    public boolean isCreator(Long memberId) {
 //
 //        return this.member.getMemberId().equals(memberId);

@@ -52,7 +52,14 @@ public class ParticipateService {
             participate.updateIsCreator();
         }
 
-        return participateRepository.save(participate);
+        Participate newParticipate = participateRepository.save(participate);
+
+        challenge.getParticipates().add(newParticipate);
+        if(challenge.getParticipates().size() >= challenge.getChallengeCapacity()){
+            challenge.updateStatus(ChallengeStatus.IMPOSSIBLE);
+        }
+
+        return newParticipate;
     }
 
     // 챌린지 생성하기 - 생성자 참여
