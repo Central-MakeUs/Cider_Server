@@ -2,6 +2,7 @@ package com.cmc.oauth.controller;
 
 import com.cmc.challenge.constant.ChallengeStatus;
 import com.cmc.common.exception.BadRequestException;
+import com.cmc.common.response.CommonResponse;
 import com.cmc.domains.challenge.service.ChallengeService;
 import com.cmc.domains.member.service.MemberService;
 import com.cmc.domains.participate.service.ParticipateService;
@@ -96,7 +97,7 @@ public class OauthLoginController {
     @Tag(name = "oauth")
     @PostMapping(value = "/signout")
     @Operation(summary = "회원 탈퇴", description = "토큰에 해당하는 멤버의 refresh token 만료 처리")
-    public ResponseEntity<String> signOut(@Parameter(hidden = true) @RequestMemberId Long memberId) {
+    public ResponseEntity<CommonResponse> signOut(@Parameter(hidden = true) @RequestMemberId Long memberId) {
 
         // 개설 챌린지 호스트 관리자로 업데이트
         Member admin = memberService.getAdmin();
@@ -109,7 +110,7 @@ public class OauthLoginController {
 
         // 탈퇴
         oauthLoginService.signOut(memberId);
-        return ResponseEntity.ok().body("회원 탈퇴가 완료되었습니다.");
+        return ResponseEntity.ok(CommonResponse.from("회원 탈퇴가 완료되었습니다."));
     }
 
 }
