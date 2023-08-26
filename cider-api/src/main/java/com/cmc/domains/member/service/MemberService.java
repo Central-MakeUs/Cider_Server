@@ -9,6 +9,7 @@ import com.cmc.domains.member.repository.nickname.NameAdjectiveRepository;
 import com.cmc.domains.member.repository.nickname.NameAnimalRepository;
 import com.cmc.domains.member.repository.nickname.NameNounRepository;
 import com.cmc.member.Member;
+import com.cmc.member.constant.MemberType;
 import com.cmc.memberLevel.MemberLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -93,6 +94,6 @@ public class MemberService {
 
     public Member getAdmin() {
 
-        return memberRepository.getAdmin();
+        return memberRepository.getAdmin(MemberType.ADMIN);
     }
 }

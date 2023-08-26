@@ -3,6 +3,7 @@ package com.cmc.domains.member.repository;
 
 import com.cmc.domains.member.dto.response.LevelInfoResponseDto;
 import com.cmc.member.Member;
+import com.cmc.member.constant.MemberType;
 import com.cmc.oauth.constant.SocialType;
 import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,12 +21,12 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 
     boolean existsByMemberName(String nickName);
 
-    @Query("select m from Member m where m.memberType =:ADMIN")
-    Member getAdmin();
+    @Query("select m from Member m where m.memberType =:memberType")
+    Member getAdmin(MemberType memberType);
 
     @Query("select m from Member m where m.socialType =:socialType and m.socialId =:socialId")
     Optional<Member> findByMemberBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
-    @Query("select m from Member m where m.email =:email and m.socialType =:APPLE")
-    Optional<Member> findByEmailAndSocialType(String email);
+    @Query("select m from Member m where m.email =:email and m.socialType =:socialType")
+    Optional<Member> findByEmailAndSocialType(String email, String socialType);
 }

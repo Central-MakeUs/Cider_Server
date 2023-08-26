@@ -1,5 +1,6 @@
 package com.cmc.oauth.service;
 
+import com.cmc.certify.Certify;
 import com.cmc.challengeLike.ChallengeLike;
 import com.cmc.common.exception.BadRequestException;
 import com.cmc.common.exception.CiderException;
@@ -7,6 +8,7 @@ import com.cmc.common.exception.MemberTokenNotFoundException;
 import com.cmc.domains.certify.repository.CertifyRepository;
 import com.cmc.domains.certifyLike.repository.CertifyLikeRepository;
 import com.cmc.domains.challengeLike.repository.ChallengeLikeRepository;
+import com.cmc.domains.image.certify.repository.CertifyImageRepository;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.memberToken.MemberTokenRepository;
 import com.cmc.domains.participate.repository.ParticipateRepository;
@@ -66,6 +68,7 @@ public class OauthLoginService {
     private final CertifyRepository certifyRepository;
     private final ParticipateRepository participateRepository;
     private final CertifyLikeRepository certifyLikeRepository;
+    private final CertifyImageRepository certifyImageRepository;
     private final TokenProvider tokenProvider;
     private final ModelMapper modelMapper;
 
@@ -166,7 +169,7 @@ public class OauthLoginService {
         log.info("oauthAttributes: {}", socialUserInfo.toString());
 
         // 첫 가입인 경우
-        Optional<Member> findMember = memberRepository.findByEmailAndSocialType(socialUserInfo.getEmail());
+        Optional<Member> findMember = memberRepository.findByEmailAndSocialType(socialUserInfo.getEmail(), "APPLE");
 
         if(findMember.isEmpty()){
             String socialId = (String) userInfo.get("sub");
@@ -327,6 +330,11 @@ public class OauthLoginService {
 
         // 피드 삭제
         for(Participate participate : member.getParticipates()){
+
+            for(Certify certify : participate.getCertifies()){
+                log.info("certifyID  :::::: "+ certify.getCertifyId());
+                certifyImageRepository.deleteAll(certify.getCertifyImageList());
+            }
             certifyRepository.deleteAll(participate.getCertifies());
         }
 
