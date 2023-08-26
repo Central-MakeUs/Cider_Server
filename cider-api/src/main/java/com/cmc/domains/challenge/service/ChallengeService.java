@@ -14,16 +14,20 @@ import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.member.Member;
 import com.cmc.participate.Participate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
@@ -129,12 +133,23 @@ public class ChallengeService {
                 break;
             case "participate":
                 challengeResponseVos = challengeRepository.getChallengeByParticipate();
+                List<ChallengeResponseVo> sortedList = sortChallengeResponseList(challengeResponseVos); // 정렬
                 break;
             case "like":
                 challengeResponseVos = challengeRepository.getChallengeByLike();
                 break;
         }
         return challengeResponseVos;
+    }
+
+     private static List<ChallengeResponseVo> sortChallengeResponseList(List<ChallengeResponseVo> list) {
+        Collections.sort(list, new Comparator<ChallengeResponseVo>() {
+            @Override
+            public int compare(ChallengeResponseVo cr1, ChallengeResponseVo cr2) {
+                return cr2.getParticipateNum().compareTo(cr1.getParticipateNum());
+            }
+        });
+        return list;
     }
 
     // 내 챌린지 - 진행중인 챌린지

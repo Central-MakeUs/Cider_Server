@@ -371,7 +371,7 @@ public class ChallengeController {
 
     @Tag(name = "home", description = "홈(둘러보기) API")
     @Operation(summary = "전체 챌린지 리스트 조회 api", description = "- {filter} - latest: 최신순, participate: 참여순, like: 좋아요순")
-    @GetMapping("/{filter}")
+    @GetMapping("/list/{filter}")
     public ResponseEntity<List<ChallengeResponseDto>> getChallengeList(HttpServletRequest httpServletRequest,
                                                                        @PathVariable("filter") String filter) {
 
