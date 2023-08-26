@@ -14,7 +14,9 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @Entity
@@ -130,6 +132,22 @@ public class Member extends BaseTimeEntity {
         this.memberGender = memberGender;
         this.memberBirth = memberBirth;
         this.interestChallenge = interestChallenge;
+    }
+
+    public void updateProfileImage(){
+
+        String[] images = {
+                "https://cider-bucket.s3.ap-northeast-2.amazonaws.com/profileExample/bear.png",
+                "https://cider-bucket.s3.ap-northeast-2.amazonaws.com/profileExample/chick.png",
+                "https://cider-bucket.s3.ap-northeast-2.amazonaws.com/profileExample/fish.png",
+                "https://cider-bucket.s3.ap-northeast-2.amazonaws.com/profileExample/pig.png",
+                "https://cider-bucket.s3.ap-northeast-2.amazonaws.com/profileExample/rabbit.png"
+        };
+
+        Random random = new Random();
+        int selectedIndex = random.nextInt(images.length);
+
+        this.profilePath = images[selectedIndex];
     }
 
     public void updateProfileImage(String imageUrl){

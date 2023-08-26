@@ -149,6 +149,7 @@ public class OauthLoginService {
             log.info("처음 가입한 유저 socialId ::::::::::::::::: " + socialId);
 
             Member newMember = Member.createApple(socialUserInfo.getEmail(), SocialType.APPLE, socialId);
+            newMember.updateProfileImage();
             requestMember = memberRepository.save(newMember);
 
             return generateTokenKakao(requestMember);
