@@ -94,28 +94,31 @@ public class CertifyController {
             certifyResponseDtos = certifies.stream().map(CertifyResponseDto::from).collect(Collectors.toList());
         } else{
             // 로그인 o
-            certifyResponseDtos = certifies.stream().map(certify -> {
 
+            for(Certify certify : certifies){
                 Long memberId = TokenProvider.getMemberIdKakao(tokenString);
                 Member member = memberService.find(memberId);
 
                 if(!checkIsBlocked(member, certify)) {
-                    return CertifyResponseDto.from(certify, findIsLike(certify, memberId));
-                }else {
-                    return null;
+                    certifyResponseDtos.add(CertifyResponseDto.from(certify, findIsLike(certify, memberId)));
                 }
-            }).collect(Collectors.toList());
+            }
+
         }
         return ResponseEntity.ok(certifyResponseDtos);
     }
 
     private Boolean checkIsBlocked(Member member, Certify certify){
 
+        log.info("certifyyyyy : " + certify.getCertifyName());
+
         for (Block block : member.getBlocks()){
             if (block.getBlockType().equals(BlockType.FEED) && block.getCertify().equals(certify)){
+                log.info("FEED blockkkkkkkk");
                 return true;
             }
-            else if (block.getBlockType().equals(BlockType.MEMBER) && block.getMember().equals(member)){
+            else if (block.getBlockType().equals(BlockType.MEMBER) && block.getBlocker().equals(certify.getParticipate().getMember())){
+                log.info("MEMBER blockkkkkkkk");
                 return true;
             }
         }
