@@ -76,32 +76,56 @@ public class OauthLoginService {
         Member requestMember;
         final Optional<Member> foundMember = memberRepository.findByEmail(memberInfo.getEmail());
 
+        ResponseJwtTokenDto responseJwtTokenDto = null;
         if (foundMember.isEmpty()) { // 기존 회원 아닐 때
+            log.info("기존 회원 아닐 때 ");
             Member newMember = Member.create(memberInfo.getProfile().getNickname(),
                     memberInfo.getEmail(), memberInfo.getBirthday(), memberInfo.getGender(), socialType);
             requestMember = memberRepository.save(newMember);
+
+            // JWT 토큰 생성
+            TokenDto tokenDto = tokenProvider.createTokenDtoKakao(requestMember.getMemberId());
+            log.info("tokenDto: {}", tokenDto);
+
+            responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+
+            final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
+            responseJwtTokenDto.setIsNewMember(isNewMember);
+            if (!isNewMember) {
+                if(requestMember.getMemberName() != null) {
+                    responseJwtTokenDto.setMemberName(requestMember.getMemberName());
+                }else{
+                    responseJwtTokenDto.setMemberName("");
+                }
+            }
+            responseJwtTokenDto.setMemberId(requestMember.getMemberId());
+            responseJwtTokenDto.setBirthday("");
+            responseJwtTokenDto.setGender("");
+
         } else {
+            log.info("기존 회원일 때 :: " + foundMember.get().getMemberId() + foundMember.get().getMemberName());
             requestMember = foundMember.get(); // 기존 회원일 때
 
             if(requestMember.getIsDeleted() != null){
                 throw new CiderException("탈퇴한 회원은 7일간 재가입이 불가합니다.");
             }
+
+            // JWT 토큰 생성
+            TokenDto tokenDto = tokenProvider.createTokenDtoKakao(requestMember.getMemberId());
+            log.info("tokenDto: {}", tokenDto);
+
+            responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
+
+            final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
+            responseJwtTokenDto.setIsNewMember(isNewMember);
+            if (!isNewMember) {
+                responseJwtTokenDto.setMemberName(requestMember.getMemberName());
+            }
+            responseJwtTokenDto.setMemberId(requestMember.getMemberId());
+            responseJwtTokenDto.setBirthday(requestMember.getMemberBirth());
+            responseJwtTokenDto.setGender(requestMember.getMemberGender());
+            responseJwtTokenDto.setIsUpdatedMember(requestMember.getIsUpdatedMember());
         }
-
-        // JWT 토큰 생성
-        TokenDto tokenDto = tokenProvider.createTokenDtoKakao(requestMember.getMemberId());
-        log.info("tokenDto: {}", tokenDto);
-
-        ResponseJwtTokenDto responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
-
-        final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
-        responseJwtTokenDto.setIsNewMember(isNewMember);
-        if (!isNewMember) {
-            responseJwtTokenDto.setMemberName(requestMember.getMemberName());
-        }
-        responseJwtTokenDto.setMemberId(requestMember.getMemberId());
-        responseJwtTokenDto.setBirthday(requestMember.getMemberBirth());
-        responseJwtTokenDto.setGender(requestMember.getMemberGender());
 
         return responseJwtTokenDto;
     }
