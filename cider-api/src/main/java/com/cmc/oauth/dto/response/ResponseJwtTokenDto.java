@@ -30,8 +30,7 @@ public class ResponseJwtTokenDto {
     private Date refreshTokenExpireTime;
 
     @Schema(description = "신규 회원 여부 - 이름이 저장되어 있는지 여부")
-    @Builder.Default
-    private Boolean isNewMember = false;
+    private Boolean isNewMember;
 
     @Schema(description = "멤버 ID")
     private Long memberId;

@@ -92,15 +92,17 @@ public class OauthLoginService {
 
             responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
 
-            final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
-            responseJwtTokenDto.setIsNewMember(isNewMember);
-            if (!isNewMember) {
-                if(requestMember.getMemberName() != null) {
-                    responseJwtTokenDto.setMemberName(requestMember.getMemberName());
-                }else{
-                    responseJwtTokenDto.setMemberName("");
-                }
-            }
+           // final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
+
+            responseJwtTokenDto.setIsNewMember(true);
+//            if (!isNewMember) {
+//                if(requestMember.getMemberName() != null) {
+//                    responseJwtTokenDto.setMemberName(requestMember.getMemberName());
+//                }else{
+//                    responseJwtTokenDto.setMemberName("");
+//                }
+//            }
+            responseJwtTokenDto.setMemberName("");
             responseJwtTokenDto.setMemberId(requestMember.getMemberId());
             responseJwtTokenDto.setBirthday("");
             responseJwtTokenDto.setGender("");
@@ -108,6 +110,7 @@ public class OauthLoginService {
         } else {
             log.info("기존 회원일 때 :: " + foundMember.get().getMemberId() + foundMember.get().getMemberName());
             requestMember = foundMember.get(); // 기존 회원일 때
+            log.info("foundMember email ::::: " + foundMember.get().getEmail());
 
             if(requestMember.getIsDeleted() != null){
                 throw new CiderException("탈퇴한 회원은 7일간 재가입이 불가합니다.");
@@ -120,10 +123,10 @@ public class OauthLoginService {
             responseJwtTokenDto = modelMapper.map(tokenDto, ResponseJwtTokenDto.class);
 
             final boolean isNewMember = StringUtils.isEmpty(requestMember.getMemberName());
-            responseJwtTokenDto.setIsNewMember(isNewMember);
-            if (!isNewMember) {
-                responseJwtTokenDto.setMemberName(requestMember.getMemberName());
-            }
+            responseJwtTokenDto.setIsNewMember(false);
+//            if (!isNewMember) {
+//                responseJwtTokenDto.setMemberName(requestMember.getMemberName());
+//            }
             responseJwtTokenDto.setMemberId(requestMember.getMemberId());
             responseJwtTokenDto.setBirthday(requestMember.getMemberBirth());
             responseJwtTokenDto.setGender(requestMember.getMemberGender());
