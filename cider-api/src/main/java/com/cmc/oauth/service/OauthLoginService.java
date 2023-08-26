@@ -329,17 +329,17 @@ public class OauthLoginService {
         certifyLikeRepository.deleteAll(member.getCertifyLikes());
 
         // 피드 삭제
-        for(Participate participate : member.getParticipates()){
-
-            for(Certify certify : participate.getCertifies()){
-                log.info("certifyID  :::::: "+ certify.getCertifyId());
-                certifyImageRepository.deleteAll(certify.getCertifyImageList());
-            }
-            certifyRepository.deleteAll(participate.getCertifies());
-        }
+//        for(Participate participate : member.getParticipates()){
+//
+//            for(Certify certify : participate.getCertifies()){
+//                log.info("certifyID  :::::: "+ certify.getCertifyId());
+//                certifyImageRepository.deleteAll(certify.getCertifyImageList());
+//            }
+//            certifyRepository.deleteAll(participate.getCertifies());
+//        }
 
         // 참여 챌린지 기록 삭제
-        participateRepository.deleteAll(member.getParticipates());
+        //participateRepository.deleteAll(member.getParticipates());
 
         // member isDeleted 업데이트
         member.updateIsDeleted();
