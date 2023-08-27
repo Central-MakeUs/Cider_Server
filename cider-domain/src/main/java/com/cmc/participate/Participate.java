@@ -52,6 +52,11 @@ public class Participate {
         this.isFirstCertify = false;
     }
 
+    public void updateParticipateStatus(ParticipateStatus status){
+
+        this.participateStatus = status;
+    }
+
     public static Participate create(Member member, Challenge challenge){
 
         return Participate.builder()

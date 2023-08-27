@@ -10,6 +10,7 @@ import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.participate.repository.ParticipateRepository;
 import com.cmc.member.Member;
 import com.cmc.participate.Participate;
+import com.cmc.participate.constant.ParticipateStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,7 @@ public class ParticipateService {
         }
 
         Participate newParticipate = participateRepository.save(participate);
+        newParticipate.updateParticipateStatus(ParticipateStatus.ONGOING);  // TODO : 챌린지 시작 전 케이스 검토
 
         challenge.getParticipates().add(newParticipate);
         if(challenge.getParticipates().size() >= challenge.getChallengeCapacity()){

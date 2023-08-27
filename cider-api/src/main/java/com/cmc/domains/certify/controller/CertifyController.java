@@ -91,6 +91,9 @@ public class CertifyController {
         List<CertifyResponseDto> certifyResponseDtos = new ArrayList<>();
         if (tokenString == null || tokenString.isEmpty()) {
             // 로그인 x
+            for(Certify certify : certifies){
+                log.info("certify ::: " + certify.getCertifyId());
+            }
             certifyResponseDtos = certifies.stream().map(CertifyResponseDto::from).collect(Collectors.toList());
         } else{
             // 로그인 o
