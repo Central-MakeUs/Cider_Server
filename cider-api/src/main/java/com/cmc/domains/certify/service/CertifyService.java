@@ -13,12 +13,14 @@ import com.cmc.common.exception.NoSuchIdException;
 import com.cmc.domains.certify.repository.CertifyRepository;
 import com.cmc.domains.certifyLike.repository.CertifyLikeRepository;
 import com.cmc.domains.challenge.repository.ChallengeRepository;
+import com.cmc.domains.image.certify.repository.CertifyImageRepository;
 import com.cmc.domains.image.certifyExample.repository.CertifyExampleImageRepository;
 import com.cmc.domains.member.repository.MemberRepository;
 import com.cmc.domains.participate.repository.ParticipateRepository;
 import com.cmc.member.Member;
 import com.cmc.participate.Participate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class CertifyService {
 
     private final CertifyRepository certifyRepository;
@@ -36,6 +39,7 @@ public class CertifyService {
     private final MemberRepository memberRepository;
     private final CertifyLikeRepository certifyLikeRepository;
     private final CertifyExampleImageRepository certifyExampleImageRepository;
+    private final CertifyImageRepository certifyImageRepository;
 
     // 인증 생성
     public Certify create(Long challengeId, String certifyName, String certifyContent, Long memberId) {
@@ -142,6 +146,21 @@ public class CertifyService {
                     challengeRepository.deleteById(challengeId);
                 }
             }
+        }
+    }
+
+    public void deleteParticipateCertify(Participate participate) {
+
+        log.info("participate :::: " + participate.getParticipateId());
+
+        for(Certify certify : participate.getCertifies()){
+
+            log.info("certify :::: " + certify.getCertifyName());
+            certifyLikeRepository.deleteAll(certify.getCertifyLikeList());
+            certifyImageRepository.deleteAll(certify.getCertifyImageList());
+
+            certifyRepository.delete(certify);
+
         }
     }
 

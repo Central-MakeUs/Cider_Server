@@ -159,8 +159,7 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.createdDate.desc())
                 .fetch();
@@ -174,8 +173,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)))
+                       // .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
                 .fetch();
 
         return makeChallengeResponseVos(challenges);
@@ -187,8 +186,8 @@ public class ChallengeCustomRepositoryImpl implements ChallengeCustomRepository{
 
         List<Challenge> challenges =  jpaQueryFactory
                 .selectFrom(challenge)
-                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE))
-                        .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
+                .where(challenge.challengeStatus.eq(ChallengeStatus.RECRUITING).or(challenge.challengeStatus.eq(ChallengeStatus.POSSIBLE)))
+                     //   .or(challenge.challengeStatus.eq(ChallengeStatus.IMPOSSIBLE)))
                 .groupBy(challenge)
                 .orderBy(challenge.challengeLikes.size().desc())
                 .fetch();

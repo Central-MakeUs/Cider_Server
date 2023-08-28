@@ -20,9 +20,11 @@ import com.cmc.domains.challengeLike.dto.request.ChallengeLikeCreateRequestDto;
 import com.cmc.domains.image.service.ImageService;
 import com.cmc.domains.member.dto.response.SimpleMemberResponseDto;
 import com.cmc.domains.member.service.MemberService;
+import com.cmc.domains.participate.service.ParticipateService;
 import com.cmc.global.resolver.RequestMemberId;
 import com.cmc.member.Member;
 import com.cmc.oauth.service.TokenProvider;
+import com.cmc.participate.Participate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,6 +55,7 @@ public class CertifyController {
     private final ImageService imageService;
     private final MemberService memberService;
     private final ChallengeService challengeService;
+    private final ParticipateService participateService;
 
     @Tag(name = "certify", description = "챌린지 인증 API")
     @Operation(summary = "챌린지 인증 api")
@@ -157,6 +160,18 @@ public class CertifyController {
             }
         }
         return false;
+    }
+
+    @Tag(name = "challenge")
+    @Operation(summary = "participate-certify 삭제 api (더미데이터 삭제용)")
+    @DeleteMapping(value="/{participateId}")
+    public ResponseEntity<CommonResponse> deleteParticipateCertify(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                          @PathVariable("participateId") Long participateId) {
+
+        Participate participate = participateService.find(participateId);
+
+        certifyService.deleteParticipateCertify(participate);
+        return ResponseEntity.ok(CommonResponse.from("챌린지가 삭제되었습니다"));
     }
 
 }

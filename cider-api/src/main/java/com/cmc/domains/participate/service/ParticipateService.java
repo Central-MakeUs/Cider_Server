@@ -88,4 +88,10 @@ public class ParticipateService {
             throw new BadRequestException("요청한 챌린지는 존재하지 않습니다.");
         });
     }
+
+    public Participate find(Long participateId) {
+        return participateRepository.findById(participateId).orElseThrow(() -> {
+            throw new BadRequestException("요청한 participate는 존재하지 않습니다.");
+        });
+    }
 }
