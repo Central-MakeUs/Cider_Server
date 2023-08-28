@@ -73,6 +73,7 @@ public class ParticipateService {
 
         Participate participate = Participate.create(member, challenge);
         participate.updateIsCreator();
+        participate.updateParticipateStatus(ParticipateStatus.ONGOING);
         return participateRepository.save(participate);
     }
 
