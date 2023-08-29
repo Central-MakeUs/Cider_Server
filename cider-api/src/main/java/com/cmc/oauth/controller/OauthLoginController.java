@@ -101,9 +101,11 @@ public class OauthLoginController {
 
         // 개설 챌린지 호스트 관리자로 업데이트
         Member admin = memberService.getAdmin();
+        log.info("ADMIN :::: " + admin.getMemberName());
         Member member = memberService.find(memberId);
         for(Participate participate : member.getParticipates()){
             if (participate.getIsCreator()){
+                participateService.delete(participate);
                 participateService.createFirst(participate.getChallenge().getChallengeId(), admin.getMemberId());
             }
         }

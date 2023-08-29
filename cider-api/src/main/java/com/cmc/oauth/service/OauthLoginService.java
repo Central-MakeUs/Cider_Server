@@ -113,10 +113,6 @@ public class OauthLoginService {
             requestMember = foundMember.get(); // 기존 회원일 때
             log.info("foundMember email ::::: " + foundMember.get().getEmail());
 
-            if(requestMember.getIsDeleted() != null){
-                throw new CiderException("탈퇴한 회원은 7일간 재가입이 불가합니다.");
-            }
-
             // JWT 토큰 생성
             TokenDto tokenDto = tokenProvider.createTokenDtoKakao(requestMember.getMemberId());
             log.info("tokenDto: {}", tokenDto);
@@ -351,9 +347,7 @@ public class OauthLoginService {
 
         // member isDeleted 업데이트
         member.updateIsDeleted();
-
-        // 7일간 재가입 불가 처리
-        // TODO : batch 도입 -> 자동삭제 추가
+        member.updateEmail();
 
         // refresh token 만료처리
         memberTokenRepository.updateExpirationTimeByMemberId(memberId, LocalDateTime.now());

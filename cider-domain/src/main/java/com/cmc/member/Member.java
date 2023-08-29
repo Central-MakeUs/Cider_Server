@@ -169,4 +169,9 @@ public class Member extends BaseTimeEntity {
 
         this.isDeleted = LocalDateTime.now();
     }
+
+    public void updateEmail(){
+
+        this.email = this.email + "-del";
+    }
 }

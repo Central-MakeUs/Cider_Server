@@ -95,4 +95,10 @@ public class ParticipateService {
             throw new BadRequestException("요청한 participate는 존재하지 않습니다.");
         });
     }
+
+    public void delete(Participate participate) {
+
+        participateRepository.delete(participate);
+        participate.getChallenge().getParticipates().removeIf(p -> p.getParticipateId().equals(participate.getParticipateId()));
+    }
 }
