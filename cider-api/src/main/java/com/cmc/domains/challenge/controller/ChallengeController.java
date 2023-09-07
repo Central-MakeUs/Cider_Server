@@ -44,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
@@ -91,7 +92,7 @@ public class ChallengeController {
     }
 
     @Tag(name = "challenge", description = "챌린지 API")
-    @Operation(summary = "내가 참가한 챌린지 리스트 조회 api")
+    @Operation(summary = "내가 참가한 챌린지 리스트 조회 api - 인증하기")
     @GetMapping("/participate")
     public ResponseEntity<List<MyParticipateChallengeResponseDto>> getMyParticipateChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId) {
 
@@ -99,11 +100,25 @@ public class ChallengeController {
 
         List<MyParticipateChallengeResponseDto> result = new ArrayList<>();
         for(Participate participate : participates){
-            if(participate.getChallenge().getJudgeStatus().equals(JudgeStatus.COMPLETE)){
+            if(participate.getChallenge().getJudgeStatus().equals(JudgeStatus.COMPLETE) && participate.getParticipateStatus().equals(ParticipateStatus.ONGOING) && !isCertifiedToday(participate)){
                 result.add(MyParticipateChallengeResponseDto.from(participate.getChallenge(), String.valueOf(participate.getParticipateStatus())));
             }
         }
         return ResponseEntity.ok(result);
+    }
+
+    private Boolean isCertifiedToday(Participate participate){
+
+        log.info("localdate 1 ::::: " + LocalDate.now());
+
+        for(Certify certify : participate.getCertifies()){
+            if(certify.getCreatedDate().toLocalDate().equals(LocalDate.now())){
+                log.info("localdate 2 ::::: " + certify.getCreatedDate().toLocalDate());
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Tag(name = "home", description = "홈(둘러보기) API")
