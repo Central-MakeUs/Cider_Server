@@ -46,10 +46,15 @@ public class SimpleCertifyResponseDto {
 
     public static SimpleCertifyResponseDto from(Certify certify) {
 
+        String url = "";
+        if(certify.getCertifyImageList().size() != 0){
+            url =  certify.getCertifyImageList().get(0).getImageUrl();
+        }
+
         return new SimpleCertifyResponseDtoBuilder()
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
                 .certifyId(certify.getCertifyId())
-                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
+                .certifyImageUrl(url)
                 .createdDate(certify.getCreatedDate())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())
@@ -60,10 +65,15 @@ public class SimpleCertifyResponseDto {
 
     public static SimpleCertifyResponseDto from(Certify certify, Boolean isLike) {
 
+        String url = "";
+        if(certify.getCertifyImageList().size() != 0){
+            url =  certify.getCertifyImageList().get(0).getImageUrl();
+        }
+
         return new SimpleCertifyResponseDtoBuilder()
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
                 .certifyId(certify.getCertifyId())
-                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
+                .certifyImageUrl(url)
                 .createdDate(certify.getCreatedDate())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())

@@ -256,9 +256,13 @@ public class ChallengeController {
         Challenge challenge = challengeService.getChallenge(challengeId);
         List<Certify> certifies = certifyService.getChallengeCertifyList(challenge, filter);
 
-        List<String> certifyImageUrlList = certifies.stream().map(certify -> {
-            return certify.getCertifyImageList().get(0).getImageUrl();
-        }).toList();
+        List<String> certifyImageUrlList = new ArrayList<>();
+
+        for(Certify certify : certifies){
+            if(certify.getCertifyImageList().size() != 0){
+                certifyImageUrlList.add(certify.getCertifyImageList().get(0).getImageUrl());
+            }
+        }
 
         List<SimpleCertifyResponseDto> certifyResponseDtos = new ArrayList<>();
         if (tokenString == null || tokenString.isEmpty()) {     // 로그인 x
