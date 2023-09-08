@@ -107,9 +107,24 @@ public class ChallengeController {
         return ResponseEntity.ok(result);
     }
 
-    private Boolean isCertifiedToday(Participate participate){
+    @Tag(name = "challenge", description = "챌린지 API")
+    @Operation(summary = "내가 참가한 챌린지 리스트 조회 api - 마이페이지 나의 인증글 조회")
+    @GetMapping("/mypage/participate")
+    public ResponseEntity<List<MyParticipateChallengeResponseDto>> getMyPageChallenge(@Parameter(hidden = true) @RequestMemberId Long memberId) {
 
-        log.info("localdate 1 ::::: " + LocalDate.now());
+        List<Participate> participates = challengeService.getMyParticipateChallenge(memberId);
+
+        List<MyParticipateChallengeResponseDto> result = new ArrayList<>();
+        for(Participate participate : participates){
+            if(participate.getChallenge().getJudgeStatus().equals(JudgeStatus.COMPLETE)){
+                result.add(MyParticipateChallengeResponseDto.from(participate.getChallenge(), String.valueOf(participate.getParticipateStatus())));
+            }
+        }
+        return ResponseEntity.ok(result);
+    }
+
+
+    private Boolean isCertifiedToday(Participate participate){
 
         for(Certify certify : participate.getCertifies()){
             if(certify.getCreatedDate().toLocalDate().equals(LocalDate.now())){
