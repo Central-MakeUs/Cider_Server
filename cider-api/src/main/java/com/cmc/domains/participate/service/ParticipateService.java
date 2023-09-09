@@ -30,6 +30,12 @@ public class ParticipateService {
         Member member = findMemberOrThrow(memberId);
         Challenge challenge = findChallengeOrThrow(challengeId);
 
+        for(Participate participate : member.getParticipates()){
+            if (participate.getChallenge().getChallengeId().equals(challengeId)) {
+                throw new CiderException("이미 참여중인 챌린지입니다.");
+            }
+        }
+
         if(challenge.getJudgeStatus().equals(JudgeStatus.JUDGING)){
             throw new CiderException("심사중인 챌린지입니다.");
         }
