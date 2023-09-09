@@ -80,10 +80,13 @@ public class OauthLoginService {
         final Optional<Member> foundMember = memberRepository.findByEmail(memberInfo.getEmail());
 
         ResponseJwtTokenDto responseJwtTokenDto = null;
+
         if (foundMember.isEmpty()) { // 기존 회원 아닐 때
+
             log.info("기존 회원 아닐 때 ");
-            Member newMember = Member.create(memberInfo.getProfile().getNickname(),
-                    memberInfo.getEmail(), memberInfo.getBirthday(), memberInfo.getGender(), socialType);
+
+            Member newMember = Member.create("",
+                    memberInfo.getEmail(), "memberInfo.getBirthday()", "memberInfo.getGender()", socialType);
             newMember.updateProfileImage();
             requestMember = memberRepository.save(newMember);
 

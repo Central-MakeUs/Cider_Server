@@ -82,6 +82,22 @@ public class CertifyController {
         return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
     }
 
+    @Tag(name = "certify", description = "챌린지 인증 API")
+    @Operation(summary = "챌린지 인증 이미지 업로드 api", description = "- form-data 형태로 보내주시고, content-type는 따로 지정 안해주셔도 됩니다.\n" +
+            "- certifyId는 직전에 호출한 챌린지 인증 api response값 보내주시면 됩니다.")
+    @PatchMapping(value="/images/{certifyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CommonResponse> updateCertifyImages(@Parameter(hidden = true) @RequestMemberId Long memberId,
+                                                              @RequestPart(value = "certifyImages") List<MultipartFile> certifyImages,
+                                                              @PathVariable("certifyId") Long certifyId) throws IOException {
+
+        for(MultipartFile multipartFile : certifyImages){
+            log.info("contentType ::::::::: " + multipartFile.getContentType());
+        }
+
+        imageService.uploadCertifyImages(certifyImages, certifyId);
+        return ResponseEntity.ok(CommonResponse.from("인증 예시 이미지가 업로드 되었습니다."));
+    }
+
     @Tag(name = "home", description = "홈(둘러보기) API")
     @Operation(summary = "홈 - 추천 피드 조회 api")
     @GetMapping("/home")
