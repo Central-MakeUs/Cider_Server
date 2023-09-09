@@ -49,6 +49,11 @@ public class CertifyResponseDto {
 
     public static CertifyResponseDto from(Certify certify) {
 
+        String url = "";
+        if(certify.getCertifyImageList().size() != 0){
+            url =  certify.getCertifyImageList().get(0).getImageUrl();
+        }
+
         return CertifyResponseDto.builder()
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
                 .simpleChallengeResponseDto(SimpleChallengeResponseDto.from(certify.getParticipate().getChallenge()))
@@ -56,7 +61,7 @@ public class CertifyResponseDto {
                 .certifyId(certify.getCertifyId())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())
-                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
+                .certifyImageUrl(url)
                 .certifyLike((long) certify.getCertifyLikeList().size())
                 .isLike(false)
                 .build();
@@ -64,6 +69,11 @@ public class CertifyResponseDto {
 
     public static CertifyResponseDto from(Certify certify, Boolean isLike) {
 
+        String url = "";
+        if(certify.getCertifyImageList().size() != 0){
+            url =  certify.getCertifyImageList().get(0).getImageUrl();
+        }
+
         return CertifyResponseDto.builder()
                 .simpleMemberResponseDto(SimpleMemberResponseDto.from(certify.getParticipate().getMember()))
                 .simpleChallengeResponseDto(SimpleChallengeResponseDto.from(certify.getParticipate().getChallenge()))
@@ -71,7 +81,7 @@ public class CertifyResponseDto {
                 .certifyId(certify.getCertifyId())
                 .certifyName(certify.getCertifyName())
                 .certifyContent(certify.getCertifyContent())
-                .certifyImageUrl(certify.getCertifyImageList().get(0).getImageUrl())
+                .certifyImageUrl(url)
                 .certifyLike((long) certify.getCertifyLikeList().size())
                 .isLike(isLike)
                 .build();
